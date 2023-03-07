@@ -11,8 +11,8 @@ ifeq ($(CC), gcc)
 	x86_64_cxx=x86_64-linux-android-$(CXX)
 
 
-	cflags=-O2 -fpic --sysroot=./sysroot
-	cxxflags=-std=c++23 -O2 -fpic --sysroot=./sysroot
+	cflags=-O2 -fPIC --sysroot=./sysroot
+	cxxflags=-std=c++23 -O2 -fPIC --sysroot=./sysroot
 else
 	aarch64_cc=clang --target=aarch64-linux-android
 	aarch64_cxx=clang++ --target=aarch64-linux-android
@@ -23,8 +23,8 @@ else
 	x86_64_cc=clang --target=x86_64-linux-android
 	x86_64_cxx=clang++ --target=x86_64-linux-android
 
-	cflags=-O2 -fpic --sysroot=./sysroot
-	cxxflags=-std=c++2b -O2 -fpic --sysroot=./sysroot
+	cflags=-O2 -fPIC --sysroot=./sysroot
+	cxxflags=-std=c++2b -O2 -fPIC --sysroot=./sysroot
 endif
 
 CFLAGS := -std=c99 $(cflags)
@@ -69,22 +69,22 @@ clean:
 
 
 $(aarch64_static) : $(aarch64_obj)
-	llvm-strip -R .note -R .comment --strip-unneeded $(aarch64_obj)
+	llvm-strip -R .comment --strip-unneeded $(aarch64_obj)
 	llvm-ar cru $(aarch64_static) $(aarch64_obj)
 	llvm-ranlib $(aarch64_static)
 
 $(arm_static) : $(arm_obj)
-	llvm-strip -R .note -R .comment --strip-unneeded $(arm_obj)
+	llvm-strip -R .comment --strip-unneeded $(arm_obj)
 	llvm-ar cru $(arm_static) $(arm_obj)
 	llvm-ranlib $(arm_static)
 
 $(i686_static) : $(i686_obj)
-	llvm-strip -R .note -R .comment --strip-unneeded $(i686_obj)
+	llvm-strip -R .comment --strip-unneeded $(i686_obj)
 	llvm-ar cru $(i686_static) $(i686_obj)
 	llvm-ranlib $(i686_static)
 
 $(x86_64_static) : $(x86_64_obj)
-	llvm-strip -R .note -R .comment --strip-unneeded $(x86_64_obj)
+	llvm-strip -R .comment --strip-unneeded $(x86_64_obj)
 	llvm-ar cru $(x86_64_static) $(x86_64_obj)
 	llvm-ranlib $(x86_64_static)
 

@@ -1,5 +1,5 @@
 
-CFLAGS = -Os -fpic
+CFLAGS = -O2 -fPIC
 
 all: aarch64 arm i686 x86_64
 	@echo "\e[35mbuild completed!\e[0m"
@@ -11,22 +11,22 @@ clean:
 
 
 aarch64: aarch64/execinfo.o
-	llvm-strip -R .note -R .comment --strip-unneeded aarch64/execinfo.o
+	llvm-strip -R .comment --strip-unneeded aarch64/execinfo.o
 	llvm-ar rcu aarch64/libexecinfo.a aarch64/execinfo.o
 	llvm-ranlib aarch64/libexecinfo.a
 	
 arm: arm/execinfo.o
-	llvm-strip -R .note -R .comment --strip-unneeded arm/execinfo.o
+	llvm-strip -R .comment --strip-unneeded arm/execinfo.o
 	llvm-ar rcu arm/libexecinfo.a arm/execinfo.o
 	llvm-ranlib arm/libexecinfo.a
 	
 i686: i686/execinfo.o
-	llvm-strip -R .note -R .comment --strip-unneeded i686/execinfo.o
+	llvm-strip -R .comment --strip-unneeded i686/execinfo.o
 	llvm-ar rcu i686/libexecinfo.a i686/execinfo.o
 	llvm-ranlib i686/libexecinfo.a
 	
 x86_64: x86_64/execinfo.o
-	llvm-strip -R .note -R .comment --strip-unneeded x86_64/execinfo.o
+	llvm-strip -R .comment --strip-unneeded x86_64/execinfo.o
 	llvm-ar rcu x86_64/libexecinfo.a x86_64/execinfo.o
 	llvm-ranlib x86_64/libexecinfo.a
 
