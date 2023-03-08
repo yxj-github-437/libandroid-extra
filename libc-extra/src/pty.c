@@ -45,7 +45,8 @@ int openpty(int* pty, int* tty, char* name, const struct termios* t, const struc
     return 0;
 }
 
-int forkpty(int* parent_pty, char* child_tty_name, const struct termios* t, const struct winsize* ws)
+int forkpty(int* parent_pty, char* child_tty_name, const struct termios* t,
+            const struct winsize* ws)
 {
     int pty;
     int tty;

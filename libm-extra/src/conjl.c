@@ -28,19 +28,18 @@
 #include <sys/cdefs.h>
 __RCSID("$NetBSD: conjl.c,v 1.4 2010/09/20 16:55:20 christos Exp $");
 
-#include <complex.h>
 #include "complex_private.h"
+#include <complex.h>
 
 /*
  * conjl(long double complex z)
  * This function returns the complex conjugate value of its argument, z.
  */
-long double complex
-conjl(long double complex z)
+long double complex conjl(long double complex z)
 {
-	long_double_complex w = { .z = z };
+    long_double_complex w = {.z = z};
 
-	IMAGPART(w) = -IMAGPART(w);
+    IMAGPART(w) = -IMAGPART(w);
 
-	return (w.z);
+    return (w.z);
 }

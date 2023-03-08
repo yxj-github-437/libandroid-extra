@@ -32,15 +32,14 @@
 #include <complex.h>
 #include <math.h>
 
-double complex
-clog(double complex z)
+double complex clog(double complex z)
 {
-	double complex w;
-	double p, rr;
+    double complex w;
+    double p, rr;
 
-	rr = cabs(z);
-	p = log(rr);
-	rr = atan2(cimag(z), creal(z));
-	w = p + rr * I;
-	return w;
+    rr = cabs(z);
+    p = log(rr);
+    rr = atan2(cimag(z), creal(z));
+    w = p + rr * I;
+    return w;
 }

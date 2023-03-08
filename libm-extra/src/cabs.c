@@ -4,7 +4,7 @@
  * Written by Matthias Drochner <drochner@NetBSD.org>.
  * Public domain.
  *
- * imported and modified include for newlib 2010/10/03 
+ * imported and modified include for newlib 2010/10/03
  * Marco Atzeri <marco_atzeri@yahoo.it>
  */
 
@@ -27,8 +27,8 @@ SYNOPSIS
 
 
 DESCRIPTION
-        These functions compute compute the complex absolute value 
-        (also called norm, modulus, or magnitude) of <[z]>. 
+        These functions compute compute the complex absolute value
+        (also called norm, modulus, or magnitude) of <[z]>.
 
         <<cabsf>> is identical to <<cabs>>, except that it performs
         its calculations on <<float complex>>.
@@ -51,9 +51,8 @@ QUICKREF
 #include <complex.h>
 #include <math.h>
 
-double
-cabs(double complex z)
+double cabs(double complex z)
 {
 
-	return hypot( creal(z), cimag(z) );
+    return hypot(creal(z), cimag(z));
 }

@@ -28,7 +28,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * imported and modified include for newlib 2010/10/03 
+ * imported and modified include for newlib 2010/10/03
  * Marco Atzeri <marco_atzeri@yahoo.it>
  */
 
@@ -65,17 +65,16 @@ QUICKREF
 */
 
 
+#include "cephes_subr.h"
 #include <complex.h>
 #include <math.h>
-#include "cephes_subr.h"
 
-double complex
-ccos(double complex z)
+double complex ccos(double complex z)
 {
-	double complex w;
-	double ch, sh;
+    double complex w;
+    double ch, sh;
 
-	_cchsh(cimag(z), &ch, &sh);
-	w = cos(creal(z)) * ch - (sin(creal(z)) * sh) * I;
-	return w;
+    _cchsh(cimag(z), &ch, &sh);
+    w = cos(creal(z)) * ch - (sin(creal(z)) * sh) * I;
+    return w;
 }

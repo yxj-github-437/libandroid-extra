@@ -9,13 +9,12 @@
 
 #ifdef __LP64__
 
-long double
-cabsl (long double complex z)
+long double cabsl(long double complex z)
 {
 #ifdef _LDBL_EQ_DBL
-  return cabs (z);
+    return cabs(z);
 #else
-  return hypotl (creall (z), cimagl (z));
+    return hypotl(creall(z), cimagl(z));
 #endif
 }
 

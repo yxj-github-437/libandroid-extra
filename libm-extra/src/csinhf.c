@@ -28,21 +28,20 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * imported and modified include for newlib 2010/10/03 
+ * imported and modified include for newlib 2010/10/03
  * Marco Atzeri <marco_atzeri@yahoo.it>
  */
 
 #include <complex.h>
 #include <math.h>
 
-float complex
-csinhf(float complex z)
+float complex csinhf(float complex z)
 {
-	float complex w;
-	float x, y;
+    float complex w;
+    float x, y;
 
-	x = crealf(z);
-	y = cimagf(z);
-	w = sinhf(x) * cosf(y) + (coshf(x) * sinf(y)) * I;
-	return w;
+    x = crealf(z);
+    y = cimagf(z);
+    w = sinhf(x) * cosf(y) + (coshf(x) * sinf(y)) * I;
+    return w;
 }

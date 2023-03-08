@@ -28,23 +28,22 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * imported and modified include for newlib 2010/10/03 
+ * imported and modified include for newlib 2010/10/03
  * Marco Atzeri <marco_atzeri@yahoo.it>
  */
 
 #include <complex.h>
 #include <math.h>
 
-float complex
-ctanhf(float complex z)
+float complex ctanhf(float complex z)
 {
-	float complex w;
-	float x, y, d;
+    float complex w;
+    float x, y, d;
 
-	x = crealf(z);
-	y = cimagf(z);
-	d = coshf(2.0f * x) + cosf(2.0f * y);
-	w = sinhf(2.0f * x) / d  +  (sinf(2.0f * y) / d) * I;
+    x = crealf(z);
+    y = cimagf(z);
+    d = coshf(2.0f * x) + cosf(2.0f * y);
+    w = sinhf(2.0f * x) / d + (sinf(2.0f * y) / d) * I;
 
-	return w;
+    return w;
 }

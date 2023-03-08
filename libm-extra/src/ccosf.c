@@ -28,21 +28,20 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * imported and modified include for newlib 2010/10/03 
+ * imported and modified include for newlib 2010/10/03
  * Marco Atzeri <marco_atzeri@yahoo.it>
  */
 
+#include "cephes_subrf.h"
 #include <complex.h>
 #include <math.h>
-#include "cephes_subrf.h"
 
-float complex
-ccosf(float complex z)
+float complex ccosf(float complex z)
 {
-	float complex w;
-	float ch, sh;
+    float complex w;
+    float ch, sh;
 
-	_cchshf(cimagf(z), &ch, &sh);
-	w = cosf(crealf(z)) * ch - (sinf(crealf(z)) * sh) * I;
-	return w;
+    _cchshf(cimagf(z), &ch, &sh);
+    w = cosf(crealf(z)) * ch - (sinf(crealf(z)) * sh) * I;
+    return w;
 }

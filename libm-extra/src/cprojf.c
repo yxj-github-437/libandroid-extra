@@ -25,7 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * imported and modified include for newlib 2010/10/03 
+ * imported and modified include for newlib 2010/10/03
  * Marco Atzeri <marco_atzeri@yahoo.it>
  */
 
@@ -50,19 +50,18 @@
  * INFINITY + I * copysign(0.0, cimag(z))
  */
 
-float complex
-cprojf(float complex z)
+float complex cprojf(float complex z)
 {
-	float_complex w = { .z = z };
+    float_complex w = {.z = z};
 
-	if (isinf(crealf(z)) || isinf(cimagf(z))) {
+    if (isinf(crealf(z)) || isinf(cimagf(z))) {
 #ifdef __INFINITY
-		REALPART(w) = __INFINITY;
+        REALPART(w) = __INFINITY;
 #else
-		REALPART(w) = INFINITY;
+        REALPART(w) = INFINITY;
 #endif
-		IMAGPART(w) = copysignf(0.0, cimagf(z));
-	}
+        IMAGPART(w) = copysignf(0.0, cimagf(z));
+    }
 
-	return (w.z);
+    return (w.z);
 }

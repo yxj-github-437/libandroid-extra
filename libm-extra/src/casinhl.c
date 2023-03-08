@@ -31,11 +31,10 @@
 
 #include <complex.h>
 
-long double complex
-casinhl(long double complex z)
+long double complex casinhl(long double complex z)
 {
-	long double complex w;
+    long double complex w;
 
-	w = -1.0L * I * casinl(z * I);
-	return w;
+    w = -1.0L * I * casinl(z * I);
+    return w;
 }

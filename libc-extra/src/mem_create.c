@@ -1,8 +1,8 @@
+#include <sys/mman.h>
 #include <syscall.h>
 #include <unistd.h>
-#include <sys/mman.h>
 
-int memfd_create(const char *name, unsigned flags)
+int memfd_create(const char* name, unsigned flags)
 {
-	return syscall(SYS_memfd_create, name, flags);
+    return syscall(SYS_memfd_create, name, flags);
 }

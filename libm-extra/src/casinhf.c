@@ -28,17 +28,16 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * imported and modified include for newlib 2010/10/03 
+ * imported and modified include for newlib 2010/10/03
  * Marco Atzeri <marco_atzeri@yahoo.it>
  */
 
 #include <complex.h>
 
-float complex
-casinhf(float complex z)
+float complex casinhf(float complex z)
 {
-	float complex w;
+    float complex w;
 
-	w = -1.0f * I * casinf(z * I);
-	return w;
+    w = -1.0f * I * casinf(z * I);
+    return w;
 }

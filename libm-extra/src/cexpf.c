@@ -28,22 +28,21 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * imported and modified include for newlib 2010/10/03 
+ * imported and modified include for newlib 2010/10/03
  * Marco Atzeri <marco_atzeri@yahoo.it>
  */
 
 #include <complex.h>
 #include <math.h>
 
-float complex
-cexpf(float complex z)
+float complex cexpf(float complex z)
 {
-	float complex w;
-	float r, x, y;
+    float complex w;
+    float r, x, y;
 
-	x = crealf(z);
-	y = cimagf(z);
-	r = expf(x);
-	w = r * cosf(y) + r * sinf(y) * I;
-	return w;
+    x = crealf(z);
+    y = cimagf(z);
+    r = expf(x);
+    w = r * cosf(y) + r * sinf(y) * I;
+    return w;
 }

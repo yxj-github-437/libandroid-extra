@@ -1,5 +1,5 @@
 #ifndef _MATH_PRIVATE_H_
-#define	_MATH_PRIVATE_H_
+#define _MATH_PRIVATE_H_
 
 #include <complex.h>
 
@@ -11,20 +11,23 @@
  * an array of two elements, where the first element is the real part
  * and the second element is the imaginary part.
  */
-typedef union {
-	float complex z;
-	float a[2];
+typedef union
+{
+    float complex z;
+    float a[2];
 } float_complex;
-typedef union {
-	double complex z;
-	double a[2];
+typedef union
+{
+    double complex z;
+    double a[2];
 } double_complex;
-typedef union {
-	long double complex z;
-	long double a[2];
+typedef union
+{
+    long double complex z;
+    long double a[2];
 } long_double_complex;
-#define	REALPART(z)	((z).a[0])
-#define	IMAGPART(z)	((z).a[1])
+#define REALPART(z) ((z).a[0])
+#define IMAGPART(z) ((z).a[1])
 
 /*
  * Inline functions that can be used to construct complex values.
@@ -42,38 +45,35 @@ typedef union {
  */
 
 #ifndef CMPLXF
-static __inline float complex
-CMPLXF(float x, float y)
+static __inline float complex CMPLXF(float x, float y)
 {
-	float_complex w;
+    float_complex w;
 
-	REALPART(w) = x;
-	IMAGPART(w) = y;
-	return (w.z);
+    REALPART(w) = x;
+    IMAGPART(w) = y;
+    return (w.z);
 }
 #endif
 
 #ifndef CMPLX
-static __inline double complex
-CMPLX(double x, double y)
+static __inline double complex CMPLX(double x, double y)
 {
-	double_complex w;
+    double_complex w;
 
-	REALPART(w) = x;
-	IMAGPART(w) = y;
-	return (w.z);
+    REALPART(w) = x;
+    IMAGPART(w) = y;
+    return (w.z);
 }
 #endif
 
 #ifndef CMPLXL
-static __inline long double complex
-CMPLXL(long double x, long double y)
+static __inline long double complex CMPLXL(long double x, long double y)
 {
-	long_double_complex w;
+    long_double_complex w;
 
-	REALPART(w) = x;
-	IMAGPART(w) = y;
-	return (w.z);
+    REALPART(w) = x;
+    IMAGPART(w) = y;
+    return (w.z);
 }
 #endif
 

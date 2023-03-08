@@ -1,8 +1,8 @@
 // __LP64__
 #include <langinfo.h>
+#include <locale.h>
 #include <nl_types.h>
 #include <xlocale.h>
-#include <locale.h>
 
 #define _NL_ITEM(category, index) (((category) << 10) | (index))
 

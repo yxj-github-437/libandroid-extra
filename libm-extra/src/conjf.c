@@ -4,19 +4,18 @@
  * Written by Matthias Drochner <drochner@NetBSD.org>.
  * Public domain.
  *
- * imported and modified include for newlib 2010/10/03 
+ * imported and modified include for newlib 2010/10/03
  * Marco Atzeri <marco_atzeri@yahoo.it>
  */
 
-#include <complex.h>
 #include "complex_private.h"
+#include <complex.h>
 
-float complex
-conjf(float complex z)
+float complex conjf(float complex z)
 {
-	float_complex w = { .z = z };
+    float_complex w = {.z = z};
 
-	IMAGPART(w) = -IMAGPART(w);
+    IMAGPART(w) = -IMAGPART(w);
 
-	return (w.z);
+    return (w.z);
 }

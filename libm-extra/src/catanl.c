@@ -29,10 +29,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <complex.h>
-#include <math.h>
-#include <float.h>
 #include "cephes_subrl.h"
+#include <complex.h>
+#include <float.h>
+#include <math.h>
 
 #ifdef __weak_alias
 __weak_alias(catanl, _catanl)
@@ -40,40 +40,39 @@ __weak_alias(catanl, _catanl)
 
 #define MAXNUM LDBL_MAX
 
-long double complex
-catanl(long double complex z)
+    long double complex catanl(long double complex z)
 {
-	long double complex w;
-	long double a, t, x, x2, y;
+    long double complex w;
+    long double a, t, x, x2, y;
 
-	x = creall(z);
-	y = cimagl(z);
+    x = creall(z);
+    y = cimagl(z);
 
-	if ((x == 0.0L) && (y > 1.0L))
-		goto ovrf;
+    if ((x == 0.0L) && (y > 1.0L))
+        goto ovrf;
 
-	x2 = x * x;
-	a = 1.0L - x2 - (y * y);
-	if (a == 0.0)
-		goto ovrf;
+    x2 = x * x;
+    a = 1.0L - x2 - (y * y);
+    if (a == 0.0)
+        goto ovrf;
 
-	t = 0.5L * atan2l(2.0L * x, a);
-	w = _redupil(t);
+    t = 0.5L * atan2l(2.0L * x, a);
+    w = _redupil(t);
 
-	t = y - 1.0L;
-	a = x2 + (t * t);
-	if (a == 0.0L)
-		goto ovrf;
+    t = y - 1.0L;
+    a = x2 + (t * t);
+    if (a == 0.0L)
+        goto ovrf;
 
-	t = y + 1.0L;
-	a = (x2 + (t * t))/a;
-	w = w + (0.25L * logl(a)) * I;
-	return w;
+    t = y + 1.0L;
+    a = (x2 + (t * t)) / a;
+    w = w + (0.25L * logl(a)) * I;
+    return w;
 
 ovrf:
 #if 0
 	mtherr ("catanl", OVERFLOW);
 #endif
-	w = MAXNUM + MAXNUM * I;
-	return w;
+    w = MAXNUM + MAXNUM * I;
+    return w;
 }

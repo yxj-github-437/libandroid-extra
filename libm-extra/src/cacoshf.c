@@ -28,21 +28,20 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * imported and modified include for newlib 2010/10/03 
+ * imported and modified include for newlib 2010/10/03
  * Marco Atzeri <marco_atzeri@yahoo.it>
  */
 
 #include <complex.h>
 
-float complex
-cacoshf(float complex z)
+float complex cacoshf(float complex z)
 {
-	float complex w;
+    float complex w;
 
 #if 0 /* does not give the principal value */
 	w = I * cacosf(z);
 #else
-	w = clogf(z + csqrtf(z + 1) * csqrtf(z - 1));
+    w = clogf(z + csqrtf(z + 1) * csqrtf(z - 1));
 #endif
-	return w;
+    return w;
 }

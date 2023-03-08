@@ -4,7 +4,7 @@
  * Written by Matthias Drochner <drochner@NetBSD.org>.
  * Public domain.
  *
- * imported and modified include for newlib 2010/10/03 
+ * imported and modified include for newlib 2010/10/03
  * Marco Atzeri <marco_atzeri@yahoo.it>
  */
 
@@ -24,7 +24,7 @@ SYNOPSIS
 
 
 DESCRIPTION
-        These functions compute the complex conjugate of <[z]>, 
+        These functions compute the complex conjugate of <[z]>,
         by reversing the sign of its imaginary part.
 
         <<conjf>> is identical to <<conj>>, except that it performs
@@ -41,15 +41,14 @@ QUICKREF
 
 */
 
-#include <complex.h>
 #include "complex_private.h"
+#include <complex.h>
 
-double complex
-conj(double complex z)
+double complex conj(double complex z)
 {
-	double_complex w = { .z = z };
+    double_complex w = {.z = z};
 
-	IMAGPART(w) = -IMAGPART(w);
+    IMAGPART(w) = -IMAGPART(w);
 
-	return (w.z);
+    return (w.z);
 }
