@@ -91,6 +91,18 @@ int mincore(void* __addr, size_t __size, unsigned char* __vector);
 
 int madvise(void* __addr, size_t __size, int __advice);
 
+#if defined(__USE_GNU)
+
+/**
+ * [memfd_create(2)](http://man7.org/linux/man-pages/man2/memfd_create.2.html)
+ * creates an anonymous file.
+ *
+ * Returns an fd on success, and returns -1 and sets `errno` on failure.
+ */
+int memfd_create(const char* __name, unsigned __flags) __INTRODUCED_IN(30);
+
+#endif
+
 #if __ANDROID_API__ >= __ANDROID_API_M__
 /*
  * Some third-party code uses the existence of POSIX_MADV_NORMAL to detect the

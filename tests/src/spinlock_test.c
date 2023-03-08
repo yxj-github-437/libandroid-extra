@@ -77,6 +77,7 @@ void* threadEntryOne(void* arg)
     }
 
     pthread_spin_unlock(&spinLock);
+    return NULL;
 }
 
 void* threadEntryTwo(void* arg)
@@ -101,4 +102,5 @@ void* threadEntryTwo(void* arg)
     }
 
     pthread_spin_unlock(&spinLock);// 循环结束后需要记得放锁,否则其它线程永远要自旋
+    return NULL;
 }
