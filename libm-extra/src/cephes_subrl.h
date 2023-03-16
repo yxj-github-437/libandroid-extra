@@ -1,5 +1,7 @@
 /* $NetBSD: cephes_subrl.h,v 1.1 2014/10/10 00:48:18 christos Exp $ */
 
+#include <complex.h>
+
 void _cchshl(long double, long double*, long double*);
 long double _redupil(long double);
 long double _ctansl(long double complex);
