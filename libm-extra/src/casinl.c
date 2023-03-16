@@ -32,11 +32,8 @@
 #include <complex.h>
 #include <math.h>
 
-#ifdef __weak_alias
-__weak_alias(casinl, _casinl)
-#endif
 
-    long double complex casinl(long double complex z)
+long double complex casinl(long double complex z)
 {
     long double complex w;
     long double complex ca, ct, zz, z2;

@@ -35,11 +35,7 @@
 #include <complex.h>
 #include <math.h>
 
-#ifdef __weak_alias
-__weak_alias(casinf, _casinf)
-#endif
-
-    float complex casinf(float complex z)
+float complex casinf(float complex z)
 {
     float complex w;
     float complex ca, ct, zz, z2;

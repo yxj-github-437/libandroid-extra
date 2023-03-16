@@ -78,11 +78,7 @@ QUICKREF
 #include <complex.h>
 #include <math.h>
 
-#ifdef __weak_alias
-__weak_alias(casin, _casin)
-#endif
-
-    double complex casin(double complex z)
+double complex casin(double complex z)
 {
     double complex w;
     double complex ca, ct, zz, z2;
