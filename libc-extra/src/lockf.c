@@ -26,26 +26,52 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _BITS_LOCKF_H_
-#define _BITS_LOCKF_H_
+#include <unistd.h>
 
-#include <sys/cdefs.h>
-#include <sys/types.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
 
-#define F_ULOCK 0
-#define F_LOCK 1
-#define F_TLOCK 2
-#define F_TEST 3
+int lockf64(int fd, int cmd, off64_t length)
+{
+    // Translate POSIX lockf into fcntl.
+    struct flock64 fl;
+    memset(&fl, 0, sizeof(fl));
+    fl.l_whence = SEEK_CUR;
+    fl.l_start = 0;
+    fl.l_len = length;
 
-__BEGIN_DECLS
+    if (cmd == F_ULOCK) {
+        fl.l_type = F_UNLCK;
+        cmd = F_SETLK64;
+        return fcntl(fd, F_SETLK64, &fl);
+    }
 
+    if (cmd == F_LOCK) {
+        fl.l_type = F_WRLCK;
+        return fcntl(fd, F_SETLKW64, &fl);
+    }
 
-// #if __ANDROID_API__ >= 24
-int lockf(int __fd, int __cmd, off_t __length) __RENAME_IF_FILE_OFFSET64(lockf64) __INTRODUCED_IN(24);
-int lockf64(int __fd, int __cmd, off64_t __length) __INTRODUCED_IN(24);
-// #endif /* __ANDROID_API__ >= 24 */
+    if (cmd == F_TLOCK) {
+        fl.l_type = F_WRLCK;
+        return fcntl(fd, F_SETLK64, &fl);
+    }
 
+    if (cmd == F_TEST) {
+        fl.l_type = F_RDLCK;
+        if (fcntl(fd, F_GETLK64, &fl) == -1)
+            return -1;
+        if (fl.l_type == F_UNLCK || fl.l_pid == getpid())
+            return 0;
+        errno = EACCES;
+        return -1;
+    }
 
-__END_DECLS
+    errno = EINVAL;
+    return -1;
+}
 
-#endif
+int lockf(int fd, int cmd, off_t length)
+{
+    return lockf64(fd, cmd, length);
+}
