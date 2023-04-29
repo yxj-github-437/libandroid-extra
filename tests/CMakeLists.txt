@@ -25,6 +25,9 @@ target_link_libraries(conio_test c_extra)
 add_executable(lockf_test src/lockf_test.c)
 target_link_libraries(lockf_test c_extra)
 
+add_executable(sem_test src/sem_test.c)
+target_link_libraries(sem_test c_extra)
+
 add_executable(execinfo_test src/execinfo_test.c)
 target_link_libraries(execinfo_test c_extra)
 set_target_properties(execinfo_test PROPERTIES LINK_FLAGS "-rdynamic")
