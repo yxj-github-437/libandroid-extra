@@ -11,7 +11,11 @@ project(libandroid-extra)
 
 set(CMAKE_SYSROOT "${PROJECT_SOURCE_DIR}/sysroot")
 
-set(CMAKE_CXX_FLAGS "-std=gnu++2b -fPIC -fno-exceptions -fno-rtti")
+if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
+    set(CMAKE_CXX_FLAGS "-std=gnu++11 -fPIC -fno-exceptions -fno-rtti")
+elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+    set(CMAKE_CXX_FLAGS "-std=gnu++23 -fPIC -fno-exceptions -fno-rtti")
+endif()
 set(CMAKE_C_FLAGS "-std=gnu11 -fPIC")
 
 set(LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/lib")
