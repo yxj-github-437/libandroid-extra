@@ -32,6 +32,7 @@
 #include <sys/cdefs.h>
 #include <sys/types.h>
 #include <asm/mman.h>
+#include <linux/memfd.h>
 
 __BEGIN_DECLS
 

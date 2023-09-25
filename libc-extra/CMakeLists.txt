@@ -1,6 +1,35 @@
-project(c_extra LANGUAGES C CXX)
+project(c_extra LANGUAGES C CXX ASM)
 
-aux_source_directory(src SRC_LIST)
+set(SRC_LIST
+    src/async_safe_log.cpp
+    src/bionic_futex.cpp
+    src/glob.c
+    src/conio.cpp
+    src/grp.c
+    src/ifaddrs.c
+    src/langinfo.c
+    src/nl_types.c
+    src/posix_spawn.cpp
+    src/pthread_barrier.cpp
+    src/pthread_spinlock.cpp
+    src/pty.c
+    src/stdio.cpp
+    src/stdio_ext.c
+    src/stdio_fmemopen.c
+    src/string.c
+    src/stdio_open_memstream.c
+    src/whar.c
+    src/execinfo.cpp
+    src/memfd_create.c
+    src/mblen.c
+    src/semaphore.c
+    src/lockf.c
+    src/getcomtext.S
+    src/makecontext.c
+    src/setcontext.S
+    src/startcontext.S
+    src/swapcontext.S)
+
 add_library(${PROJECT_NAME} ${SRC_LIST})
 
 
