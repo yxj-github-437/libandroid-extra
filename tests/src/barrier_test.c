@@ -25,6 +25,8 @@ void* thread0_entry(void* data)
         printf("thread0 count [%d]\r\n", count++);
         sleep(1); /* 主动让出cpu */
     }
+    
+    return NULL;
 }
 
 void* thread1_entry(void* data)
@@ -42,6 +44,8 @@ void* thread1_entry(void* data)
         printf("thread1 count [%d]\r\n", count++);
         sleep(1); /* 主动让出cpu */
     }
+    
+    return NULL;
 }
 
 void* thread2_entry(void* data)
@@ -59,6 +63,8 @@ void* thread2_entry(void* data)
         printf("thread2 count [%d]\r\n", count++);
         sleep(1); /* 主动让出cpu */
     }
+    
+    return NULL;
 }
 
 int main(int argc, char** argv)
