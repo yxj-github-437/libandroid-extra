@@ -24,10 +24,9 @@ extern void __start_context(void);
 
 
 void
-__makecontext(ucontext_t *ucp, void (*func)(void), int argc, ...)
+__makecontext(ucontext_t *ucp, void (*func)(), int argc, ...)
 {
 	unsigned long *sp;
-	unsigned long *regp;
 	va_list va;
 	int i;
 
@@ -42,10 +41,8 @@ __makecontext(ucontext_t *ucp, void (*func)(void), int argc, ...)
 
 	va_start(va, argc);
 
-	regp = &(ucp->uc_mcontext.regs[0]);
-
 	for (i = 0; (i < argc && i < 8); i++)
-		*regp++ = va_arg (va, unsigned long);
+		ucp->uc_mcontext.regs[i] = va_arg (va, unsigned long);
 
 	for (; i < argc; i++)
 		*sp++ = va_arg (va, unsigned long);

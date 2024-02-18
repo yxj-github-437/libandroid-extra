@@ -23,7 +23,7 @@ extern void __start_context(void);
 
 
 void
-__makecontext(ucontext_t *ucp, void (*func)(void), int argc, ...)
+__makecontext(ucontext_t *ucp, void (*func)(), int argc, ...)
 {
 	unsigned long *sp;
 	unsigned long *regp;

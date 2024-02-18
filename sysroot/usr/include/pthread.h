@@ -176,11 +176,13 @@ void* pthread_getspecific(pthread_key_t __key);
 pid_t pthread_gettid_np(pthread_t __pthread) __INTRODUCED_IN(21);
 
 #if defined(__USE_GNU)
-
-static int pthread_getaffinity_np(pthread_t __pthread, size_t __set_size, cpu_set_t* __set) {
+static __inline__ __always_inline
+int pthread_getaffinity_np(pthread_t __pthread, size_t __set_size, cpu_set_t* __set) {
   return sched_getaffinity(pthread_gettid_np(__pthread), __set_size, __set);
 }
-static int pthread_setaffinity_np(pthread_t __pthread, size_t __set_size, cpu_set_t* __set) {
+
+static __inline__ __always_inline
+int pthread_setaffinity_np(pthread_t __pthread, size_t __set_size, cpu_set_t* __set) {
   return sched_setaffinity(pthread_gettid_np(__pthread), __set_size, __set);
 }
 
