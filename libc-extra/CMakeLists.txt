@@ -6,6 +6,10 @@ set(SRC_LIST
     src/glob.c
     src/conio.cpp
     src/grp.c
+	src/hcreate.c
+	src/hcreate_r.c
+	src/hdestroy_r.c
+	src/hsearch_r.c
     src/ifaddrs.c
     src/langinfo.c
     src/nl_types.c
