@@ -39,82 +39,43 @@
 #include <unistd.h>
 #include <unwind.h>
 
-static inline int __tmpfile_crate()
+class mem_file
 {
-    char name[256] = "";
-    char* tmpdir = getenv("TMPDIR");
-    if (!tmpdir)
-        tmpdir = getenv("PWD");
-    snprintf(name, sizeof(name), "%s/.backtrace-%0x-XXXXXXXX", tmpdir, getpid() & 0xFFFFFFFF);
-    // XXX: It is almost impossible to have file conflicts, isn't it?
-    int fd = mkstemp(name);
-    unlink(name);
-    return fd;
-}
-
-#define BIONIC_DISALLOW_COPY_AND_ASSIGN(TypeName)                                                  \
-    TypeName(const TypeName&) = delete;                                                            \
-    void operator=(const TypeName&) = delete
-
-class ErrnoRestorer
-{
-public:
-    explicit ErrnoRestorer()
-        : saved_errno_(errno)
-    {}
-
-    ~ErrnoRestorer()
-    {
-        errno = saved_errno_;
-    }
-
-    void override(int new_errno)
-    {
-        saved_errno_ = new_errno;
-    }
-
 private:
-    int saved_errno_;
+    FILE* fp = nullptr;
+    char* buffer = nullptr;
+    size_t buffer_size = 0;
 
-    BIONIC_DISALLOW_COPY_AND_ASSIGN(ErrnoRestorer);
-};
-
-class ScopedFd final
-{
 public:
-    explicit ScopedFd(int fd)
-        : fd_(fd)
-    {}
-
-    ScopedFd()
-        : fd_(-1)
+    mem_file()
     {
-        fd_ = __tmpfile_crate();
+        fp = open_memstream(&buffer, &buffer_size);
     }
-
-    ~ScopedFd()
+    ~mem_file()
     {
-        reset(-1);
+        if (!valid())
+            return;
+        fclose(fp);
+        free(buffer);
+        buffer = nullptr;
+        buffer_size = 0;
     }
-
-    void reset(int fd = -1)
+    FILE* get_fp() const
     {
-        if (fd_ != -1) {
-            ErrnoRestorer e;
-            close(fd_);
-        }
-        fd_ = fd;
+        return fp;
     }
-
-    int get() const
+    size_t get_size() const
     {
-        return fd_;
+        return buffer_size;
     }
-
-private:
-    int fd_;
-
-    BIONIC_DISALLOW_COPY_AND_ASSIGN(ScopedFd);
+    char* get_buf() const
+    {
+        return buffer;
+    }
+    bool valid() const
+    {
+        return (fp != nullptr && buffer != nullptr);
+    }
 };
 
 struct StackState
@@ -194,24 +155,46 @@ char** backtrace_symbols(void* const* buffer, int size)
         return nullptr;
     }
 
-    ScopedFd fd(memfd_create("backtrace_symbols_fd", MFD_CLOEXEC));
-    if (fd.get() == -1) {
-        return nullptr;
-    }
-    backtrace_symbols_fd(buffer, size, fd.get());
-
-    // Get the size of the file.
-    off_t file_size = lseek(fd.get(), 0, SEEK_END);
-    if (file_size <= 0) {
+    mem_file mfile {};
+    if (!mfile.valid()) {
         return nullptr;
     }
 
+    for (int frame_num = 0; frame_num < size; frame_num++) {
+        void* address = buffer[frame_num];
+        Dl_info info;
+        if (dladdr(address, &info) != 0) {
+            if (info.dli_fname != nullptr) {
+                fprintf(mfile.get_fp(), info.dli_fname);
+            }
+            if (info.dli_sname != nullptr) {
+                fprintf(mfile.get_fp(),
+                        "(%s+0x%" PRIxPTR ") ",
+                        info.dli_sname,
+                        reinterpret_cast<uintptr_t>(address)
+                            - reinterpret_cast<uintptr_t>(info.dli_saddr));
+            }
+            else {
+                fprintf(mfile.get_fp(), "(+%p) ", info.dli_saddr);
+            }
+        }
+
+        fprintf(mfile.get_fp(), "[%p]\n", address);
+        fflush(mfile.get_fp());
+    }
+
+    // check mem_file
+    if (!mfile.valid()) {
+        return nullptr;
+    }
+
+    size_t buf_size = mfile.get_size();
     // The interface for backtrace_symbols indicates that only the single
     // returned pointer must be freed by the caller. Therefore, allocate a
     // buffer that includes the memory for the strings and all of the pointers.
     // Add one byte at the end just in case the file didn't end with a '\n'.
     size_t symbol_data_size;
-    if (__builtin_add_overflow(ptr_size, file_size, &symbol_data_size)
+    if (__builtin_add_overflow(ptr_size, buf_size, &symbol_data_size)
         || __builtin_add_overflow(symbol_data_size, 1, &symbol_data_size)) {
         return nullptr;
     }
@@ -224,17 +207,11 @@ char** backtrace_symbols(void* const* buffer, int size)
     // Copy the string data into the buffer.
     char* cur_string = reinterpret_cast<char*>(&symbol_data[ptr_size]);
     // If this fails, the read won't read back the correct number of bytes.
-    lseek(fd.get(), 0, SEEK_SET);
-    ssize_t num_read = read(fd.get(), cur_string, file_size);
-    fd.reset(-1);
-    if (num_read != file_size) {
-        free(symbol_data);
-        return nullptr;
-    }
+    memcpy(cur_string, mfile.get_buf(), buf_size);
 
     // Make sure the last character in the file is '\n'.
-    if (cur_string[file_size] != '\n') {
-        cur_string[file_size++] = '\n';
+    if (cur_string[buf_size] != '\n') {
+        cur_string[buf_size++] = '\n';
     }
 
     for (int i = 0; i < size; i++) {

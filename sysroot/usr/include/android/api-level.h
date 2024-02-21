@@ -60,4 +60,46 @@
 #define __ANDROID_API_O_MR1__ 27
 #define __ANDROID_API_P__ 28
 
+/* This file is included in <features.h>, and might be used from .S files. */
+#if !defined(__ASSEMBLY__)
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
+#if __ANDROID_API__ < 29
+
+/* android_get_device_api_level is a static inline before API level 29. */
+
+// Avoid circular dependencies since this is exposed from <sys/cdefs.h>.
+int __system_property_get(const char* __name, char* __value);
+int atoi(const char* __s) __attribute__((__pure__));
+
+static __inline__ __attribute__((__always_inline__))
+int android_get_device_api_level() {
+  char value[92] = { 0 };
+  if (__system_property_get("ro.build.version.sdk", value) < 1) return -1;
+  int api_level = atoi(value);
+  return (api_level > 0) ? api_level : -1;
+}
+
+#else
+
+/**
+ * Returns the API level of the device we're actually running on, or -1 on failure.
+ * The returned values correspond to the named constants in `<android/api-level.h>`,
+ * and is equivalent to the Java `Build.VERSION.SDK_INT` API.
+ *
+ * See also android_get_application_target_sdk_version().
+ */
+int android_get_device_api_level() __INTRODUCED_IN(29);
+
+#endif // __ANDROID_API__ < 29
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
+#endif /* defined(__ASSEMBLY__) */
+
 #endif
