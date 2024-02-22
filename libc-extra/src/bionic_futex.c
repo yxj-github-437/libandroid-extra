@@ -32,35 +32,36 @@
 
 #define NS_PER_S 1000000000
 
-static void monotonic_time_from_realtime_time(timespec& monotonic_time,
-                                              const timespec& realtime_time)
+static void monotonic_time_from_realtime_time(struct timespec* monotonic_time,
+                                              const struct timespec* realtime_time)
 {
-    monotonic_time = realtime_time;
+    *monotonic_time = *realtime_time;
 
-    timespec cur_monotonic_time;
+    struct timespec cur_monotonic_time;
     clock_gettime(CLOCK_MONOTONIC, &cur_monotonic_time);
-    timespec cur_realtime_time;
+    struct timespec cur_realtime_time;
     clock_gettime(CLOCK_REALTIME, &cur_realtime_time);
 
-    monotonic_time.tv_nsec -= cur_realtime_time.tv_nsec;
-    monotonic_time.tv_nsec += cur_monotonic_time.tv_nsec;
-    if (monotonic_time.tv_nsec >= NS_PER_S) {
-        monotonic_time.tv_nsec -= NS_PER_S;
-        monotonic_time.tv_sec += 1;
+    monotonic_time->tv_nsec -= cur_realtime_time.tv_nsec;
+    monotonic_time->tv_nsec += cur_monotonic_time.tv_nsec;
+    if (monotonic_time->tv_nsec >= NS_PER_S) {
+        monotonic_time->tv_nsec -= NS_PER_S;
+        monotonic_time->tv_sec += 1;
     }
-    else if (monotonic_time.tv_nsec < 0) {
-        monotonic_time.tv_nsec += NS_PER_S;
-        monotonic_time.tv_sec -= 1;
+    else if (monotonic_time->tv_nsec < 0) {
+        monotonic_time->tv_nsec += NS_PER_S;
+        monotonic_time->tv_sec -= 1;
     }
-    monotonic_time.tv_sec -= cur_realtime_time.tv_sec;
-    monotonic_time.tv_sec += cur_monotonic_time.tv_sec;
+    monotonic_time->tv_sec -= cur_realtime_time.tv_sec;
+    monotonic_time->tv_sec += cur_monotonic_time.tv_sec;
 }
 
-static inline __always_inline int FutexWithTimeout(volatile void* ftx, int op, int value,
-                                                   bool use_realtime_clock,
-                                                   const timespec* abs_timeout, int bitset)
+static inline __always_inline
+int FutexWithTimeout(volatile void* ftx, int op, int value,
+                     bool use_realtime_clock,
+                     const struct timespec* abs_timeout, int bitset)
 {
-    const timespec* futex_abs_timeout = abs_timeout;
+    const struct timespec* futex_abs_timeout = abs_timeout;
     // pthread's and semaphore's default behavior is to use CLOCK_REALTIME, however this behavior is
     // essentially never intended, as that clock is prone to change discontinuously.
     //
@@ -71,9 +72,9 @@ static inline __always_inline int FutexWithTimeout(volatile void* ftx, int op, i
     // We have seen numerous bugs directly attributable to this difference.  Therefore, we provide
     // this general workaround to always use CLOCK_MONOTONIC for waiting, regardless of what the
     // input timespec is.
-    timespec converted_monotonic_abs_timeout;
+    struct timespec converted_monotonic_abs_timeout;
     if (abs_timeout && use_realtime_clock) {
-        monotonic_time_from_realtime_time(converted_monotonic_abs_timeout, *abs_timeout);
+        monotonic_time_from_realtime_time(&converted_monotonic_abs_timeout, abs_timeout);
         if (converted_monotonic_abs_timeout.tv_sec < 0) {
             return -ETIMEDOUT;
         }
@@ -83,8 +84,8 @@ static inline __always_inline int FutexWithTimeout(volatile void* ftx, int op, i
     return __futex(ftx, op, value, futex_abs_timeout, bitset);
 }
 
-int __futex_wait_ex(volatile void* ftx, bool shared, int value, bool use_realtime_clock,
-                    const timespec* abs_timeout)
+int __futex_wait_ex_with_timeout(volatile void* ftx, bool shared, int value,
+                                 bool use_realtime_clock, const struct timespec* abs_timeout)
 {
     return FutexWithTimeout(ftx,
                             (shared ? FUTEX_WAIT_BITSET : FUTEX_WAIT_BITSET_PRIVATE),

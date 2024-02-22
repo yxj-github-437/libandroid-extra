@@ -1,6 +1,8 @@
 #include "bionic_futex.h"
+#include <assert.h>   // assert_static
 #include <errno.h>
 #include <pthread.h>
+#include <stdalign.h> // alignof
 #include <stdatomic.h>
 #include <stdint.h>
 
@@ -51,7 +53,7 @@ struct pthread_barrier_internal_t
     uint32_t init_count;
     // Barrier state. It is WAIT if waiting for more threads to enter the barrier in this cycle,
     // otherwise threads are leaving the barrier.
-    _Atomic(BarrierState) state;
+    _Atomic(enum BarrierState) state;
     // Number of threads having entered but not left the barrier in this cycle.
     atomic_uint wait_count;
     // Whether the barrier is shared across processes.
@@ -59,21 +61,23 @@ struct pthread_barrier_internal_t
     uint32_t __reserved[4];
 };
 
-static_assert(sizeof(pthread_barrier_t) == sizeof(pthread_barrier_internal_t),
-              "pthread_barrier_t should actually be pthread_barrier_internal_t in implementation.");
+static_assert(
+    sizeof(pthread_barrier_t) == sizeof(struct pthread_barrier_internal_t),
+    "pthread_barrier_t should actually be struct pthread_barrier_internal_t in implementation.");
 
-static_assert(alignof(pthread_barrier_t) >= 4,
-              "pthread_barrier_t should fulfill the alignment of pthread_barrier_internal_t.");
+static_assert(
+    alignof(pthread_barrier_t) >= 4,
+    "pthread_barrier_t should fulfill the alignment of struct pthread_barrier_internal_t.");
 
-static inline pthread_barrier_internal_t* __get_internal_barrier(pthread_barrier_t* barrier)
+static inline struct pthread_barrier_internal_t* __get_internal_barrier(pthread_barrier_t* barrier)
 {
-    return reinterpret_cast<pthread_barrier_internal_t*>(barrier);
+    return (struct pthread_barrier_internal_t*)barrier;
 }
 
 int pthread_barrier_init(pthread_barrier_t* barrier_interface, const pthread_barrierattr_t* attr,
                          unsigned count)
 {
-    pthread_barrier_internal_t* barrier = __get_internal_barrier(barrier_interface);
+    struct pthread_barrier_internal_t* barrier = __get_internal_barrier(barrier_interface);
     if (count == 0) {
         return EINVAL;
     }
@@ -81,7 +85,7 @@ int pthread_barrier_init(pthread_barrier_t* barrier_interface, const pthread_bar
     atomic_init(&barrier->state, WAIT);
     atomic_init(&barrier->wait_count, 0);
     barrier->pshared = false;
-    if (attr != nullptr && (*attr & 1)) {
+    if (attr != NULL && (*attr & 1)) {
         barrier->pshared = true;
     }
     return 0;
@@ -96,14 +100,14 @@ int pthread_barrier_init(pthread_barrier_t* barrier_interface, const pthread_bar
 // thread entering the barrier with all threads leaving the barrier.
 int pthread_barrier_wait(pthread_barrier_t* barrier_interface)
 {
-    pthread_barrier_internal_t* barrier = __get_internal_barrier(barrier_interface);
+    struct pthread_barrier_internal_t* barrier = __get_internal_barrier(barrier_interface);
 
     // Wait until all threads for the previous cycle have left the barrier. This is needed
     // as a participating thread can call pthread_barrier_wait() again before other
     // threads have left the barrier. Use acquire operation here to synchronize with
     // the last thread leaving the previous cycle, so we can read correct wait_count below.
     while (atomic_load_explicit(&barrier->state, memory_order_acquire) == RELEASE) {
-        __futex_wait_ex(&barrier->state, barrier->pshared, RELEASE, false, nullptr);
+        __futex_wait_ex_with_timeout(&barrier->state, barrier->pshared, RELEASE, false, NULL);
     }
 
     uint32_t prev_wait_count = atomic_load_explicit(&barrier->wait_count, memory_order_relaxed);
@@ -140,7 +144,7 @@ int pthread_barrier_wait(pthread_barrier_t* barrier_interface)
         // Use acquire operation here to synchronize between the last thread entering the
         // barrier with all threads leaving the barrier.
         while (atomic_load_explicit(&barrier->state, memory_order_acquire) == WAIT) {
-            __futex_wait_ex(&barrier->state, barrier->pshared, WAIT, false, nullptr);
+            __futex_wait_ex_with_timeout(&barrier->state, barrier->pshared, WAIT, false, NULL);
         }
     }
     // Use release operation here to make it not reordered with previous operations.
@@ -155,14 +159,14 @@ int pthread_barrier_wait(pthread_barrier_t* barrier_interface)
 
 int pthread_barrier_destroy(pthread_barrier_t* barrier_interface)
 {
-    pthread_barrier_internal_t* barrier = __get_internal_barrier(barrier_interface);
+    struct pthread_barrier_internal_t* barrier = __get_internal_barrier(barrier_interface);
     if (barrier->init_count == 0) {
         return EINVAL;
     }
     // Use acquire operation here to synchronize with the last thread leaving the barrier.
     // So we can read correct wait_count below.
     while (atomic_load_explicit(&barrier->state, memory_order_acquire) == RELEASE) {
-        __futex_wait_ex(&barrier->state, barrier->pshared, RELEASE, false, nullptr);
+        __futex_wait_ex_with_timeout(&barrier->state, barrier->pshared, RELEASE, false, NULL);
     }
     if (atomic_load_explicit(&barrier->wait_count, memory_order_relaxed) != 0) {
         return EBUSY;

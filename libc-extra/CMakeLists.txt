@@ -2,7 +2,7 @@ project(c_extra LANGUAGES C CXX ASM)
 
 set(SRC_LIST
     src/async_safe_log.cpp
-    src/bionic_futex.cpp
+    src/bionic_futex.c
     src/glob.c
     src/conio.cpp
     src/grp.c
@@ -14,8 +14,8 @@ set(SRC_LIST
     src/langinfo.c
     src/nl_types.c
     src/posix_spawn.cpp
-    src/pthread_barrier.cpp
-    src/pthread_spinlock.cpp
+    src/pthread_barrier.c
+    src/pthread_spinlock.c
     src/pty.c
     src/stdio.cpp
     src/stdio_ext.c

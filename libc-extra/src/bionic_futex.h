@@ -38,8 +38,11 @@
 
 struct timespec;
 
-static inline __always_inline int __futex(volatile void* ftx, int op, int value,
-                                          const timespec* timeout, int bitset)
+__BEGIN_DECLS
+
+static inline __always_inline
+int __futex(volatile void* ftx, int op, int value,
+            const struct timespec* timeout, int bitset)
 {
     // Our generated syscall assembler sets errno, but our callers (pthread functions) don't want
     // to.
@@ -52,31 +55,39 @@ static inline __always_inline int __futex(volatile void* ftx, int op, int value,
     return result;
 }
 
-static inline int __futex_wake(volatile void* ftx, int count)
+static inline __always_inline
+int __futex_wake(volatile void* ftx, int count)
 {
-    return __futex(ftx, FUTEX_WAKE, count, nullptr, 0);
+    return __futex(ftx, FUTEX_WAKE, count, NULL, 0);
 }
 
-static inline int __futex_wake_ex(volatile void* ftx, bool shared, int count)
+static inline __always_inline
+int __futex_wake_ex(volatile void* ftx, bool shared, int count)
 {
-    return __futex(ftx, shared ? FUTEX_WAKE : FUTEX_WAKE_PRIVATE, count, nullptr, 0);
+    return __futex(ftx, shared ? FUTEX_WAKE : FUTEX_WAKE_PRIVATE, count, NULL, 0);
 }
 
-static inline int __futex_wait(volatile void* ftx, int value, const timespec* timeout)
+static inline __always_inline
+int __futex_wait(volatile void* ftx, int value, const struct timespec* timeout)
 {
     return __futex(ftx, FUTEX_WAIT, value, timeout, 0);
 }
 
-static inline int __futex_wait_ex(volatile void* ftx, bool shared, int value)
+static inline __always_inline
+int __futex_wait_ex(volatile void* ftx, bool shared, int value)
 {
     return __futex(ftx,
                    (shared ? FUTEX_WAIT_BITSET : FUTEX_WAIT_BITSET_PRIVATE),
                    value,
-                   nullptr,
+                   NULL,
                    FUTEX_BITSET_MATCH_ANY);
 }
 
-__LIBC_HIDDEN__ int __futex_wait_ex(volatile void* ftx, bool shared, int value,
-                                    bool use_realtime_clock, const timespec* abs_timeout);
+__LIBC_HIDDEN__
+int __futex_wait_ex_with_timeout(volatile void* ftx, bool shared, int value,
+                                 bool use_realtime_clock,
+                                 const struct timespec* abs_timeout);
+
+__END_DECLS
 
 #endif /* _BIONIC_FUTEX_H */
