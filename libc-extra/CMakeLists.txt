@@ -6,10 +6,10 @@ set(SRC_LIST
     src/glob.c
     src/conio.cpp
     src/grp.c
-	src/hcreate.c
-	src/hcreate_r.c
-	src/hdestroy_r.c
-	src/hsearch_r.c
+    src/hcreate.c
+    src/hcreate_r.c
+    src/hdestroy_r.c
+    src/hsearch_r.c
     src/ifaddrs.c
     src/langinfo.c
     src/nl_types.c
@@ -23,6 +23,7 @@ set(SRC_LIST
     src/string.c
     src/stdio_open_memstream.c
     src/whar.c
+    src/wcwidth.c
     src/execinfo.cpp
     src/memfd_create.c
     src/mblen.c
