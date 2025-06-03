@@ -22,6 +22,7 @@ set(SRC_LIST
     src/stdio_fmemopen.c
     src/string.c
     src/stdio_open_memstream.c
+    src/wctype.c
     src/whar.c
     src/wcwidth.c
     src/execinfo.cpp
