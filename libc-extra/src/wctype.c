@@ -7,8 +7,8 @@
 #define wctrans_toupper (wctrans_t)2
 
 wint_t towctrans(wint_t c, wctrans_t t) {
-    if (t == wctrans_tolower) towlower(c);
-    if (t == wctrans_toupper) towupper(c);
+    if (t == wctrans_tolower) return towlower(c);
+    if (t == wctrans_toupper) return towupper(c);
     errno = EINVAL;
     return 0;
 }
