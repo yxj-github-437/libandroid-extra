@@ -1,6 +1,8 @@
 project(tests
         LANGUAGES C)
 
+add_compile_definitions(_FORTIFY_SOURCE=2)
+
 add_executable(fmemopen_test src/fmemopen_test.c)
 target_link_libraries(fmemopen_test c_extra)
 
