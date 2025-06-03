@@ -1,25 +1,14 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _DRM_SAREA_H_
 #define _DRM_SAREA_H_
 #include "drm.h"
 #ifdef __cplusplus
+extern "C" {
 #endif
 #ifdef __alpha__
 #define SAREA_MAX 0x2000U
@@ -54,5 +43,6 @@ typedef struct drm_sarea_drawable drm_sarea_drawable_t;
 typedef struct drm_sarea_frame drm_sarea_frame_t;
 typedef struct drm_sarea drm_sarea_t;
 #ifdef __cplusplus
+}
 #endif
 #endif

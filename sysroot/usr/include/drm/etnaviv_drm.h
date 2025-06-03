@@ -1,25 +1,14 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef __ETNAVIV_DRM_H__
 #define __ETNAVIV_DRM_H__
 #include "drm.h"
 #ifdef __cplusplus
+extern "C" {
 #endif
 struct drm_etnaviv_timespec {
   __s64 tv_sec;
@@ -34,6 +23,12 @@ struct drm_etnaviv_timespec {
 #define ETNAVIV_PARAM_GPU_FEATURES_4 0x07
 #define ETNAVIV_PARAM_GPU_FEATURES_5 0x08
 #define ETNAVIV_PARAM_GPU_FEATURES_6 0x09
+#define ETNAVIV_PARAM_GPU_FEATURES_7 0x0a
+#define ETNAVIV_PARAM_GPU_FEATURES_8 0x0b
+#define ETNAVIV_PARAM_GPU_FEATURES_9 0x0c
+#define ETNAVIV_PARAM_GPU_FEATURES_10 0x0d
+#define ETNAVIV_PARAM_GPU_FEATURES_11 0x0e
+#define ETNAVIV_PARAM_GPU_FEATURES_12 0x0f
 #define ETNAVIV_PARAM_GPU_STREAM_COUNT 0x10
 #define ETNAVIV_PARAM_GPU_REGISTER_MAX 0x11
 #define ETNAVIV_PARAM_GPU_THREAD_COUNT 0x12
@@ -45,6 +40,10 @@ struct drm_etnaviv_timespec {
 #define ETNAVIV_PARAM_GPU_INSTRUCTION_COUNT 0x18
 #define ETNAVIV_PARAM_GPU_NUM_CONSTANTS 0x19
 #define ETNAVIV_PARAM_GPU_NUM_VARYINGS 0x1a
+#define ETNAVIV_PARAM_SOFTPIN_START_ADDR 0x1b
+#define ETNAVIV_PARAM_GPU_PRODUCT_ID 0x1c
+#define ETNAVIV_PARAM_GPU_CUSTOMER_ID 0x1d
+#define ETNAVIV_PARAM_GPU_ECO_ID 0x1e
 #define ETNA_MAX_PIPES 4
 struct drm_etnaviv_param {
   __u32 pipe;
@@ -105,7 +104,8 @@ struct drm_etnaviv_gem_submit_pmr {
 #define ETNA_SUBMIT_NO_IMPLICIT 0x0001
 #define ETNA_SUBMIT_FENCE_FD_IN 0x0002
 #define ETNA_SUBMIT_FENCE_FD_OUT 0x0004
-#define ETNA_SUBMIT_FLAGS (ETNA_SUBMIT_NO_IMPLICIT | ETNA_SUBMIT_FENCE_FD_IN | ETNA_SUBMIT_FENCE_FD_OUT)
+#define ETNA_SUBMIT_SOFTPIN 0x0008
+#define ETNA_SUBMIT_FLAGS (ETNA_SUBMIT_NO_IMPLICIT | ETNA_SUBMIT_FENCE_FD_IN | ETNA_SUBMIT_FENCE_FD_OUT | ETNA_SUBMIT_SOFTPIN)
 #define ETNA_PIPE_3D 0x00
 #define ETNA_PIPE_2D 0x01
 #define ETNA_PIPE_VG 0x02
@@ -187,5 +187,6 @@ struct drm_etnaviv_pm_signal {
 #define DRM_IOCTL_ETNAVIV_PM_QUERY_DOM DRM_IOWR(DRM_COMMAND_BASE + DRM_ETNAVIV_PM_QUERY_DOM, struct drm_etnaviv_pm_domain)
 #define DRM_IOCTL_ETNAVIV_PM_QUERY_SIG DRM_IOWR(DRM_COMMAND_BASE + DRM_ETNAVIV_PM_QUERY_SIG, struct drm_etnaviv_pm_signal)
 #ifdef __cplusplus
+}
 #endif
 #endif

@@ -1,26 +1,15 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI__LINUX_USB_AUDIO_H
 #define _UAPI__LINUX_USB_AUDIO_H
 #include <linux/types.h>
 #define UAC_VERSION_1 0x00
 #define UAC_VERSION_2 0x20
+#define UAC_VERSION_3 0x30
 #define USB_SUBCLASS_AUDIOCONTROL 0x01
 #define USB_SUBCLASS_AUDIOSTREAMING 0x02
 #define USB_SUBCLASS_MIDISTREAMING 0x03
@@ -153,6 +142,12 @@ struct uac1_output_terminal_descriptor {
 #define UAC_OUTPUT_TERMINAL_ROOM_SPEAKER 0x305
 #define UAC_OUTPUT_TERMINAL_COMMUNICATION_SPEAKER 0x306
 #define UAC_OUTPUT_TERMINAL_LOW_FREQ_EFFECTS_SPEAKER 0x307
+#define UAC_BIDIR_TERMINAL_UNDEFINED 0x400
+#define UAC_BIDIR_TERMINAL_HANDSET 0x401
+#define UAC_BIDIR_TERMINAL_HEADSET 0x402
+#define UAC_BIDIR_TERMINAL_SPEAKER_PHONE 0x403
+#define UAC_BIDIR_TERMINAL_ECHO_SUPPRESSING 0x404
+#define UAC_BIDIR_TERMINAL_ECHO_CANCELING 0x405
 #define UAC_DT_FEATURE_UNIT_SIZE(ch) (7 + ((ch) + 1) * 2)
 #define DECLARE_UAC_FEATURE_UNIT_DESCRIPTOR(ch) struct uac_feature_unit_descriptor_ ##ch { __u8 bLength; __u8 bDescriptorType; __u8 bDescriptorSubtype; __u8 bUnitID; __u8 bSourceID; __u8 bControlSize; __le16 bmaControls[ch + 1]; __u8 iFeature; \
 } __attribute__((packed))
@@ -179,7 +174,7 @@ struct uac_feature_unit_descriptor {
   __u8 bUnitID;
   __u8 bSourceID;
   __u8 bControlSize;
-  __u8 bmaControls[0];
+  __u8 bmaControls[];
 } __attribute__((packed));
 struct uac_processing_unit_descriptor {
   __u8 bLength;

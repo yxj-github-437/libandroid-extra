@@ -37,10 +37,10 @@
 
 #define __BIONIC_POSIX_FEATURE_MISSING (-1)
 #define __BIONIC_POSIX_FEATURE_SINCE(level) \
-    (((__ANDROID_API__) >= level) ? _POSIX_VERSION : __BIONIC_POSIX_FEATURE_MISSING)
+    (((__ANDROID_API__) >= (level)) ? _POSIX_VERSION : __BIONIC_POSIX_FEATURE_MISSING)
 
 /* Availability macros. */
-/* See http://man7.org/linux/man-pages/man7/posixoptions.7.html for documentation. */
+/* See https://man7.org/linux/man-pages/man7/posixoptions.7.html for documentation. */
 /* Keep this list sorted by name. */
 #define _POSIX_ADVISORY_INFO __BIONIC_POSIX_FEATURE_SINCE(23) /* posix_memadvise arrived late. */
 #define _POSIX_ASYNCHRONOUS_IO __BIONIC_POSIX_FEATURE_MISSING
@@ -104,15 +104,15 @@
 #define _POSIX2_UPE                 __BIONIC_POSIX_FEATURE_MISSING
 
 #if defined(__LP64__)
-#define _POSIX_V7_ILP32_OFF32       -1
-#define _POSIX_V7_ILP32_OFFBIG      -1
+#define _POSIX_V7_ILP32_OFF32      (-1)
+#define _POSIX_V7_ILP32_OFFBIG     (-1)
 #define _POSIX_V7_LP64_OFF64         1
 #define _POSIX_V7_LPBIG_OFFBIG       1
 #else
 #define _POSIX_V7_ILP32_OFF32        1
-#define _POSIX_V7_ILP32_OFFBIG      -1
-#define _POSIX_V7_LP64_OFF64        -1
-#define _POSIX_V7_LPBIG_OFFBIG      -1
+#define _POSIX_V7_ILP32_OFFBIG     (-1)
+#define _POSIX_V7_LP64_OFF64       (-1)
+#define _POSIX_V7_LPBIG_OFFBIG     (-1)
 #endif
 
 #define _XOPEN_CRYPT                __BIONIC_POSIX_FEATURE_MISSING

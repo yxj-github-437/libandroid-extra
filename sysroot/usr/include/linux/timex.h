@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_LINUX_TIMEX_H
 #define _UAPI_LINUX_TIMEX_H
 #include <linux/time.h>
@@ -40,6 +28,46 @@ struct timex {
   __kernel_long_t calcnt;
   __kernel_long_t errcnt;
   __kernel_long_t stbcnt;
+  int tai;
+  int : 32;
+  int : 32;
+  int : 32;
+  int : 32;
+  int : 32;
+  int : 32;
+  int : 32;
+  int : 32;
+  int : 32;
+  int : 32;
+  int : 32;
+};
+struct __kernel_timex_timeval {
+  __kernel_time64_t tv_sec;
+  long long tv_usec;
+};
+struct __kernel_timex {
+  unsigned int modes;
+  int : 32;
+  long long offset;
+  long long freq;
+  long long maxerror;
+  long long esterror;
+  int status;
+  int : 32;
+  long long constant;
+  long long precision;
+  long long tolerance;
+  struct __kernel_timex_timeval time;
+  long long tick;
+  long long ppsfreq;
+  long long jitter;
+  int shift;
+  int : 32;
+  long long stabil;
+  long long jitcnt;
+  long long calcnt;
+  long long errcnt;
+  long long stbcnt;
   int tai;
   int : 32;
   int : 32;

@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPILINUX_NUBUS_H
 #define _UAPILINUX_NUBUS_H
 #include <linux/types.h>
@@ -154,17 +142,5 @@ enum nubus_display_res_id {
   NUBUS_RESID_FOURTHMODE = 0x0083,
   NUBUS_RESID_FIFTHMODE = 0x0084,
   NUBUS_RESID_SIXTHMODE = 0x0085
-};
-struct nubus_dir {
-  unsigned char * base;
-  unsigned char * ptr;
-  int done;
-  int mask;
-};
-struct nubus_dirent {
-  unsigned char * base;
-  unsigned char type;
-  __u32 data;
-  int mask;
 };
 #endif

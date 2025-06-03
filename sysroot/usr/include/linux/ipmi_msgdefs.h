@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef __LINUX_IPMI_MSGDEFS_H
 #define __LINUX_IPMI_MSGDEFS_H
 #define IPMI_NETFN_SENSOR_EVENT_REQUEST 0x04
@@ -53,6 +41,8 @@
 #define IPMI_ERR_MSG_TRUNCATED 0xc6
 #define IPMI_REQ_LEN_INVALID_ERR 0xc7
 #define IPMI_REQ_LEN_EXCEEDED_ERR 0xc8
+#define IPMI_DEVICE_IN_FW_UPDATE_ERR 0xd1
+#define IPMI_DEVICE_IN_INIT_ERR 0xd2
 #define IPMI_NOT_IN_MY_STATE_ERR 0xd5
 #define IPMI_LOST_ARBITRATION_ERR 0x81
 #define IPMI_BUS_ERR 0x82

@@ -26,15 +26,23 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _BITS_FCNTL_H_
-#define _BITS_FCNTL_H_
+#pragma once
+
+/**
+ * @file bits/fcntl.h
+ * @brief The fcntl() function.
+ */
 
 #include <sys/cdefs.h>
 
 __BEGIN_DECLS
 
-int fcntl(int __fd, int __cmd, ...);
+/**
+ * [fcntl(3)](https://man7.org/linux/man-pages/man2/fcntl.2.html) performs various operations
+ * on file descriptors.
+ *
+ * The return value depends on the operation.
+ */
+int fcntl(int __fd, int __op, ...);
 
 __END_DECLS
-
-#endif

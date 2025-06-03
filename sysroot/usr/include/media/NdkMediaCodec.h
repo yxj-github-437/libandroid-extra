@@ -39,6 +39,8 @@
 #include <stdint.h>
 #include <sys/cdefs.h>
 
+#include <android/api-level.h>
+
 #include "NdkMediaCrypto.h"
 #include "NdkMediaError.h"
 #include "NdkMediaFormat.h"
@@ -61,11 +63,41 @@ struct AMediaCodecBufferInfo {
 typedef struct AMediaCodecBufferInfo AMediaCodecBufferInfo;
 typedef struct AMediaCodecCryptoInfo AMediaCodecCryptoInfo;
 
+
+/**
+ * Definitions of per-buffer flags for operation with NdkMediaCodec.
+ *
+ * The semantics of these enums match those of the same name
+ * in {@link android.media.MediaCodec}.
+ */
 enum {
+    /**
+     * This indicates that the (encoded) buffer marked as such contains
+     * the data for a key frame.
+     *
+     * Semantics are the same as {@link android.media.MediaCodec#BUFFER_FLAG_KEY_FRAME}
+     */
+    AMEDIACODEC_BUFFER_FLAG_KEY_FRAME = 1, // introduced in API 34
     AMEDIACODEC_BUFFER_FLAG_CODEC_CONFIG = 2,
     AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM = 4,
     AMEDIACODEC_BUFFER_FLAG_PARTIAL_FRAME = 8,
+    /**
+     * This indicates that the buffer contains non-media data for the
+     * muxer to process.
+     *
+     * Semantics are the same as {@link android.media.MediaCodec#BUFFER_FLAG_MUXER_DATA}
+     */
+    AMEDIACODEC_BUFFER_FLAG_MUXER_DATA = 16,  // introduced in API 34
+    /**
+     * This indicates that the buffer is decoded and updates the internal state of the decoder,
+     * but does not produce any output buffer.
+     *
+     * Semantics are the same as {@link android.media.MediaCodec#BUFFER_FLAG_DECODE_ONLY}
+     */
+    AMEDIACODEC_BUFFER_FLAG_DECODE_ONLY = 32,  // introduced in API 34
+};
 
+enum {
     AMEDIACODEC_CONFIGURE_FLAG_ENCODE = 1,
     AMEDIACODEC_INFO_OUTPUT_BUFFERS_CHANGED = -3,
     AMEDIACODEC_INFO_OUTPUT_FORMAT_CHANGED = -2,
@@ -114,83 +146,122 @@ typedef void (*AMediaCodecOnAsyncError)(
         int32_t actionCode,
         const char *detail);
 
-struct AMediaCodecOnAsyncNotifyCallback {
+typedef struct AMediaCodecOnAsyncNotifyCallback {
       AMediaCodecOnAsyncInputAvailable  onAsyncInputAvailable;
       AMediaCodecOnAsyncOutputAvailable onAsyncOutputAvailable;
       AMediaCodecOnAsyncFormatChanged   onAsyncFormatChanged;
       AMediaCodecOnAsyncError           onAsyncError;
-};
+} AMediaCodecOnAsyncNotifyCallback;
 
-#if __ANDROID_API__ >= 21
+/**
+ * Called when an output frame has rendered on the output surface.
+ *
+ * \param codec       The codec object that generated this notification.
+ * \param userdata    The user data set at AMediaCodec_setOnFrameRenderedCallback.
+ * \param mediaTimeUs The presentation time (media time) of the frame rendered.
+ *                    This is usually the same as specified in
+ *                    AMediaCodec_queueInputBuffer, but some codecs may alter
+ *                    the media time by applying some time-based transformation,
+ *                    such as frame rate conversion. In that case, presentation
+ *                    time corresponds to the actual output frame rendered.
+ * \param systemNano  The system time when the frame was rendered.
+ */
+typedef void (*AMediaCodecOnFrameRendered)(
+        AMediaCodec *codec,
+        void *userdata,
+        int64_t mediaTimeUs,
+        int64_t systemNano);
 
 /**
  * Create codec by name. Use this if you know the exact codec you want to use.
  * When configuring, you will need to specify whether to use the codec as an
  * encoder or decoder.
+ *
+ * Available since API level 21.
  */
-AMediaCodec* AMediaCodec_createCodecByName(const char *name);
+AMediaCodec* AMediaCodec_createCodecByName(const char *name) __INTRODUCED_IN(21);
 
 /**
  * Create codec by mime type. Most applications will use this, specifying a
  * mime type obtained from media extractor.
+ *
+ * Available since API level 21.
  */
-AMediaCodec* AMediaCodec_createDecoderByType(const char *mime_type);
+AMediaCodec* AMediaCodec_createDecoderByType(const char *mime_type) __INTRODUCED_IN(21);
 
 /**
  * Create encoder by name.
+ *
+ * Available since API level 21.
  */
-AMediaCodec* AMediaCodec_createEncoderByType(const char *mime_type);
+AMediaCodec* AMediaCodec_createEncoderByType(const char *mime_type) __INTRODUCED_IN(21);
 
 /**
- * delete the codec and free its resources
+ * Delete the codec and free its resources.
+ *
+ * Available since API level 21.
  */
-media_status_t AMediaCodec_delete(AMediaCodec*);
+media_status_t AMediaCodec_delete(AMediaCodec*) __INTRODUCED_IN(21);
 
 /**
  * Configure the codec. For decoding you would typically get the format from an extractor.
+ *
+ * Available since API level 21.
  */
 media_status_t AMediaCodec_configure(
         AMediaCodec*,
         const AMediaFormat* format,
         ANativeWindow* surface,
         AMediaCrypto *crypto,
-        uint32_t flags);
+        uint32_t flags) __INTRODUCED_IN(21);
 
 /**
  * Start the codec. A codec must be configured before it can be started, and must be started
  * before buffers can be sent to it.
+ *
+ * Available since API level 21.
  */
-media_status_t AMediaCodec_start(AMediaCodec*);
+media_status_t AMediaCodec_start(AMediaCodec*) __INTRODUCED_IN(21);
 
 /**
  * Stop the codec.
+ *
+ * Available since API level 21.
  */
-media_status_t AMediaCodec_stop(AMediaCodec*);
+media_status_t AMediaCodec_stop(AMediaCodec*) __INTRODUCED_IN(21);
 
 /*
  * Flush the codec's input and output. All indices previously returned from calls to
  * AMediaCodec_dequeueInputBuffer and AMediaCodec_dequeueOutputBuffer become invalid.
+ *
+ * Available since API level 21.
  */
-media_status_t AMediaCodec_flush(AMediaCodec*);
+media_status_t AMediaCodec_flush(AMediaCodec*) __INTRODUCED_IN(21);
 
 /**
  * Get an input buffer. The specified buffer index must have been previously obtained from
  * dequeueInputBuffer, and not yet queued.
+ *
+ * Available since API level 21.
  */
-uint8_t* AMediaCodec_getInputBuffer(AMediaCodec*, size_t idx, size_t *out_size);
+uint8_t* AMediaCodec_getInputBuffer(AMediaCodec*, size_t idx, size_t *out_size) __INTRODUCED_IN(21);
 
 /**
  * Get an output buffer. The specified buffer index must have been previously obtained from
  * dequeueOutputBuffer, and not yet queued.
+ *
+ * Available since API level 21.
  */
-uint8_t* AMediaCodec_getOutputBuffer(AMediaCodec*, size_t idx, size_t *out_size);
+uint8_t* AMediaCodec_getOutputBuffer(AMediaCodec*, size_t idx, size_t *out_size) __INTRODUCED_IN(21);
 
 /**
  * Get the index of the next available input buffer. An app will typically use this with
  * getInputBuffer() to get a pointer to the buffer, then copy the data to be encoded or decoded
  * into the buffer before passing it to the codec.
+ *
+ * Available since API level 21.
  */
-ssize_t AMediaCodec_dequeueInputBuffer(AMediaCodec*, int64_t timeoutUs);
+ssize_t AMediaCodec_dequeueInputBuffer(AMediaCodec*, int64_t timeoutUs) __INTRODUCED_IN(21);
 
 /*
  * __USE_FILE_OFFSET64 changes the type of off_t in LP32, which changes the ABI
@@ -218,40 +289,49 @@ static_assert(sizeof(_off_t_compat) == sizeof(long),
 
 /**
  * Send the specified buffer to the codec for processing.
+ *
+ * Available since API level 21.
  */
 media_status_t AMediaCodec_queueInputBuffer(AMediaCodec*, size_t idx,
                                             _off_t_compat offset, size_t size,
-                                            uint64_t time, uint32_t flags);
+                                            uint64_t time, uint32_t flags) __INTRODUCED_IN(21);
 
 /**
  * Send the specified buffer to the codec for processing.
+ *
+ * Available since API level 21.
  */
 media_status_t AMediaCodec_queueSecureInputBuffer(AMediaCodec*, size_t idx,
                                                   _off_t_compat offset,
                                                   AMediaCodecCryptoInfo*,
-                                                  uint64_t time, uint32_t flags);
+                                                  uint64_t time, uint32_t flags) __INTRODUCED_IN(21);
 
 #undef _off_t_compat
 
 /**
  * Get the index of the next available buffer of processed data.
+ *
+ * Available since API level 21.
  */
 ssize_t AMediaCodec_dequeueOutputBuffer(AMediaCodec*, AMediaCodecBufferInfo *info,
-        int64_t timeoutUs);
-AMediaFormat* AMediaCodec_getOutputFormat(AMediaCodec*);
+        int64_t timeoutUs) __INTRODUCED_IN(21);
 
 /**
- * Get format of the buffer. The specified buffer index must have been previously obtained from
- * dequeueOutputBuffer.
+ * Returns the format of the codec's output.
+ * The caller must free the returned format.
+ *
+ * Available since API level 21.
  */
-AMediaFormat* AMediaCodec_getBufferFormat(AMediaCodec*, size_t index);
+AMediaFormat* AMediaCodec_getOutputFormat(AMediaCodec*) __INTRODUCED_IN(21);
 
 /**
  * If you are done with a buffer, use this call to return the buffer to
  * the codec. If you previously specified a surface when configuring this
  * video decoder you can optionally render the buffer.
+ *
+ * Available since API level 21.
  */
-media_status_t AMediaCodec_releaseOutputBuffer(AMediaCodec*, size_t idx, bool render);
+media_status_t AMediaCodec_releaseOutputBuffer(AMediaCodec*, size_t idx, bool render) __INTRODUCED_IN(21);
 
 /**
  * Dynamically sets the output surface of a codec.
@@ -262,8 +342,10 @@ media_status_t AMediaCodec_releaseOutputBuffer(AMediaCodec*, size_t idx, bool re
  *  to ImageReader (software readable) output.
  *
  * For more details, see the Java documentation for MediaCodec.setOutputSurface.
+ *
+ * Available since API level 21.
  */
-media_status_t AMediaCodec_setOutputSurface(AMediaCodec*, ANativeWindow* surface);
+media_status_t AMediaCodec_setOutputSurface(AMediaCodec*, ANativeWindow* surface) __INTRODUCED_IN(21);
 
 /**
  * If you are done with a buffer, use this call to update its surface timestamp
@@ -272,11 +354,11 @@ media_status_t AMediaCodec_setOutputSurface(AMediaCodec*, ANativeWindow* surface
  * this call will simply return the buffer to the codec.
  *
  * For more details, see the Java documentation for MediaCodec.releaseOutputBuffer.
+ *
+ * Available since API level 21.
  */
 media_status_t AMediaCodec_releaseOutputBufferAtTime(
-        AMediaCodec *mData, size_t idx, int64_t timestampNs);
-
-#if __ANDROID_API__ >= 26
+        AMediaCodec *mData, size_t idx, int64_t timestampNs) __INTRODUCED_IN(21);
 
 /**
  * Creates a Surface that can be used as the input to encoder, in place of input buffers
@@ -288,9 +370,11 @@ media_status_t AMediaCodec_releaseOutputBufferAtTime(
  * ANativeWindow_release() when done.
  *
  * For more details, see the Java documentation for MediaCodec.createInputSurface.
+ *
+ * Available since API level 26.
  */
 media_status_t AMediaCodec_createInputSurface(
-        AMediaCodec *mData, ANativeWindow **surface);
+        AMediaCodec *mData, ANativeWindow **surface) __INTRODUCED_IN(26);
 
 /**
  * Creates a persistent Surface that can be used as the input to encoder
@@ -304,9 +388,11 @@ media_status_t AMediaCodec_createInputSurface(
  * ANativeWindow_release() when done.
  *
  * For more details, see the Java documentation for MediaCodec.createPersistentInputSurface.
+ *
+ * Available since API level 26.
  */
 media_status_t AMediaCodec_createPersistentInputSurface(
-        ANativeWindow **surface);
+        ANativeWindow **surface) __INTRODUCED_IN(26);
 
 /**
  * Set a persistent-surface that can be used as the input to encoder, in place of input buffers
@@ -317,9 +403,11 @@ media_status_t AMediaCodec_createPersistentInputSurface(
  * AMediaCodec_configure(..); and before AMediaCodec_start() has been called.
  *
  * For more details, see the Java documentation for MediaCodec.setInputSurface.
+ *
+ * Available since API level 26.
  */
 media_status_t AMediaCodec_setInputSurface(
-        AMediaCodec *mData, ANativeWindow *surface);
+        AMediaCodec *mData, ANativeWindow *surface) __INTRODUCED_IN(26);
 
 /**
  * Signal additional parameters to the codec instance.
@@ -328,9 +416,11 @@ media_status_t AMediaCodec_setInputSurface(
  * after AMediaCodec_start() has been called.
  *
  * NOTE: Some of these parameter changes may silently fail to apply.
+ *
+ * Available since API level 26.
  */
 media_status_t AMediaCodec_setParameters(
-        AMediaCodec *mData, const AMediaFormat* params);
+        AMediaCodec *mData, const AMediaFormat* params) __INTRODUCED_IN(26);
 
 /**
  * Signals end-of-stream on input. Equivalent to submitting an empty buffer with
@@ -345,75 +435,138 @@ media_status_t AMediaCodec_setParameters(
  * Returns AMEDIA_OK when completed succesfully.
  *
  * For more details, see the Java documentation for MediaCodec.signalEndOfInputStream.
+ *
+ * Available since API level 26.
  */
-media_status_t AMediaCodec_signalEndOfInputStream(AMediaCodec *mData);
+media_status_t AMediaCodec_signalEndOfInputStream(AMediaCodec *mData) __INTRODUCED_IN(26);
 
-#endif /* __ANDROID_API__ >= 26 */
-
-#if __ANDROID_API__ >= 28
+/**
+ * Get format of the buffer. The specified buffer index must have been previously obtained from
+ * dequeueOutputBuffer.
+ * The caller must free the returned format.
+ *
+ * Available since API level 28.
+ */
+AMediaFormat* AMediaCodec_getBufferFormat(AMediaCodec*, size_t index) __INTRODUCED_IN(28);
 
 /**
  * Get the component name. If the codec was created by createDecoderByType
  * or createEncoderByType, what component is chosen is not known beforehand.
  * Caller shall call AMediaCodec_releaseName to free the returned pointer.
+ *
+ * Available since API level 28.
  */
-media_status_t AMediaCodec_getName(AMediaCodec*, char** out_name);
+media_status_t AMediaCodec_getName(AMediaCodec*, char** out_name) __INTRODUCED_IN(28);
 
 /**
  * Free the memory pointed by name which is returned by AMediaCodec_getName.
+ *
+ * Available since API level 28.
  */
-void AMediaCodec_releaseName(AMediaCodec*, char* name);
+void AMediaCodec_releaseName(AMediaCodec*, char* name) __INTRODUCED_IN(28);
 
 /**
  * Set an asynchronous callback for actionable AMediaCodec events.
- * When asynchronous callback is enabled, the client should not call
+ * When asynchronous callback is enabled, it is an error for the client to call
  * AMediaCodec_getInputBuffers(), AMediaCodec_getOutputBuffers(),
  * AMediaCodec_dequeueInputBuffer() or AMediaCodec_dequeueOutputBuffer().
  *
- * Also, AMediaCodec_flush() behaves differently in asynchronous mode.
- * After calling AMediaCodec_flush(), you must call AMediaCodec_start() to
- * "resume" receiving input buffers, even if an input surface was created.
+ * AMediaCodec_flush() behaves differently in asynchronous mode.
+ * After calling AMediaCodec_flush(), the client must call AMediaCodec_start() to
+ * "resume" receiving input buffers. Even if the client does not receive
+ * AMediaCodecOnAsyncInputAvailable callbacks from video encoders configured
+ * with an input surface, the client still needs to call AMediaCodec_start()
+ * to resume the input surface to send buffers to the encoders.
+ *
+ * When called with null callback, this method unregisters any previously set callback.
  *
  * Refer to the definition of AMediaCodecOnAsyncNotifyCallback on how each
  * callback function is called and what are specified.
- * The specified userdata is the pointer used when those callback functions are
- * called.
+ * The specified userdata is opaque data which will be passed along
+ * when the callback functions are called. MediaCodec does not look at or alter the
+ * value of userdata. Often it is a pointer to a client-owned object,
+ * and client manages the lifecycle of the object in that case.
+ *
+ * Once the callback is unregistered or the codec is reset / released, the
+ * previously registered callback will not be called.
  *
  * All callbacks are fired on one NDK internal thread.
  * AMediaCodec_setAsyncNotifyCallback should not be called on the callback thread.
  * No heavy duty task should be performed on callback thread.
+ *
+ * Available since API level 28.
  */
 media_status_t AMediaCodec_setAsyncNotifyCallback(
         AMediaCodec*,
         AMediaCodecOnAsyncNotifyCallback callback,
-        void *userdata);
+        void *userdata) __INTRODUCED_IN(28);
+
+/**
+ * Registers a callback to be invoked when an output frame is rendered on the output surface.
+ *
+ * This method can be called in any codec state, but will only have an effect in the
+ * Executing state for codecs that render buffers to the output surface.
+ *
+ * This callback is for informational purposes only: to get precise
+ * render timing samples, and can be significantly delayed and batched. Some frames may have
+ * been rendered even if there was no callback generated.
+ *
+ * When called with null callback, this method unregisters any previously set callback.
+ *
+ * Refer to the definition of AMediaCodecOnFrameRendered on how each
+ * callback function is called and what are specified.
+ * The specified userdata is opaque data which will be passed along
+ * when the callback functions are called. MediaCodec does not look at or alter the
+ * value of userdata. Often it is a pointer to a client-owned object,
+ * and client manages the lifecycle of the object in that case.
+ *
+ * Once the callback is unregistered or the codec is reset / released, the
+ * previously registered callback will not be called.
+ *
+ * All callbacks are fired on one NDK internal thread.
+ * AMediaCodec_setOnFrameRenderedCallback should not be called on the callback thread.
+ * No heavy duty task should be performed on callback thread.
+ *
+ * Available since Android T.
+ */
+media_status_t AMediaCodec_setOnFrameRenderedCallback(
+        AMediaCodec*,
+        AMediaCodecOnFrameRendered callback,
+        void *userdata) __INTRODUCED_IN(__ANDROID_API_T__);
 
 /**
  * Release the crypto if applicable.
+ *
+ * Available since API level 28.
  */
-media_status_t AMediaCodec_releaseCrypto(AMediaCodec*);
+media_status_t AMediaCodec_releaseCrypto(AMediaCodec*) __INTRODUCED_IN(28);
 
 /**
  * Call this after AMediaCodec_configure() returns successfully to get the input
  * format accepted by the codec. Do this to determine what optional configuration
  * parameters were supported by the codec.
+ * The caller must free the returned format.
+ *
+ * Available since API level 28.
  */
-AMediaFormat* AMediaCodec_getInputFormat(AMediaCodec*);
+AMediaFormat* AMediaCodec_getInputFormat(AMediaCodec*) __INTRODUCED_IN(28);
 
 /**
  * Returns true if the codec cannot proceed further, but can be recovered by stopping,
  * configuring, and starting again.
+ *
+ * Available since API level 28.
  */
-bool AMediaCodecActionCode_isRecoverable(int32_t actionCode);
+bool AMediaCodecActionCode_isRecoverable(int32_t actionCode) __INTRODUCED_IN(28);
 
 /**
  * Returns true if the codec error is a transient issue, perhaps due to
  * resource constraints, and that the method (or encoding/decoding) may be
  * retried at a later time.
+ *
+ * Available since API level 28.
  */
-bool AMediaCodecActionCode_isTransient(int32_t actionCode);
-
-#endif /* __ANDROID_API__ >= 28 */
+bool AMediaCodecActionCode_isTransient(int32_t actionCode) __INTRODUCED_IN(28);
 
 typedef enum {
     AMEDIACODECRYPTOINFO_MODE_CLEAR = 0,
@@ -440,6 +593,8 @@ typedef struct {
  * numBytesOfClearData can be null to indicate that all data is encrypted.
  * This information encapsulates per-sample metadata as outlined in
  * ISO/IEC FDIS 23001-7:2011 "Common encryption in ISO base media file format files".
+ *
+ * Available since API level 21.
  */
 AMediaCodecCryptoInfo *AMediaCodecCryptoInfo_new(
         int numsubsamples,
@@ -447,53 +602,75 @@ AMediaCodecCryptoInfo *AMediaCodecCryptoInfo_new(
         uint8_t iv[16],
         cryptoinfo_mode_t mode,
         size_t *clearbytes,
-        size_t *encryptedbytes);
+        size_t *encryptedbytes) __INTRODUCED_IN(21);
 
 /**
- * delete an AMediaCodecCryptoInfo created previously with AMediaCodecCryptoInfo_new, or
- * obtained from AMediaExtractor
+ * Delete an AMediaCodecCryptoInfo created previously with AMediaCodecCryptoInfo_new, or
+ * obtained from AMediaExtractor.
+ *
+ * Available since API level 21.
  */
-media_status_t AMediaCodecCryptoInfo_delete(AMediaCodecCryptoInfo*);
+media_status_t AMediaCodecCryptoInfo_delete(AMediaCodecCryptoInfo*) __INTRODUCED_IN(21);
 
 /**
- * Set the crypto pattern on an AMediaCryptoInfo object
+ * Set the crypto pattern on an AMediaCryptoInfo object.
+ *
+ * Available since API level 21.
  */
 void AMediaCodecCryptoInfo_setPattern(
         AMediaCodecCryptoInfo *info,
-        cryptoinfo_pattern_t *pattern);
+        cryptoinfo_pattern_t *pattern) __INTRODUCED_IN(21);
 
 /**
  * The number of subsamples that make up the buffer's contents.
+ *
+ * Available since API level 21.
  */
-size_t AMediaCodecCryptoInfo_getNumSubSamples(AMediaCodecCryptoInfo*);
+size_t AMediaCodecCryptoInfo_getNumSubSamples(AMediaCodecCryptoInfo*) __INTRODUCED_IN(21);
 
 /**
- * A 16-byte opaque key
+ * A 16-byte opaque key.
+ *
+ * Available since API level 21.
  */
-media_status_t AMediaCodecCryptoInfo_getKey(AMediaCodecCryptoInfo*, uint8_t *dst);
+media_status_t AMediaCodecCryptoInfo_getKey(AMediaCodecCryptoInfo*, uint8_t *dst) __INTRODUCED_IN(21);
 
 /**
- * A 16-byte initialization vector
+ * A 16-byte initialization vector.
+ *
+ * Available since API level 21.
  */
-media_status_t AMediaCodecCryptoInfo_getIV(AMediaCodecCryptoInfo*, uint8_t *dst);
+media_status_t AMediaCodecCryptoInfo_getIV(AMediaCodecCryptoInfo*, uint8_t *dst) __INTRODUCED_IN(21);
 
 /**
  * The type of encryption that has been applied,
  * one of AMEDIACODECRYPTOINFO_MODE_CLEAR or AMEDIACODECRYPTOINFO_MODE_AES_CTR.
+ *
+ * Available since API level 21.
  */
-cryptoinfo_mode_t AMediaCodecCryptoInfo_getMode(AMediaCodecCryptoInfo*);
+cryptoinfo_mode_t AMediaCodecCryptoInfo_getMode(AMediaCodecCryptoInfo*) __INTRODUCED_IN(21);
 
 /**
  * The number of leading unencrypted bytes in each subsample.
+ *
+ * Available since API level 21.
  */
-media_status_t AMediaCodecCryptoInfo_getClearBytes(AMediaCodecCryptoInfo*, size_t *dst);
+media_status_t AMediaCodecCryptoInfo_getClearBytes(AMediaCodecCryptoInfo*, size_t *dst) __INTRODUCED_IN(21);
 
 /**
  * The number of trailing encrypted bytes in each subsample.
+ *
+ * Available since API level 21.
  */
-media_status_t AMediaCodecCryptoInfo_getEncryptedBytes(AMediaCodecCryptoInfo*, size_t *dst);
+media_status_t AMediaCodecCryptoInfo_getEncryptedBytes(AMediaCodecCryptoInfo*, size_t *dst) __INTRODUCED_IN(21);
 
-#endif /* __ANDROID_API__ >= 21 */
+extern const char* AMEDIACODEC_KEY_HDR10_PLUS_INFO __INTRODUCED_IN(31);
+extern const char* AMEDIACODEC_KEY_LOW_LATENCY __INTRODUCED_IN(31);
+extern const char* AMEDIACODEC_KEY_OFFSET_TIME __INTRODUCED_IN(31);
+extern const char* AMEDIACODEC_KEY_REQUEST_SYNC_FRAME __INTRODUCED_IN(31);
+extern const char* AMEDIACODEC_KEY_SUSPEND __INTRODUCED_IN(31);
+extern const char* AMEDIACODEC_KEY_SUSPEND_TIME __INTRODUCED_IN(31);
+extern const char* AMEDIACODEC_KEY_VIDEO_BITRATE __INTRODUCED_IN(31);
 
 __END_DECLS
 

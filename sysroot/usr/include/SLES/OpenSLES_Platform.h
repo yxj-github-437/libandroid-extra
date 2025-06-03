@@ -54,4 +54,12 @@ typedef unsigned long long          sl_uint64_t;
 #define SLAPIENTRY
 #endif
 
+#ifndef SL_API_DEPRECATED
+#if defined(__clang__)
+#define SL_API_DEPRECATED(level) __attribute__((availability(android,deprecated=level)))
+#else
+#define SL_API_DEPRECATED(level) __attribute__((__annotate__("deprecated_in=" # level)))
+#endif
+#endif
+
 #endif /* _OPENSLES_PLATFORM_H_ */

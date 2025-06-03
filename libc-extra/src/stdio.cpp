@@ -6,17 +6,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include <wchar.h>
-
+#include <stdio_ext.h>
 
 #define CHECK_FP(fp)                                                                               \
     if (fp == NULL)                                                                                \
     __fortify_fatal("%s: null FILE*", __FUNCTION__)
 
 #define FLOCKFILE(fp)                                                                              \
-    if (!_EXT(fp)->_caller_handles_locking)                                                        \
+    if (__fsetlocking(fp, FSETLOCKING_QUERY) == FSETLOCKING_INTERNAL)                              \
     flockfile(fp)
 #define FUNLOCKFILE(fp)                                                                            \
-    if (!_EXT(fp)->_caller_handles_locking)                                                        \
+    if (__fsetlocking(fp, FSETLOCKING_QUERY) == FSETLOCKING_INTERNAL)                              \
     funlockfile(fp)
 
 #define __sferror(p) (((p)->_flags & __SERR) != 0)

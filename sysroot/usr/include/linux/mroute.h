@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI__LINUX_MROUTE_H
 #define _UAPI__LINUX_MROUTE_H
 #include <linux/sockios.h>
@@ -34,10 +22,15 @@
 #define MRT_TABLE (MRT_BASE + 9)
 #define MRT_ADD_MFC_PROXY (MRT_BASE + 10)
 #define MRT_DEL_MFC_PROXY (MRT_BASE + 11)
-#define MRT_MAX (MRT_BASE + 11)
+#define MRT_FLUSH (MRT_BASE + 12)
+#define MRT_MAX (MRT_BASE + 12)
 #define SIOCGETVIFCNT SIOCPROTOPRIVATE
 #define SIOCGETSGCNT (SIOCPROTOPRIVATE + 1)
 #define SIOCGETRPF (SIOCPROTOPRIVATE + 2)
+#define MRT_FLUSH_MFC 1
+#define MRT_FLUSH_MFC_STATIC 2
+#define MRT_FLUSH_VIFS 4
+#define MRT_FLUSH_VIFS_STATIC 8
 #define MAXVIFS 32
 typedef unsigned long vifbitmap_t;
 typedef unsigned short vifi_t;
@@ -92,7 +85,7 @@ struct igmpmsg {
   unsigned char im_msgtype;
   unsigned char im_mbz;
   unsigned char im_vif;
-  unsigned char unused3;
+  unsigned char im_vif_hi;
   struct in_addr im_src, im_dst;
 };
 enum {
@@ -103,6 +96,7 @@ enum {
   IPMRA_TABLE_MROUTE_DO_ASSERT,
   IPMRA_TABLE_MROUTE_DO_PIM,
   IPMRA_TABLE_VIFS,
+  IPMRA_TABLE_MROUTE_DO_WRVIFWHOLE,
   __IPMRA_TABLE_MAX
 };
 #define IPMRA_TABLE_MAX (__IPMRA_TABLE_MAX - 1)
@@ -134,6 +128,7 @@ enum {
   IPMRA_CREPORT_SRC_ADDR,
   IPMRA_CREPORT_DST_ADDR,
   IPMRA_CREPORT_PKT,
+  IPMRA_CREPORT_TABLE,
   __IPMRA_CREPORT_MAX
 };
 #define IPMRA_CREPORT_MAX (__IPMRA_CREPORT_MAX - 1)
@@ -141,4 +136,5 @@ enum {
 #define IGMPMSG_NOCACHE 1
 #define IGMPMSG_WRONGVIF 2
 #define IGMPMSG_WHOLEPKT 3
+#define IGMPMSG_WRVIFWHOLE 4
 #endif

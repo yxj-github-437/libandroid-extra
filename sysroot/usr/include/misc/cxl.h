@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_MISC_CXL_H
 #define _UAPI_MISC_CXL_H
 #include <linux/types.h>
@@ -25,17 +13,18 @@ struct cxl_ioctl_start_work {
   __u64 work_element_descriptor;
   __u64 amr;
   __s16 num_interrupts;
-  __s16 reserved1;
-  __s32 reserved2;
+  __u16 tid;
+  __s32 reserved1;
+  __u64 reserved2;
   __u64 reserved3;
   __u64 reserved4;
   __u64 reserved5;
-  __u64 reserved6;
 };
 #define CXL_START_WORK_AMR 0x0000000000000001ULL
 #define CXL_START_WORK_NUM_IRQS 0x0000000000000002ULL
 #define CXL_START_WORK_ERR_FF 0x0000000000000004ULL
-#define CXL_START_WORK_ALL (CXL_START_WORK_AMR | CXL_START_WORK_NUM_IRQS | CXL_START_WORK_ERR_FF)
+#define CXL_START_WORK_TID 0x0000000000000008ULL
+#define CXL_START_WORK_ALL (CXL_START_WORK_AMR | CXL_START_WORK_NUM_IRQS | CXL_START_WORK_ERR_FF | CXL_START_WORK_TID)
 #define CXL_MODE_DEDICATED 0x1
 #define CXL_MODE_DIRECTED 0x2
 #define CXL_AFUID_FLAG_SLAVE 0x1

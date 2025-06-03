@@ -34,6 +34,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <wchar.h>
+#include <dlfcn.h>
 
 size_t __fbufsize(FILE* fp)
 {
@@ -88,16 +89,9 @@ void __fseterr(FILE* fp)
 
 int __fsetlocking(FILE* fp, int type)
 {
-    int old_state = _EXT(fp)->_caller_handles_locking ? FSETLOCKING_BYCALLER : FSETLOCKING_INTERNAL;
-    if (type == FSETLOCKING_QUERY) {
-        return old_state;
-    }
+    __typeof__(__fsetlocking)* real_ = dlsym(RTLD_NEXT, "__fsetlocking");
+    if (real_)
+        return real_(fp, type);
 
-    if (type != FSETLOCKING_INTERNAL && type != FSETLOCKING_BYCALLER) {
-        // The API doesn't let us report an error, so blow up.
-        async_safe_fatal("Bad type (%d) passed to __fsetlocking\n", type);
-    }
-
-    _EXT(fp)->_caller_handles_locking = (type == FSETLOCKING_BYCALLER);
-    return old_state;
+    return FSETLOCKING_INTERNAL;
 }

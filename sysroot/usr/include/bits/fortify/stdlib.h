@@ -31,6 +31,8 @@
 #endif
 
 #if defined(__BIONIC_FORTIFY)
+#define __realpath_path_never_correct \
+    "'realpath': NULL path is never correct; flipped arguments?"
 #define __realpath_buf_too_small_str \
     "'realpath' output parameter must be NULL or a pointer to a buffer with >= PATH_MAX bytes"
 
@@ -38,22 +40,25 @@
 #define __PATH_MAX 4096
 
 #if defined(__clang__)
-char* realpath(const char* path, char* resolved)
-        __clang_error_if(__bos(resolved) != __BIONIC_FORTIFY_UNKNOWN_SIZE &&
-                         __bos(resolved) < __PATH_MAX, __realpath_buf_too_small_str)
-        __clang_error_if(!path, "'realpath': NULL path is never correct; flipped arguments?");
+char* _Nullable realpath(const char* _Nonnull path, char* _Nullable resolved)
+        __clang_error_if(!path, __realpath_path_never_correct)
+        __clang_error_if(__bos_unevaluated_lt(__bos(resolved), __PATH_MAX),
+                         __realpath_buf_too_small_str);
+
 /* No need for a definition; the only issues we can catch are at compile-time. */
 
 #else /* defined(__clang__) */
 
 char* __realpath_real(const char*, char*) __RENAME(realpath);
+__errordecl(__realpath_path_null, __realpath_path_never_correct);
 __errordecl(__realpath_size_error, __realpath_buf_too_small_str);
 
 __BIONIC_FORTIFY_INLINE
 char* realpath(const char* path, char* resolved) {
-    size_t bos = __bos(resolved);
+    if (!path)
+        __realpath_path_null();
 
-    if (bos != __BIONIC_FORTIFY_UNKNOWN_SIZE && bos < __PATH_MAX) {
+    if (__bos_unevaluated_lt(__bos(resolved), __PATH_MAX)) {
         __realpath_size_error();
     }
 
@@ -64,4 +69,5 @@ char* realpath(const char* path, char* resolved) {
 
 #undef __PATH_MAX
 #undef __realpath_buf_too_small_str
+#undef __realpath_path_never_correct
 #endif /* defined(__BIONIC_FORTIFY) */

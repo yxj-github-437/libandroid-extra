@@ -1,27 +1,15 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef IB_USER_VERBS_H
 #define IB_USER_VERBS_H
 #include <linux/types.h>
 #define IB_USER_VERBS_ABI_VERSION 6
 #define IB_USER_VERBS_CMD_THRESHOLD 50
-enum {
+enum ib_uverbs_write_cmds {
   IB_USER_VERBS_CMD_GET_CONTEXT,
   IB_USER_VERBS_CMD_QUERY_DEVICE,
   IB_USER_VERBS_CMD_QUERY_PORT,
@@ -78,13 +66,21 @@ enum {
   IB_USER_VERBS_EX_CMD_DESTROY_RWQ_IND_TBL,
   IB_USER_VERBS_EX_CMD_MODIFY_CQ
 };
+enum ib_placement_type {
+  IB_FLUSH_GLOBAL = 1U << 0,
+  IB_FLUSH_PERSISTENT = 1U << 1,
+};
+enum ib_selectivity_level {
+  IB_FLUSH_RANGE = 0,
+  IB_FLUSH_MR,
+};
 struct ib_uverbs_async_event_desc {
-  __u64 element;
+  __aligned_u64 element;
   __u32 event_type;
   __u32 reserved;
 };
 struct ib_uverbs_comp_event_desc {
-  __u64 cq_handle;
+  __aligned_u64 cq_handle;
 };
 struct ib_uverbs_cq_moderation_caps {
   __u16 max_cq_moderation_count;
@@ -92,38 +88,37 @@ struct ib_uverbs_cq_moderation_caps {
   __u32 reserved;
 };
 #define IB_USER_VERBS_CMD_COMMAND_MASK 0xff
-#define IB_USER_VERBS_CMD_FLAGS_MASK 0xff000000u
-#define IB_USER_VERBS_CMD_FLAGS_SHIFT 24
-#define IB_USER_VERBS_CMD_FLAG_EXTENDED 0x80
+#define IB_USER_VERBS_CMD_FLAG_EXTENDED 0x80000000u
 struct ib_uverbs_cmd_hdr {
   __u32 command;
   __u16 in_words;
   __u16 out_words;
 };
 struct ib_uverbs_ex_cmd_hdr {
-  __u64 response;
+  __aligned_u64 response;
   __u16 provider_in_words;
   __u16 provider_out_words;
   __u32 cmd_hdr_reserved;
 };
 struct ib_uverbs_get_context {
-  __u64 response;
-  __u64 driver_data[0];
+  __aligned_u64 response;
+  __aligned_u64 driver_data[];
 };
 struct ib_uverbs_get_context_resp {
   __u32 async_fd;
   __u32 num_comp_vectors;
+  __aligned_u64 driver_data[];
 };
 struct ib_uverbs_query_device {
-  __u64 response;
-  __u64 driver_data[0];
+  __aligned_u64 response;
+  __aligned_u64 driver_data[];
 };
 struct ib_uverbs_query_device_resp {
-  __u64 fw_ver;
+  __aligned_u64 fw_ver;
   __be64 node_guid;
   __be64 sys_image_guid;
-  __u64 max_mr_size;
-  __u64 page_size_cap;
+  __aligned_u64 max_mr_size;
+  __aligned_u64 page_size_cap;
   __u32 vendor_id;
   __u32 vendor_part_id;
   __u32 hw_ver;
@@ -166,7 +161,7 @@ struct ib_uverbs_ex_query_device {
   __u32 reserved;
 };
 struct ib_uverbs_odp_caps {
-  __u64 general_caps;
+  __aligned_u64 general_caps;
   struct {
     __u32 rc_odp_caps;
     __u32 uc_odp_caps;
@@ -193,20 +188,23 @@ struct ib_uverbs_ex_query_device_resp {
   __u32 comp_mask;
   __u32 response_length;
   struct ib_uverbs_odp_caps odp_caps;
-  __u64 timestamp_mask;
-  __u64 hca_core_clock;
-  __u64 device_cap_flags_ex;
+  __aligned_u64 timestamp_mask;
+  __aligned_u64 hca_core_clock;
+  __aligned_u64 device_cap_flags_ex;
   struct ib_uverbs_rss_caps rss_caps;
   __u32 max_wq_type_rq;
   __u32 raw_packet_caps;
   struct ib_uverbs_tm_caps tm_caps;
   struct ib_uverbs_cq_moderation_caps cq_moderation_caps;
+  __aligned_u64 max_dm_size;
+  __u32 xrc_odp_caps;
+  __u32 reserved;
 };
 struct ib_uverbs_query_port {
-  __u64 response;
+  __aligned_u64 response;
   __u8 port_num;
   __u8 reserved[7];
-  __u64 driver_data[0];
+  __aligned_u64 driver_data[];
 };
 struct ib_uverbs_query_port_resp {
   __u32 port_cap_flags;
@@ -229,91 +227,103 @@ struct ib_uverbs_query_port_resp {
   __u8 active_speed;
   __u8 phys_state;
   __u8 link_layer;
-  __u8 reserved[2];
+  __u8 flags;
+  __u8 reserved;
 };
 struct ib_uverbs_alloc_pd {
-  __u64 response;
-  __u64 driver_data[0];
+  __aligned_u64 response;
+  __aligned_u64 driver_data[];
 };
 struct ib_uverbs_alloc_pd_resp {
   __u32 pd_handle;
+  __u32 driver_data[];
 };
 struct ib_uverbs_dealloc_pd {
   __u32 pd_handle;
 };
 struct ib_uverbs_open_xrcd {
-  __u64 response;
+  __aligned_u64 response;
   __u32 fd;
   __u32 oflags;
-  __u64 driver_data[0];
+  __aligned_u64 driver_data[];
 };
 struct ib_uverbs_open_xrcd_resp {
   __u32 xrcd_handle;
+  __u32 driver_data[];
 };
 struct ib_uverbs_close_xrcd {
   __u32 xrcd_handle;
 };
 struct ib_uverbs_reg_mr {
-  __u64 response;
-  __u64 start;
-  __u64 length;
-  __u64 hca_va;
+  __aligned_u64 response;
+  __aligned_u64 start;
+  __aligned_u64 length;
+  __aligned_u64 hca_va;
   __u32 pd_handle;
   __u32 access_flags;
-  __u64 driver_data[0];
+  __aligned_u64 driver_data[];
 };
 struct ib_uverbs_reg_mr_resp {
   __u32 mr_handle;
   __u32 lkey;
   __u32 rkey;
+  __u32 driver_data[];
 };
 struct ib_uverbs_rereg_mr {
-  __u64 response;
+  __aligned_u64 response;
   __u32 mr_handle;
   __u32 flags;
-  __u64 start;
-  __u64 length;
-  __u64 hca_va;
+  __aligned_u64 start;
+  __aligned_u64 length;
+  __aligned_u64 hca_va;
   __u32 pd_handle;
   __u32 access_flags;
+  __aligned_u64 driver_data[];
 };
 struct ib_uverbs_rereg_mr_resp {
   __u32 lkey;
   __u32 rkey;
+  __aligned_u64 driver_data[];
 };
 struct ib_uverbs_dereg_mr {
   __u32 mr_handle;
 };
 struct ib_uverbs_alloc_mw {
-  __u64 response;
+  __aligned_u64 response;
   __u32 pd_handle;
   __u8 mw_type;
   __u8 reserved[3];
+  __aligned_u64 driver_data[];
 };
 struct ib_uverbs_alloc_mw_resp {
   __u32 mw_handle;
   __u32 rkey;
+  __aligned_u64 driver_data[];
 };
 struct ib_uverbs_dealloc_mw {
   __u32 mw_handle;
 };
 struct ib_uverbs_create_comp_channel {
-  __u64 response;
+  __aligned_u64 response;
 };
 struct ib_uverbs_create_comp_channel_resp {
   __u32 fd;
 };
 struct ib_uverbs_create_cq {
-  __u64 response;
-  __u64 user_handle;
+  __aligned_u64 response;
+  __aligned_u64 user_handle;
   __u32 cqe;
   __u32 comp_vector;
   __s32 comp_channel;
   __u32 reserved;
-  __u64 driver_data[0];
+  __aligned_u64 driver_data[];
+};
+enum ib_uverbs_ex_create_cq_flags {
+  IB_UVERBS_CQ_FLAGS_TIMESTAMP_COMPLETION = 1 << 0,
+  IB_UVERBS_CQ_FLAGS_IGNORE_OVERRUN = 1 << 1,
 };
 struct ib_uverbs_ex_create_cq {
-  __u64 user_handle;
+  __aligned_u64 user_handle;
   __u32 cqe;
   __u32 comp_vector;
   __s32 comp_channel;
@@ -324,6 +334,7 @@ struct ib_uverbs_ex_create_cq {
 struct ib_uverbs_create_cq_resp {
   __u32 cq_handle;
   __u32 cqe;
+  __aligned_u64 driver_data[0];
 };
 struct ib_uverbs_ex_create_cq_resp {
   struct ib_uverbs_create_cq_resp base;
@@ -331,29 +342,41 @@ struct ib_uverbs_ex_create_cq_resp {
   __u32 response_length;
 };
 struct ib_uverbs_resize_cq {
-  __u64 response;
+  __aligned_u64 response;
   __u32 cq_handle;
   __u32 cqe;
-  __u64 driver_data[0];
+  __aligned_u64 driver_data[];
 };
 struct ib_uverbs_resize_cq_resp {
   __u32 cqe;
   __u32 reserved;
-  __u64 driver_data[0];
+  __aligned_u64 driver_data[];
 };
 struct ib_uverbs_poll_cq {
-  __u64 response;
+  __aligned_u64 response;
   __u32 cq_handle;
   __u32 ne;
 };
+enum ib_uverbs_wc_opcode {
+  IB_UVERBS_WC_SEND = 0,
+  IB_UVERBS_WC_RDMA_WRITE = 1,
+  IB_UVERBS_WC_RDMA_READ = 2,
+  IB_UVERBS_WC_COMP_SWAP = 3,
+  IB_UVERBS_WC_FETCH_ADD = 4,
+  IB_UVERBS_WC_BIND_MW = 5,
+  IB_UVERBS_WC_LOCAL_INV = 6,
+  IB_UVERBS_WC_TSO = 7,
+  IB_UVERBS_WC_FLUSH = 8,
+  IB_UVERBS_WC_ATOMIC_WRITE = 9,
+};
 struct ib_uverbs_wc {
-  __u64 wr_id;
+  __aligned_u64 wr_id;
   __u32 status;
   __u32 opcode;
   __u32 vendor_err;
   __u32 byte_len;
   union {
-    __u32 imm_data;
+    __be32 imm_data;
     __u32 invalidate_rkey;
   } ex;
   __u32 qp_num;
@@ -369,14 +392,14 @@ struct ib_uverbs_wc {
 struct ib_uverbs_poll_cq_resp {
   __u32 count;
   __u32 reserved;
-  struct ib_uverbs_wc wc[0];
+  struct ib_uverbs_wc wc[];
 };
 struct ib_uverbs_req_notify_cq {
   __u32 cq_handle;
   __u32 solicited_only;
 };
 struct ib_uverbs_destroy_cq {
-  __u64 response;
+  __aligned_u64 response;
   __u32 cq_handle;
   __u32 reserved;
 };
@@ -436,8 +459,8 @@ struct ib_uverbs_qp_attr {
   __u8 reserved[5];
 };
 struct ib_uverbs_create_qp {
-  __u64 response;
-  __u64 user_handle;
+  __aligned_u64 response;
+  __aligned_u64 user_handle;
   __u32 pd_handle;
   __u32 send_cq_handle;
   __u32 recv_cq_handle;
@@ -451,7 +474,7 @@ struct ib_uverbs_create_qp {
   __u8 qp_type;
   __u8 is_srq;
   __u8 reserved;
-  __u64 driver_data[0];
+  __aligned_u64 driver_data[];
 };
 enum ib_uverbs_create_qp_mask {
   IB_UVERBS_CREATE_QP_MASK_IND_TABLE = 1UL << 0,
@@ -459,14 +482,8 @@ enum ib_uverbs_create_qp_mask {
 enum {
   IB_UVERBS_CREATE_QP_SUP_COMP_MASK = IB_UVERBS_CREATE_QP_MASK_IND_TABLE,
 };
-enum {
-  IB_USER_LEGACY_LAST_QP_ATTR_MASK = 1ULL << 20,
-};
-enum {
-  IB_USER_LAST_QP_ATTR_MASK = 1ULL << 25,
-};
 struct ib_uverbs_ex_create_qp {
-  __u64 user_handle;
+  __aligned_u64 user_handle;
   __u32 pd_handle;
   __u32 send_cq_handle;
   __u32 recv_cq_handle;
@@ -486,13 +503,13 @@ struct ib_uverbs_ex_create_qp {
   __u32 source_qpn;
 };
 struct ib_uverbs_open_qp {
-  __u64 response;
-  __u64 user_handle;
+  __aligned_u64 response;
+  __aligned_u64 user_handle;
   __u32 pd_handle;
   __u32 qpn;
   __u8 qp_type;
   __u8 reserved[7];
-  __u64 driver_data[0];
+  __aligned_u64 driver_data[];
 };
 struct ib_uverbs_create_qp_resp {
   __u32 qp_handle;
@@ -503,6 +520,7 @@ struct ib_uverbs_create_qp_resp {
   __u32 max_recv_sge;
   __u32 max_inline_data;
   __u32 reserved;
+  __u32 driver_data[0];
 };
 struct ib_uverbs_ex_create_qp_resp {
   struct ib_uverbs_create_qp_resp base;
@@ -524,10 +542,10 @@ struct ib_uverbs_qp_dest {
   __u8 port_num;
 };
 struct ib_uverbs_query_qp {
-  __u64 response;
+  __aligned_u64 response;
   __u32 qp_handle;
   __u32 attr_mask;
-  __u64 driver_data[0];
+  __aligned_u64 driver_data[];
 };
 struct ib_uverbs_query_qp_resp {
   struct ib_uverbs_qp_dest dest;
@@ -560,7 +578,7 @@ struct ib_uverbs_query_qp_resp {
   __u8 alt_timeout;
   __u8 sq_sig_all;
   __u8 reserved[5];
-  __u64 driver_data[0];
+  __aligned_u64 driver_data[];
 };
 struct ib_uverbs_modify_qp {
   struct ib_uverbs_qp_dest dest;
@@ -589,21 +607,19 @@ struct ib_uverbs_modify_qp {
   __u8 alt_port_num;
   __u8 alt_timeout;
   __u8 reserved[2];
-  __u64 driver_data[0];
+  __aligned_u64 driver_data[0];
 };
 struct ib_uverbs_ex_modify_qp {
   struct ib_uverbs_modify_qp base;
   __u32 rate_limit;
   __u32 reserved;
 };
-struct ib_uverbs_modify_qp_resp {
-};
 struct ib_uverbs_ex_modify_qp_resp {
   __u32 comp_mask;
   __u32 response_length;
 };
 struct ib_uverbs_destroy_qp {
-  __u64 response;
+  __aligned_u64 response;
   __u32 qp_handle;
   __u32 reserved;
 };
@@ -611,29 +627,47 @@ struct ib_uverbs_destroy_qp_resp {
   __u32 events_reported;
 };
 struct ib_uverbs_sge {
-  __u64 addr;
+  __aligned_u64 addr;
   __u32 length;
   __u32 lkey;
 };
+enum ib_uverbs_wr_opcode {
+  IB_UVERBS_WR_RDMA_WRITE = 0,
+  IB_UVERBS_WR_RDMA_WRITE_WITH_IMM = 1,
+  IB_UVERBS_WR_SEND = 2,
+  IB_UVERBS_WR_SEND_WITH_IMM = 3,
+  IB_UVERBS_WR_RDMA_READ = 4,
+  IB_UVERBS_WR_ATOMIC_CMP_AND_SWP = 5,
+  IB_UVERBS_WR_ATOMIC_FETCH_AND_ADD = 6,
+  IB_UVERBS_WR_LOCAL_INV = 7,
+  IB_UVERBS_WR_BIND_MW = 8,
+  IB_UVERBS_WR_SEND_WITH_INV = 9,
+  IB_UVERBS_WR_TSO = 10,
+  IB_UVERBS_WR_RDMA_READ_WITH_INV = 11,
+  IB_UVERBS_WR_MASKED_ATOMIC_CMP_AND_SWP = 12,
+  IB_UVERBS_WR_MASKED_ATOMIC_FETCH_AND_ADD = 13,
+  IB_UVERBS_WR_FLUSH = 14,
+  IB_UVERBS_WR_ATOMIC_WRITE = 15,
+};
 struct ib_uverbs_send_wr {
-  __u64 wr_id;
+  __aligned_u64 wr_id;
   __u32 num_sge;
   __u32 opcode;
   __u32 send_flags;
   union {
-    __u32 imm_data;
+    __be32 imm_data;
     __u32 invalidate_rkey;
   } ex;
   union {
     struct {
-      __u64 remote_addr;
+      __aligned_u64 remote_addr;
       __u32 rkey;
       __u32 reserved;
     } rdma;
     struct {
-      __u64 remote_addr;
-      __u64 compare_add;
-      __u64 swap;
+      __aligned_u64 remote_addr;
+      __aligned_u64 compare_add;
+      __aligned_u64 swap;
       __u32 rkey;
       __u32 reserved;
     } atomic;
@@ -646,52 +680,54 @@ struct ib_uverbs_send_wr {
   } wr;
 };
 struct ib_uverbs_post_send {
-  __u64 response;
+  __aligned_u64 response;
   __u32 qp_handle;
   __u32 wr_count;
   __u32 sge_count;
   __u32 wqe_size;
-  struct ib_uverbs_send_wr send_wr[0];
+  struct ib_uverbs_send_wr send_wr[];
 };
 struct ib_uverbs_post_send_resp {
   __u32 bad_wr;
 };
 struct ib_uverbs_recv_wr {
-  __u64 wr_id;
+  __aligned_u64 wr_id;
   __u32 num_sge;
   __u32 reserved;
 };
 struct ib_uverbs_post_recv {
-  __u64 response;
+  __aligned_u64 response;
   __u32 qp_handle;
   __u32 wr_count;
   __u32 sge_count;
   __u32 wqe_size;
-  struct ib_uverbs_recv_wr recv_wr[0];
+  struct ib_uverbs_recv_wr recv_wr[];
 };
 struct ib_uverbs_post_recv_resp {
   __u32 bad_wr;
 };
 struct ib_uverbs_post_srq_recv {
-  __u64 response;
+  __aligned_u64 response;
   __u32 srq_handle;
   __u32 wr_count;
   __u32 sge_count;
   __u32 wqe_size;
-  struct ib_uverbs_recv_wr recv[0];
+  struct ib_uverbs_recv_wr recv[];
 };
 struct ib_uverbs_post_srq_recv_resp {
   __u32 bad_wr;
 };
 struct ib_uverbs_create_ah {
-  __u64 response;
-  __u64 user_handle;
+  __aligned_u64 response;
+  __aligned_u64 user_handle;
   __u32 pd_handle;
   __u32 reserved;
   struct ib_uverbs_ah_attr attr;
+  __aligned_u64 driver_data[];
 };
 struct ib_uverbs_create_ah_resp {
   __u32 ah_handle;
+  __u32 driver_data[];
 };
 struct ib_uverbs_destroy_ah {
   __u32 ah_handle;
@@ -701,20 +737,20 @@ struct ib_uverbs_attach_mcast {
   __u32 qp_handle;
   __u16 mlid;
   __u16 reserved;
-  __u64 driver_data[0];
+  __aligned_u64 driver_data[];
 };
 struct ib_uverbs_detach_mcast {
   __u8 gid[16];
   __u32 qp_handle;
   __u16 mlid;
   __u16 reserved;
-  __u64 driver_data[0];
+  __aligned_u64 driver_data[];
 };
 struct ib_uverbs_flow_spec_hdr {
   __u32 type;
   __u16 size;
   __u16 reserved;
-  __u64 flow_spec_data[0];
+  __aligned_u64 flow_spec_data[0];
 };
 struct ib_uverbs_flow_eth_filter {
   __u8 dst_mac[6];
@@ -813,6 +849,30 @@ struct ib_uverbs_flow_spec_action_drop {
     };
   };
 };
+struct ib_uverbs_flow_spec_action_handle {
+  union {
+    struct ib_uverbs_flow_spec_hdr hdr;
+    struct {
+      __u32 type;
+      __u16 size;
+      __u16 reserved;
+    };
+  };
+  __u32 handle;
+  __u32 reserved1;
+};
+struct ib_uverbs_flow_spec_action_count {
+  union {
+    struct ib_uverbs_flow_spec_hdr hdr;
+    struct {
+      __u32 type;
+      __u16 size;
+      __u16 reserved;
+    };
+  };
+  __u32 handle;
+  __u32 reserved1;
+};
 struct ib_uverbs_flow_tunnel_filter {
   __be32 tunnel_id;
 };
@@ -828,6 +888,54 @@ struct ib_uverbs_flow_spec_tunnel {
   struct ib_uverbs_flow_tunnel_filter val;
   struct ib_uverbs_flow_tunnel_filter mask;
 };
+struct ib_uverbs_flow_spec_esp_filter {
+  __u32 spi;
+  __u32 seq;
+};
+struct ib_uverbs_flow_spec_esp {
+  union {
+    struct ib_uverbs_flow_spec_hdr hdr;
+    struct {
+      __u32 type;
+      __u16 size;
+      __u16 reserved;
+    };
+  };
+  struct ib_uverbs_flow_spec_esp_filter val;
+  struct ib_uverbs_flow_spec_esp_filter mask;
+};
+struct ib_uverbs_flow_gre_filter {
+  __be16 c_ks_res0_ver;
+  __be16 protocol;
+  __be32 key;
+};
+struct ib_uverbs_flow_spec_gre {
+  union {
+    struct ib_uverbs_flow_spec_hdr hdr;
+    struct {
+      __u32 type;
+      __u16 size;
+      __u16 reserved;
+    };
+  };
+  struct ib_uverbs_flow_gre_filter val;
+  struct ib_uverbs_flow_gre_filter mask;
+};
+struct ib_uverbs_flow_mpls_filter {
+  __be32 label;
+};
+struct ib_uverbs_flow_spec_mpls {
+  union {
+    struct ib_uverbs_flow_spec_hdr hdr;
+    struct {
+      __u32 type;
+      __u16 size;
+      __u16 reserved;
+    };
+  };
+  struct ib_uverbs_flow_mpls_filter val;
+  struct ib_uverbs_flow_mpls_filter mask;
+};
 struct ib_uverbs_flow_attr {
   __u32 type;
   __u16 size;
@@ -836,7 +944,7 @@ struct ib_uverbs_flow_attr {
   __u8 reserved[2];
   __u8 port;
   __u32 flags;
-  struct ib_uverbs_flow_spec_hdr flow_specs[0];
+  struct ib_uverbs_flow_spec_hdr flow_specs[];
 };
 struct ib_uverbs_create_flow {
   __u32 comp_mask;
@@ -852,17 +960,17 @@ struct ib_uverbs_destroy_flow {
   __u32 flow_handle;
 };
 struct ib_uverbs_create_srq {
-  __u64 response;
-  __u64 user_handle;
+  __aligned_u64 response;
+  __aligned_u64 user_handle;
   __u32 pd_handle;
   __u32 max_wr;
   __u32 max_sge;
   __u32 srq_limit;
-  __u64 driver_data[0];
+  __aligned_u64 driver_data[];
 };
 struct ib_uverbs_create_xsrq {
-  __u64 response;
-  __u64 user_handle;
+  __aligned_u64 response;
+  __aligned_u64 user_handle;
   __u32 srq_type;
   __u32 pd_handle;
   __u32 max_wr;
@@ -871,26 +979,27 @@ struct ib_uverbs_create_xsrq {
   __u32 max_num_tags;
   __u32 xrcd_handle;
   __u32 cq_handle;
-  __u64 driver_data[0];
+  __aligned_u64 driver_data[];
 };
 struct ib_uverbs_create_srq_resp {
   __u32 srq_handle;
   __u32 max_wr;
   __u32 max_sge;
   __u32 srqn;
+  __u32 driver_data[];
 };
 struct ib_uverbs_modify_srq {
   __u32 srq_handle;
   __u32 attr_mask;
   __u32 max_wr;
   __u32 srq_limit;
-  __u64 driver_data[0];
+  __aligned_u64 driver_data[];
 };
 struct ib_uverbs_query_srq {
-  __u64 response;
+  __aligned_u64 response;
   __u32 srq_handle;
   __u32 reserved;
-  __u64 driver_data[0];
+  __aligned_u64 driver_data[];
 };
 struct ib_uverbs_query_srq_resp {
   __u32 max_wr;
@@ -899,7 +1008,7 @@ struct ib_uverbs_query_srq_resp {
   __u32 reserved;
 };
 struct ib_uverbs_destroy_srq {
-  __u64 response;
+  __aligned_u64 response;
   __u32 srq_handle;
   __u32 reserved;
 };
@@ -909,7 +1018,7 @@ struct ib_uverbs_destroy_srq_resp {
 struct ib_uverbs_ex_create_wq {
   __u32 comp_mask;
   __u32 wq_type;
-  __u64 user_handle;
+  __aligned_u64 user_handle;
   __u32 pd_handle;
   __u32 cq_handle;
   __u32 max_wr;
@@ -947,7 +1056,7 @@ struct ib_uverbs_ex_modify_wq {
 struct ib_uverbs_ex_create_rwq_ind_table {
   __u32 comp_mask;
   __u32 log_ind_tbl_size;
-  __u32 wq_handles[0];
+  __u32 wq_handles[];
 };
 struct ib_uverbs_ex_create_rwq_ind_table_resp {
   __u32 comp_mask;
@@ -970,4 +1079,40 @@ struct ib_uverbs_ex_modify_cq {
   __u32 reserved;
 };
 #define IB_DEVICE_NAME_MAX 64
+enum ib_uverbs_device_cap_flags {
+  IB_UVERBS_DEVICE_RESIZE_MAX_WR = 1 << 0,
+  IB_UVERBS_DEVICE_BAD_PKEY_CNTR = 1 << 1,
+  IB_UVERBS_DEVICE_BAD_QKEY_CNTR = 1 << 2,
+  IB_UVERBS_DEVICE_RAW_MULTI = 1 << 3,
+  IB_UVERBS_DEVICE_AUTO_PATH_MIG = 1 << 4,
+  IB_UVERBS_DEVICE_CHANGE_PHY_PORT = 1 << 5,
+  IB_UVERBS_DEVICE_UD_AV_PORT_ENFORCE = 1 << 6,
+  IB_UVERBS_DEVICE_CURR_QP_STATE_MOD = 1 << 7,
+  IB_UVERBS_DEVICE_SHUTDOWN_PORT = 1 << 8,
+  IB_UVERBS_DEVICE_PORT_ACTIVE_EVENT = 1 << 10,
+  IB_UVERBS_DEVICE_SYS_IMAGE_GUID = 1 << 11,
+  IB_UVERBS_DEVICE_RC_RNR_NAK_GEN = 1 << 12,
+  IB_UVERBS_DEVICE_SRQ_RESIZE = 1 << 13,
+  IB_UVERBS_DEVICE_N_NOTIFY_CQ = 1 << 14,
+  IB_UVERBS_DEVICE_MEM_WINDOW = 1 << 17,
+  IB_UVERBS_DEVICE_UD_IP_CSUM = 1 << 18,
+  IB_UVERBS_DEVICE_XRC = 1 << 20,
+  IB_UVERBS_DEVICE_MEM_MGT_EXTENSIONS = 1 << 21,
+  IB_UVERBS_DEVICE_MEM_WINDOW_TYPE_2A = 1 << 23,
+  IB_UVERBS_DEVICE_MEM_WINDOW_TYPE_2B = 1 << 24,
+  IB_UVERBS_DEVICE_RC_IP_CSUM = 1 << 25,
+  IB_UVERBS_DEVICE_RAW_IP_CSUM = 1 << 26,
+  IB_UVERBS_DEVICE_MANAGED_FLOW_STEERING = 1 << 29,
+  IB_UVERBS_DEVICE_RAW_SCATTER_FCS = 1ULL << 34,
+  IB_UVERBS_DEVICE_PCI_WRITE_END_PADDING = 1ULL << 36,
+  IB_UVERBS_DEVICE_FLUSH_GLOBAL = 1ULL << 38,
+  IB_UVERBS_DEVICE_FLUSH_PERSISTENT = 1ULL << 39,
+  IB_UVERBS_DEVICE_ATOMIC_WRITE = 1ULL << 40,
+};
+enum ib_uverbs_raw_packet_caps {
+  IB_UVERBS_RAW_PACKET_CAP_CVLAN_STRIPPING = 1 << 0,
+  IB_UVERBS_RAW_PACKET_CAP_SCATTER_FCS = 1 << 1,
+  IB_UVERBS_RAW_PACKET_CAP_IP_CSUM = 1 << 2,
+  IB_UVERBS_RAW_PACKET_CAP_DELAY_DROP = 1 << 3,
+};
 #endif

@@ -33,6 +33,8 @@
  * SUCH DAMAGE.
  */
 
+#define _GNU_SOURCE 1
+
 #if defined(LIBC_SCCS) && !defined(lint)
 static char sccsid[] = "@(#)glob.c	8.3 (Berkeley) 10/13/93";
 #endif /* LIBC_SCCS and not lint */

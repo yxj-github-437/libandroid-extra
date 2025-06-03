@@ -1,23 +1,13 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_LINUX_LP_H
 #define _UAPI_LINUX_LP_H
+#include <linux/types.h>
+#include <linux/ioctl.h>
 #define LP_EXIST 0x0001
 #define LP_SELEC 0x0002
 #define LP_BUSY 0x0004
@@ -53,7 +43,13 @@
 #define LPGETSTATS 0x060d
 #endif
 #define LPGETFLAGS 0x060e
-#define LPSETTIMEOUT 0x060f
+#define LPSETTIMEOUT_OLD 0x060f
+#define LPSETTIMEOUT_NEW _IOW(0x6, 0xf, __s64[2])
+#if __BITS_PER_LONG == 64
+#define LPSETTIMEOUT LPSETTIMEOUT_OLD
+#else
+#define LPSETTIMEOUT (sizeof(time_t) > sizeof(__kernel_long_t) ? LPSETTIMEOUT_NEW : LPSETTIMEOUT_OLD)
+#endif
 #define LP_TIMEOUT_INTERRUPT (60 * HZ)
 #define LP_TIMEOUT_POLLED (10 * HZ)
 #endif

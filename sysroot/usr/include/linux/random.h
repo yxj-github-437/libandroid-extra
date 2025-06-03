@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_LINUX_RANDOM_H
 #define _UAPI_LINUX_RANDOM_H
 #include <linux/types.h>
@@ -27,11 +15,19 @@
 #define RNDADDENTROPY _IOW('R', 0x03, int[2])
 #define RNDZAPENTCNT _IO('R', 0x04)
 #define RNDCLEARPOOL _IO('R', 0x06)
+#define RNDRESEEDCRNG _IO('R', 0x07)
 struct rand_pool_info {
   int entropy_count;
   int buf_size;
-  __u32 buf[0];
+  __u32 buf[];
 };
 #define GRND_NONBLOCK 0x0001
 #define GRND_RANDOM 0x0002
+#define GRND_INSECURE 0x0004
+struct vgetrandom_opaque_params {
+  __u32 size_of_opaque_state;
+  __u32 mmap_prot;
+  __u32 mmap_flags;
+  __u32 reserved[13];
+};
 #endif

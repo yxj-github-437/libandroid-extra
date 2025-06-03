@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef __ASM_GENERIC_IOCTLS_H
 #define __ASM_GENERIC_IOCTLS_H
 #include <linux/ioctl.h>
@@ -81,6 +69,8 @@
 #define TIOCGPTLCK _IOR('T', 0x39, int)
 #define TIOCGEXCL _IOR('T', 0x40, int)
 #define TIOCGPTPEER _IO('T', 0x41)
+#define TIOCGISO7816 _IOR('T', 0x42, struct serial_iso7816)
+#define TIOCSISO7816 _IOWR('T', 0x43, struct serial_iso7816)
 #define FIONCLEX 0x5450
 #define FIOCLEX 0x5451
 #define FIOASYNC 0x5452

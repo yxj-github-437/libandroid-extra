@@ -26,8 +26,7 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _SYS_UCONTEXT_H_
-#define _SYS_UCONTEXT_H_
+#pragma once
 
 #include <sys/cdefs.h>
 
@@ -213,78 +212,6 @@ typedef struct ucontext {
   struct _libc_fpstate __fpregs_mem;
 } ucontext_t;
 
-#elif defined(__mips__)
-
-/* glibc doesn't have names for MIPS registers. */
-
-#define NGREG 32
-#define NFPREG 32
-
-typedef unsigned long long greg_t;
-typedef greg_t gregset_t[NGREG];
-
-typedef struct fpregset {
-  union {
-    double fp_dregs[NFPREG];
-    struct {
-      float _fp_fregs;
-      unsigned _fp_pad;
-    } fp_fregs[NFPREG];
-  } fp_r;
-} fpregset_t;
-
-#ifdef __LP64__
-typedef struct {
-  gregset_t gregs;
-  fpregset_t fpregs;
-  greg_t mdhi;
-  greg_t hi1;
-  greg_t hi2;
-  greg_t hi3;
-  greg_t mdlo;
-  greg_t lo1;
-  greg_t lo2;
-  greg_t lo3;
-  greg_t pc;
-  uint32_t fpc_csr;
-  uint32_t used_math;
-  uint32_t dsp;
-  uint32_t reserved;
-} mcontext_t;
-#else
-typedef struct {
-  unsigned regmask;
-  unsigned status;
-  greg_t pc;
-  gregset_t gregs;
-  fpregset_t fpregs;
-  unsigned fp_owned;
-  unsigned fpc_csr;
-  unsigned fpc_eir;
-  unsigned used_math;
-  unsigned dsp;
-  greg_t mdhi;
-  greg_t mdlo;
-  unsigned long hi1;
-  unsigned long lo1;
-  unsigned long hi2;
-  unsigned long lo2;
-  unsigned long hi3;
-  unsigned long lo3;
-} mcontext_t;
-#endif
-
-typedef struct ucontext {
-  unsigned long uc_flags;
-  struct ucontext* uc_link;
-  stack_t uc_stack;
-  mcontext_t uc_mcontext;
-  union {
-    sigset_t uc_sigmask;
-    sigset64_t uc_sigmask64;
-  };
-} ucontext_t;
-
 #elif defined(__x86_64__)
 
 enum {
@@ -385,8 +312,81 @@ typedef struct ucontext {
   struct _libc_fpstate __fpregs_mem;
 } ucontext_t;
 
+#elif defined(__riscv)
+
+#define NGREG 32
+
+#if defined(__USE_GNU)
+
+enum {
+  REG_PC = 0,
+#define REG_PC REG_PC
+  REG_RA = 1,
+#define REG_RA REG_RA
+  REG_SP = 2,
+#define REG_SP REG_SP
+  REG_TP = 4,
+#define REG_TP REG_TP
+  REG_S0 = 8,
+#define REG_S0 REG_S0
+  REG_A0 = 10,
+#define REG_A0 REG_A0
+};
+
+#endif // defined(__USE_GNU)
+
+typedef unsigned long __riscv_mc_gp_state[NGREG];
+
+typedef unsigned long greg_t;
+typedef unsigned long gregset_t[NGREG];
+typedef union __riscv_mc_fp_state fpregset_t;
+
+/* These match the kernel <asm/ptrace.h> types but with different names. */
+
+struct __riscv_mc_f_ext_state {
+  uint32_t __f[32];
+  uint32_t __fcsr;
+};
+
+struct __riscv_mc_d_ext_state {
+  uint64_t __f[32];
+  uint32_t __fcsr;
+};
+
+struct __riscv_mc_q_ext_state {
+  uint64_t __f[64] __attribute__((__aligned__(16)));
+  uint32_t __fcsr;
+  uint32_t __reserved[3];
+};
+
+union __riscv_mc_fp_state {
+  struct __riscv_mc_f_ext_state __f;
+  struct __riscv_mc_d_ext_state __d;
+  struct __riscv_mc_q_ext_state __q;
+};
+
+/* This matches the kernel <asm/sigcontext.h> but with different names. */
+
+typedef struct mcontext_t {
+  __riscv_mc_gp_state __gregs;
+  union __riscv_mc_fp_state __fpregs;
+} mcontext_t;
+
+/* This matches the kernel <asm/ucontext.h> but using mcontext_t. */
+
+typedef struct ucontext {
+  unsigned long uc_flags;
+  struct ucontext* uc_link;
+  stack_t uc_stack;
+  union {
+    sigset_t uc_sigmask;
+    sigset64_t uc_sigmask64;
+  };
+  /* The kernel adds extra padding here to allow sigset_t to grow. */
+  char __padding[128 - sizeof(sigset_t)];
+  mcontext_t uc_mcontext;
+} ucontext_t;
+
 #endif
 
 __END_DECLS
-
-#endif /* _SYS_UCONTEXT_H_ */

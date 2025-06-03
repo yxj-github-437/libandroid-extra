@@ -1,6 +1,7 @@
 #include <errno.h>
 #include <spawn.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -20,8 +21,12 @@ int main(int argc, char* argv[])
     args[2] = NULL;
     posix_spawnattr_init(&attr);
     posix_spawn_file_actions_init(&fact);
-    posix_spawn(&pid, "/system/bin/echo", &fact, &attr, args, environ);
-    perror("posix_spawn");
+    if (posix_spawn(&pid, "/system/bin/echo", &fact, &attr, args, environ) != 0)
+    {
+        perror("posix_spawn");
+        exit(-1);
+    }
+
     printf("pid=%d,child pid = %d\n", getpid(), pid);
     int stat = 0;
     waitpid(pid, &stat, 0);

@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_LINUX_IN6_H
 #define _UAPI_LINUX_IN6_H
 #include <linux/types.h>
@@ -105,6 +93,7 @@ struct in6_flowlabel_req {
 #define IPV6_TLV_PADN 1
 #define IPV6_TLV_ROUTERALERT 5
 #define IPV6_TLV_CALIPSO 7
+#define IPV6_TLV_IOAM 49
 #define IPV6_TLV_JUMBO 194
 #define IPV6_TLV_HAO 201
 #if __UAPI_DEF_IPV6_OPTIONS
@@ -132,6 +121,9 @@ struct in6_flowlabel_req {
 #define IPV6_V6ONLY 26
 #define IPV6_JOIN_ANYCAST 27
 #define IPV6_LEAVE_ANYCAST 28
+#define IPV6_MULTICAST_ALL 29
+#define IPV6_ROUTER_ALERT_ISOLATE 30
+#define IPV6_RECVERR_RFC4884 31
 #define IPV6_PMTUDISC_DONT 0
 #define IPV6_PMTUDISC_WANT 1
 #define IPV6_PMTUDISC_DO 2

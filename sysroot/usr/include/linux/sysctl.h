@@ -1,33 +1,21 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_LINUX_SYSCTL_H
 #define _UAPI_LINUX_SYSCTL_H
-#include <linux/kernel.h>
+#include <linux/const.h>
 #include <linux/types.h>
 #include <linux/compiler.h>
 #define CTL_MAXNAME 10
 struct __sysctl_args {
-  int __user * name;
+  int  * name;
   int nlen;
-  void __user * oldval;
-  size_t __user * oldlenp;
-  void __user * newval;
+  void  * oldval;
+  size_t  * oldlenp;
+  void  * newval;
   size_t newlen;
   unsigned long __linux_unused[4];
 };
@@ -124,6 +112,7 @@ enum {
   KERN_NMI_WATCHDOG = 75,
   KERN_PANIC_ON_NMI = 76,
   KERN_PANIC_ON_WARN = 77,
+  KERN_PANIC_PRINT = 78,
 };
 enum {
   VM_UNUSED1 = 1,
@@ -406,6 +395,7 @@ enum {
   NET_IPV4_CONF_PROMOTE_SECONDARIES = 20,
   NET_IPV4_CONF_ARP_ACCEPT = 21,
   NET_IPV4_CONF_ARP_NOTIFY = 22,
+  NET_IPV4_CONF_ARP_EVICT_NOCARRIER = 23,
 };
 enum {
   NET_IPV4_NF_CONNTRACK_MAX = 1,
@@ -488,10 +478,12 @@ enum {
   NET_IPV6_ACCEPT_SOURCE_ROUTE = 25,
   NET_IPV6_ACCEPT_RA_FROM_LOCAL = 26,
   NET_IPV6_ACCEPT_RA_RT_INFO_MIN_PLEN = 27,
+  NET_IPV6_RA_DEFRTR_METRIC = 28,
   __NET_IPV6_MAX
 };
 enum {
-  NET_IPV6_ICMP_RATELIMIT = 1
+  NET_IPV6_ICMP_RATELIMIT = 1,
+  NET_IPV6_ICMP_ECHO_IGNORE_ALL = 2
 };
 enum {
   NET_NEIGH_MCAST_SOLICIT = 1,
@@ -512,6 +504,7 @@ enum {
   NET_NEIGH_GC_THRESH3 = 16,
   NET_NEIGH_RETRANS_TIME_MS = 17,
   NET_NEIGH_REACHABLE_TIME_MS = 18,
+  NET_NEIGH_INTERVAL_PROBE_TIME_MS = 19,
 };
 enum {
   NET_DCCP_DEFAULT = 1,
@@ -654,22 +647,6 @@ enum {
   NET_BRIDGE_NF_CALL_IP6TABLES = 3,
   NET_BRIDGE_NF_FILTER_VLAN_TAGGED = 4,
   NET_BRIDGE_NF_FILTER_PPPOE_TAGGED = 5,
-};
-enum {
-  NET_IRDA_DISCOVERY = 1,
-  NET_IRDA_DEVNAME = 2,
-  NET_IRDA_DEBUG = 3,
-  NET_IRDA_FAST_POLL = 4,
-  NET_IRDA_DISCOVERY_SLOTS = 5,
-  NET_IRDA_DISCOVERY_TIMEOUT = 6,
-  NET_IRDA_SLOT_TIMEOUT = 7,
-  NET_IRDA_MAX_BAUD_RATE = 8,
-  NET_IRDA_MIN_TX_TURN_TIME = 9,
-  NET_IRDA_MAX_TX_DATA_SIZE = 10,
-  NET_IRDA_MAX_TX_WINDOW = 11,
-  NET_IRDA_MAX_NOREPLY_TIME = 12,
-  NET_IRDA_WARN_NOREPLY_TIME = 13,
-  NET_IRDA_LAP_KEEPALIVE_TIME = 14,
 };
 enum {
   FS_NRINODE = 1,

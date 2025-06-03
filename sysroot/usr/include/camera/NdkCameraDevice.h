@@ -34,17 +34,15 @@
  */
 #include <sys/cdefs.h>
 
-#include <android/native_window.h>
 #include "NdkCameraError.h"
 #include "NdkCaptureRequest.h"
 #include "NdkCameraCaptureSession.h"
+#include "NdkCameraWindowType.h"
 
 #ifndef _NDK_CAMERA_DEVICE_H
 #define _NDK_CAMERA_DEVICE_H
 
 __BEGIN_DECLS
-
-#if __ANDROID_API__ >= 24
 
 /**
  * ACameraDevice is opaque type that provides access to a camera device.
@@ -52,6 +50,17 @@ __BEGIN_DECLS
  * A pointer can be obtained using {@link ACameraManager_openCamera} method.
  */
 typedef struct ACameraDevice ACameraDevice;
+
+/**
+ * Struct to hold list of camera device Ids. This can refer to either the Ids
+ * of connected camera devices returned from {@link ACameraManager_getCameraIdList},
+ * or the physical camera Ids passed into
+ * {@link ACameraDevice_createCaptureRequest_withPhysicalIds}.
+ */
+typedef struct ACameraIdList {
+    int numCameras;          ///< Number of camera device Ids
+    const char** cameraIds;  ///< list of camera device Ids
+} ACameraIdList;
 
 /// Enum for ACameraDevice_ErrorStateCallback error code
 enum {
@@ -104,7 +113,7 @@ typedef void (*ACameraDevice_StateCallback)(void* context, ACameraDevice* device
  * @param context The optional context in {@link ACameraDevice_StateCallbacks} will be
  *                passed to this callback.
  * @param device The {@link ACameraDevice} that is being disconnected.
- * @param error The error code describes the cause of this error callback. See the folowing
+ * @param error The error code describes the cause of this error callback. See the following
  *              links for more detail.
  *
  * @see ERROR_CAMERA_IN_USE
@@ -115,6 +124,10 @@ typedef void (*ACameraDevice_StateCallback)(void* context, ACameraDevice* device
  */
 typedef void (*ACameraDevice_ErrorStateCallback)(void* context, ACameraDevice* device, int error);
 
+/**
+ * Applications' callbacks for camera device state changes, register with
+ * {@link ACameraManager_openCamera}.
+ */
 typedef struct ACameraDevice_StateCallbacks {
     /// optional application context.
     void*                             context;
@@ -176,7 +189,7 @@ typedef ACameraDevice_StateCallbacks ACameraDevice_stateCallbacks;
  *         <li>{@link ACAMERA_OK} if the method call succeeds.</li>
  *         <li>{@link ACAMERA_ERROR_INVALID_PARAMETER} if device is NULL.</li></ul>
  */
-camera_status_t ACameraDevice_close(ACameraDevice* device);
+camera_status_t ACameraDevice_close(ACameraDevice* device) __INTRODUCED_IN(24);
 
 /**
  * Return the camera id associated with this camera device.
@@ -187,8 +200,12 @@ camera_status_t ACameraDevice_close(ACameraDevice* device);
  * delete/free by the application. Also the returned string must not be used after the device
  * has been closed.
  */
-const char* ACameraDevice_getId(const ACameraDevice* device);
+const char* ACameraDevice_getId(const ACameraDevice* device) __INTRODUCED_IN(24);
 
+/**
+ * Capture request pre-defined template types, used in {@link ACameraDevice_createCaptureRequest}
+ * and {@link ACameraDevice_createCaptureRequest_withPhysicalIds}.
+ */
 typedef enum {
     /**
      * Create a request suitable for a camera preview window. Specifically, this
@@ -290,12 +307,14 @@ typedef enum {
  */
 camera_status_t ACameraDevice_createCaptureRequest(
         const ACameraDevice* device, ACameraDevice_request_template templateId,
-        /*out*/ACaptureRequest** request);
+        /*out*/ACaptureRequest** request) __INTRODUCED_IN(24);
 
-
+/**
+ * Opaque object for CaptureSessionOutput container, use
+ * {@link ACaptureSessionOutputContainer_create} to create an instance.
+ */
 typedef struct ACaptureSessionOutputContainer ACaptureSessionOutputContainer;
 
-typedef struct ACaptureSessionOutput ACaptureSessionOutput;
 
 /**
  * Create a capture session output container.
@@ -313,7 +332,7 @@ typedef struct ACaptureSessionOutput ACaptureSessionOutput;
  *         <li>{@link ACAMERA_ERROR_INVALID_PARAMETER} if container is NULL.</li></ul>
  */
 camera_status_t ACaptureSessionOutputContainer_create(
-        /*out*/ACaptureSessionOutputContainer** container);
+        /*out*/ACaptureSessionOutputContainer** container) __INTRODUCED_IN(24);
 
 /**
  * Free a capture session output container.
@@ -322,7 +341,8 @@ camera_status_t ACaptureSessionOutputContainer_create(
  *
  * @see ACaptureSessionOutputContainer_create
  */
-void            ACaptureSessionOutputContainer_free(ACaptureSessionOutputContainer* container);
+void            ACaptureSessionOutputContainer_free(ACaptureSessionOutputContainer* container)
+        __INTRODUCED_IN(24);
 
 /**
  * Create a ACaptureSessionOutput object.
@@ -344,7 +364,7 @@ void            ACaptureSessionOutputContainer_free(ACaptureSessionOutputContain
  * @see ACaptureSessionOutputContainer_add
  */
 camera_status_t ACaptureSessionOutput_create(
-        ANativeWindow* anw, /*out*/ACaptureSessionOutput** output);
+        ANativeWindow* anw, /*out*/ACaptureSessionOutput** output) __INTRODUCED_IN(24);
 
 /**
  * Free a ACaptureSessionOutput object.
@@ -353,7 +373,7 @@ camera_status_t ACaptureSessionOutput_create(
  *
  * @see ACaptureSessionOutput_create
  */
-void            ACaptureSessionOutput_free(ACaptureSessionOutput* output);
+void            ACaptureSessionOutput_free(ACaptureSessionOutput* output) __INTRODUCED_IN(24);
 
 /**
  * Add an {@link ACaptureSessionOutput} object to {@link ACaptureSessionOutputContainer}.
@@ -366,7 +386,8 @@ void            ACaptureSessionOutput_free(ACaptureSessionOutput* output);
  *         <li>{@link ACAMERA_ERROR_INVALID_PARAMETER} if container or output is NULL.</li></ul>
  */
 camera_status_t ACaptureSessionOutputContainer_add(
-        ACaptureSessionOutputContainer* container, const ACaptureSessionOutput* output);
+        ACaptureSessionOutputContainer* container, const ACaptureSessionOutput* output)
+        __INTRODUCED_IN(24);
 
 /**
  * Remove an {@link ACaptureSessionOutput} object from {@link ACaptureSessionOutputContainer}.
@@ -382,7 +403,8 @@ camera_status_t ACaptureSessionOutputContainer_add(
  *         <li>{@link ACAMERA_ERROR_INVALID_PARAMETER} if container or output is NULL.</li></ul>
  */
 camera_status_t ACaptureSessionOutputContainer_remove(
-        ACaptureSessionOutputContainer* container, const ACaptureSessionOutput* output);
+        ACaptureSessionOutputContainer* container, const ACaptureSessionOutput* output)
+        __INTRODUCED_IN(24);
 
 /**
  * Create a new camera capture session by providing the target output set of {@link ANativeWindow}
@@ -425,8 +447,8 @@ camera_status_t ACaptureSessionOutputContainer_remove(
  *   returned by {@link ACAMERA_SCALER_AVAILABLE_STREAM_CONFIGURATIONS}
  *   before creating a Surface from the SurfaceTexture with <a href=
  *   "http://developer.android.com/reference/android/view/Surface.html#Surface(android.graphics.SurfaceTexture)">
- *   Surface\#Surface(SurfaceTextrue)</a>. If the size is not set by the application, it will be set to be the
- *   smallest supported size less than 1080p, by the camera device.</li>
+ *   Surface\#Surface(SurfaceTexture)</a>. If the size is not set by the application, it will be
+ *   set to be the smallest supported size less than 1080p, by the camera device.</li>
  *
  * <li>For recording with <a href=
  *     "http://developer.android.com/reference/android/media/MediaCodec.html">
@@ -447,18 +469,6 @@ camera_status_t ACaptureSessionOutputContainer_remove(
  *   {@link ACAMERA_SCALER_AVAILABLE_STREAM_CONFIGURATIONS}, or configuring it to use one of the supported
  *   <a href="http://developer.android.com/reference/android/media/CamcorderProfile.html">
  *    CamcorderProfiles</a>.</li>
- *
- * <li>For efficient YUV processing with <a href=
- *   "http://developer.android.com/reference/android/renderscript/package-summary.html">
- *   RenderScript</a>:
- *   Create a RenderScript
- *   <a href="http://developer.android.com/reference/android/renderscript/Allocation.html">
- *   Allocation</a> with a supported YUV
- *   type, the IO_INPUT flag, and one of the YUV output sizes returned by
- *   {@link ACAMERA_SCALER_AVAILABLE_STREAM_CONFIGURATIONS},
- *   Then obtain the Surface with
- *   <a href="http://developer.android.com/reference/android/renderscript/Allocation.html#getSurface()">
- *   Allocation#getSurface}</a>.</li>
  *
  * <li>For access to RAW, uncompressed YUV, or compressed JPEG data in the application: Create an
  *   {@link AImageReader} object using the {@link AImageReader_new} method with one of the supported
@@ -577,7 +587,7 @@ camera_status_t ACaptureSessionOutputContainer_remove(
  * <tr><th>Type</th><th id="rb">Max size</th><th>Type</th><th id="rb">Max size</th><th>Type</th><th id="rb">Max size</th> </tr>
  * <tr> <td>`PRIV`</td><td id="rb">`PREVIEW`</td> <td>`PRIV`</td><td id="rb">`MAXIMUM`</td> <td colspan="2" id="rb"></td> <td>Maximum-resolution GPU processing with preview.</td> </tr>
  * <tr> <td>`PRIV`</td><td id="rb">`PREVIEW`</td> <td>`YUV `</td><td id="rb">`MAXIMUM`</td> <td colspan="2" id="rb"></td> <td>Maximum-resolution in-app processing with preview.</td> </tr>
- * <tr> <td>`YUV `</td><td id="rb">`PREVIEW`</td> <td>`YUV `</td><td id="rb">`MAXIMUM`</td> <td colspan="2" id="rb"></td> <td>Maximum-resolution two-input in-app processsing.</td> </tr>
+ * <tr> <td>`YUV `</td><td id="rb">`PREVIEW`</td> <td>`YUV `</td><td id="rb">`MAXIMUM`</td> <td colspan="2" id="rb"></td> <td>Maximum-resolution two-input in-app processing.</td> </tr>
  * <tr> <td>`PRIV`</td><td id="rb">`PREVIEW`</td> <td>`PRIV`</td><td id="rb">`PREVIEW`</td> <td>`JPEG`</td><td id="rb">`MAXIMUM`</td> <td>Video recording with maximum-size video snapshot</td> </tr>
  * <tr> <td>`YUV `</td><td id="rb">`640x480`</td> <td>`PRIV`</td><td id="rb">`PREVIEW`</td> <td>`YUV `</td><td id="rb">`MAXIMUM`</td> <td>Standard video recording plus maximum-resolution in-app processing.</td> </tr>
  * <tr> <td>`YUV `</td><td id="rb">`640x480`</td> <td>`YUV `</td><td id="rb">`PREVIEW`</td> <td>`YUV `</td><td id="rb">`MAXIMUM`</td> <td>Preview plus two-input maximum-resolution in-app processing.</td> </tr>
@@ -619,7 +629,7 @@ camera_status_t ACaptureSessionOutputContainer_remove(
  * <tr><th>Type</th><th id="rb">Max size</th><th>Type</th><th id="rb">Max size</th> </tr>
  * <tr> <td>`PRIV`</td><td id="rb">`PREVIEW`</td> <td>`PRIV`</td><td id="rb">`MAXIMUM`</td> <td>Maximum-resolution GPU processing with preview.</td> </tr>
  * <tr> <td>`PRIV`</td><td id="rb">`PREVIEW`</td> <td>`YUV `</td><td id="rb">`MAXIMUM`</td> <td>Maximum-resolution in-app processing with preview.</td> </tr>
- * <tr> <td>`YUV `</td><td id="rb">`PREVIEW`</td> <td>`YUV `</td><td id="rb">`MAXIMUM`</td> <td>Maximum-resolution two-input in-app processsing.</td> </tr>
+ * <tr> <td>`YUV `</td><td id="rb">`PREVIEW`</td> <td>`YUV `</td><td id="rb">`MAXIMUM`</td> <td>Maximum-resolution two-input in-app processing.</td> </tr>
  * </table><br>
  * </p>
  *
@@ -643,6 +653,14 @@ camera_status_t ACaptureSessionOutputContainer_remove(
  * target combinations with sizes outside of these guarantees, but this can only be tested for
  * by attempting to create a session with such targets.</p>
  *
+ * <p>Exception on 176x144 (QCIF) resolution:
+ * Camera devices usually have a fixed capability for downscaling from larger resolution to
+ * smaller, and the QCIF resolution sometimes cannot be fully supported due to this
+ * limitation on devices with high-resolution image sensors. Therefore, trying to configure a
+ * QCIF resolution stream together with any other stream larger than 1920x1080 resolution
+ * (either width or height) might not be supported, and capture session creation will fail if it
+ * is not.</p>
+ *
  * @param device the camera device of interest.
  * @param outputs the {@link ACaptureSessionOutputContainer} describes all output streams.
  * @param callbacks the {@link ACameraCaptureSession_stateCallbacks capture session state callbacks}.
@@ -663,11 +681,7 @@ camera_status_t ACameraDevice_createCaptureSession(
         ACameraDevice* device,
         const ACaptureSessionOutputContainer*       outputs,
         const ACameraCaptureSession_stateCallbacks* callbacks,
-        /*out*/ACameraCaptureSession** session);
-
-#endif /* __ANDROID_API__ >= 24 */
-
-#if __ANDROID_API__ >= 28
+        /*out*/ACameraCaptureSession** session) __INTRODUCED_IN(24);
 
 /**
  * Create a shared ACaptureSessionOutput object.
@@ -691,7 +705,7 @@ camera_status_t ACameraDevice_createCaptureSession(
  * @see ACaptureSessionOutputContainer_add
  */
 camera_status_t ACaptureSessionSharedOutput_create(
-        ANativeWindow* anw, /*out*/ACaptureSessionOutput** output);
+        ANativeWindow* anw, /*out*/ACaptureSessionOutput** output) __INTRODUCED_IN(28);
 
 /**
  * Add a native window to shared ACaptureSessionOutput.
@@ -708,7 +722,8 @@ camera_status_t ACaptureSessionSharedOutput_create(
  *             window associated with ACaptureSessionOutput; or anw is already present inside
  *             ACaptureSessionOutput.</li></ul>
  */
-camera_status_t ACaptureSessionSharedOutput_add(ACaptureSessionOutput *output, ANativeWindow *anw);
+camera_status_t ACaptureSessionSharedOutput_add(ACaptureSessionOutput *output,
+        ANativeWindow *anw) __INTRODUCED_IN(28);
 
 /**
  * Remove a native window from shared ACaptureSessionOutput.
@@ -724,7 +739,7 @@ camera_status_t ACaptureSessionSharedOutput_add(ACaptureSessionOutput *output, A
  *             ACaptureSessionOutput.</li></ul>
  */
 camera_status_t ACaptureSessionSharedOutput_remove(ACaptureSessionOutput *output,
-        ANativeWindow* anw);
+        ANativeWindow* anw) __INTRODUCED_IN(28);
 
 /**
  * Create a new camera capture session similar to {@link ACameraDevice_createCaptureSession}. This
@@ -757,9 +772,112 @@ camera_status_t ACameraDevice_createCaptureSessionWithSessionParameters(
         const ACaptureSessionOutputContainer* outputs,
         const ACaptureRequest* sessionParameters,
         const ACameraCaptureSession_stateCallbacks* callbacks,
-        /*out*/ACameraCaptureSession** session);
+        /*out*/ACameraCaptureSession** session) __INTRODUCED_IN(28);
 
-#endif /* __ANDROID_API__ >= 28 */
+/**
+ * Create a ACaptureSessionOutput object used for streaming from a physical
+ * camera as part of a logical camera device.
+ *
+ * <p>The ACaptureSessionOutput is used in {@link ACaptureSessionOutputContainer_add} method to add
+ * an output {@link ANativeWindow} to ACaptureSessionOutputContainer. Use
+ * {@link ACaptureSessionOutput_free} to free the object and its memory after application no longer
+ * needs the {@link ACaptureSessionOutput}.</p>
+ *
+ * @param anw the {@link ANativeWindow} to be associated with the {@link ACaptureSessionOutput}
+ * @param physicalId the Id of the physical camera this output is associated
+ *                  with.
+ * @param output the output {@link ACaptureSessionOutput} will be stored here if the
+ *                  method call succeeds.
+ *
+ * @return <ul>
+ *         <li>{@link ACAMERA_OK} if the method call succeeds. The created container will be
+ *                                filled in the output argument.</li>
+ *         <li>{@link ACAMERA_ERROR_INVALID_PARAMETER} if anw, physicalId or output is NULL.</li></ul>
+ *
+ * @see ACaptureSessionOutputContainer_add
+ */
+camera_status_t ACaptureSessionPhysicalOutput_create(
+        ANativeWindow* anw, const char* physicalId,
+        /*out*/ACaptureSessionOutput** output) __INTRODUCED_IN(29);
+
+/**
+ * Create a logical multi-camera ACaptureRequest for capturing images, initialized with template
+ * for a target use case, with the ability to specify physical camera settings.
+ *
+ * <p>The settings are chosen to be the best options for this camera device,
+ * so it is not recommended to reuse the same request for a different camera device.</p>
+ *
+ * <p>Note that for all keys in physical camera settings, only the keys
+ * advertised in ACAMERA_REQUEST_AVAILABLE_PHYSICAL_CAMERA_REQUEST_KEYS are
+ * applicable. All other keys are ignored by the camera device.</p>
+ *
+ * @param device the camera device of interest
+ * @param templateId the type of capture request to be created.
+ *        See {@link ACameraDevice_request_template}.
+ * @param physicalIdList The list of physical camera Ids that can be used to
+ *        customize the request for a specific physical camera.
+ * @param request the output request will be stored here if the method call succeeds.
+ *
+ * @return <ul>
+ *         <li>{@link ACAMERA_OK} if the method call succeeds. The created capture request will be
+ *                                filled in request argument.</li>
+ *         <li>{@link ACAMERA_ERROR_INVALID_PARAMETER} if device, physicalIdList, or request is
+ *                                NULL, templateId is undefined or camera device does not support
+ *                                requested template, or if some Ids in physicalIdList isn't a
+ *                                valid physical camera backing the current camera device.</li>
+ *         <li>{@link ACAMERA_ERROR_CAMERA_DISCONNECTED} if the camera device is closed.</li>
+ *         <li>{@link ACAMERA_ERROR_CAMERA_DEVICE} if the camera device encounters fatal error.</li>
+ *         <li>{@link ACAMERA_ERROR_CAMERA_SERVICE} if the camera service encounters fatal error.</li>
+ *         <li>{@link ACAMERA_ERROR_UNKNOWN} if the method fails for some other reasons.</li></ul>
+ *
+ * @see TEMPLATE_PREVIEW
+ * @see TEMPLATE_RECORD
+ * @see TEMPLATE_STILL_CAPTURE
+ * @see TEMPLATE_VIDEO_SNAPSHOT
+ * @see TEMPLATE_MANUAL
+ */
+camera_status_t ACameraDevice_createCaptureRequest_withPhysicalIds(
+        const ACameraDevice* device, ACameraDevice_request_template templateId,
+        const ACameraIdList* physicalIdList,
+        /*out*/ACaptureRequest** request) __INTRODUCED_IN(29);
+
+/**
+ * Check whether a particular {@link ACaptureSessionOutputContainer} is supported by
+ * the camera device.
+ *
+ * <p>This method performs a runtime check of a given {@link
+ * ACaptureSessionOutputContainer}. The result confirms whether or not the
+ * passed CaptureSession outputs can be successfully used to create a camera
+ * capture session using {@link ACameraDevice_createCaptureSession}.</p>
+ *
+ * <p>This method can be called at any point before, during and after active
+ * capture session. It must not impact normal camera behavior in any way and
+ * must complete significantly faster than creating a capture session.</p>
+ *
+ * <p>Although this method is faster than creating a new capture session, it is not intended
+ * to be used for exploring the entire space of supported stream combinations.</p>
+ *
+ * @param device the camera device of interest
+ * @param sessionOutputContainer the {@link ACaptureSessionOutputContainer} of
+ *                               interest.
+ *
+ * @return <ul>
+ *         <li>{@link ACAMERA_OK} if the given {@link ACaptureSessionOutputContainer}
+ *                                is supported by the camera device.</li>
+ *         <li>{@link ACAMERA_ERROR_INVALID_PARAMETER} if device, or sessionOutputContainer
+ *                                                     is NULL.</li>
+ *         <li>{@link ACAMERA_ERROR_STREAM_CONFIGURE_FAIL} if the given
+ *                                                         {@link ACaptureSessionOutputContainer}
+ *                                                         is not supported by
+ *                                                         the camera
+ *                                                         device.</li>
+ *        <li>{@link ACAMERA_ERROR_UNSUPPORTED_OPERATION} if the query operation is not
+ *                                                        supported by the camera device.</li>
+ *        </ul>
+ */
+camera_status_t ACameraDevice_isSessionConfigurationSupported(
+        const ACameraDevice* device,
+        const ACaptureSessionOutputContainer* sessionOutputContainer) __INTRODUCED_IN(29);
 
 __END_DECLS
 

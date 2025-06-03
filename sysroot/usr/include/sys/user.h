@@ -26,17 +26,15 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _SYS_USER_H_
-#define _SYS_USER_H_
+#pragma once
 
 #include <sys/cdefs.h>
 #include <stddef.h> /* For size_t. */
 #include <stdint.h>
 
-__BEGIN_DECLS
+#include <bits/page_size.h>
 
-#define PAGE_SIZE 4096
-#define PAGE_MASK (~(PAGE_SIZE - 1))
+__BEGIN_DECLS
 
 #if defined(__i386__)
 
@@ -172,22 +170,6 @@ struct user {
   unsigned long fault_address;
 };
 
-#elif defined(__mips__)
-
-struct user {
-  unsigned long regs[180 / sizeof(unsigned long) + 64];
-  size_t u_tsize;
-  size_t u_dsize;
-  size_t u_ssize;
-  unsigned long start_code;
-  unsigned long start_data;
-  unsigned long start_stack;
-  long int signal;
-  void* u_ar0;
-  unsigned long magic;
-  char u_comm[32];
-};
-
 #elif defined(__arm__)
 
 struct user_fpregs {
@@ -249,6 +231,11 @@ struct user_fpsimd_struct {
   uint32_t fpcr;
 };
 
+#elif defined(__riscv)
+
+// This space deliberately left blank for now.
+// No other libcs have any riscv64-specific structs.
+
 #else
 
 #error "Unsupported architecture."
@@ -256,5 +243,3 @@ struct user_fpsimd_struct {
 #endif
 
 __END_DECLS
-
-#endif  /* _SYS_USER_H_ */

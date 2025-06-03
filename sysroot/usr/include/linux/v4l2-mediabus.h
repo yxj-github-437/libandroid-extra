@@ -1,36 +1,29 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef __LINUX_V4L2_MEDIABUS_H
 #define __LINUX_V4L2_MEDIABUS_H
 #include <linux/media-bus-format.h>
 #include <linux/types.h>
 #include <linux/videodev2.h>
+#define V4L2_MBUS_FRAMEFMT_SET_CSC 0x0001
 struct v4l2_mbus_framefmt {
   __u32 width;
   __u32 height;
   __u32 code;
   __u32 field;
   __u32 colorspace;
-  __u16 ycbcr_enc;
+  union {
+    __u16 ycbcr_enc;
+    __u16 hsv_enc;
+  };
   __u16 quantization;
   __u16 xfer_func;
-  __u16 reserved[11];
+  __u16 flags;
+  __u16 reserved[10];
 };
 #define V4L2_MBUS_FROM_MEDIA_BUS_FMT(name) V4L2_MBUS_FMT_ ##name = MEDIA_BUS_FMT_ ##name
 enum v4l2_mbus_pixelcode {

@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI__LINUX_MII_H__
 #define _UAPI__LINUX_MII_H__
 #include <linux/types.h>
@@ -113,15 +101,35 @@
 #define EXPANSION_NPCAPABLE 0x0008
 #define EXPANSION_MFAULTS 0x0010
 #define EXPANSION_RESV 0xffe0
+#define ESTATUS_1000_XFULL 0x8000
+#define ESTATUS_1000_XHALF 0x4000
 #define ESTATUS_1000_TFULL 0x2000
 #define ESTATUS_1000_THALF 0x1000
 #define NWAYTEST_RESV1 0x00ff
 #define NWAYTEST_LOOPBACK 0x0100
 #define NWAYTEST_RESV2 0xfe00
+#define ADVERTISE_SGMII 0x0001
+#define LPA_SGMII 0x0001
+#define LPA_SGMII_SPD_MASK 0x0c00
+#define LPA_SGMII_FULL_DUPLEX 0x1000
+#define LPA_SGMII_DPX_SPD_MASK 0x1C00
+#define LPA_SGMII_10 0x0000
+#define LPA_SGMII_10HALF 0x0000
+#define LPA_SGMII_10FULL 0x1000
+#define LPA_SGMII_100 0x0400
+#define LPA_SGMII_100HALF 0x0400
+#define LPA_SGMII_100FULL 0x1400
+#define LPA_SGMII_1000 0x0800
+#define LPA_SGMII_1000HALF 0x0800
+#define LPA_SGMII_1000FULL 0x1800
+#define LPA_SGMII_LINK 0x8000
 #define ADVERTISE_1000FULL 0x0200
 #define ADVERTISE_1000HALF 0x0100
+#define CTL1000_PREFER_MASTER 0x0400
 #define CTL1000_AS_MASTER 0x0800
 #define CTL1000_ENABLE_MASTER 0x1000
+#define LPA_1000MSFAIL 0x8000
+#define LPA_1000MSRES 0x4000
 #define LPA_1000LOCALRXOK 0x2000
 #define LPA_1000REMRXOK 0x1000
 #define LPA_1000FULL 0x0800

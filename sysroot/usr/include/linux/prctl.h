@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _LINUX_PRCTL_H
 #define _LINUX_PRCTL_H
 #include <linux/types.h>
@@ -134,4 +122,89 @@ struct prctl_mm_map {
 #define PR_SVE_GET_VL 51
 #define PR_SVE_VL_LEN_MASK 0xffff
 #define PR_SVE_VL_INHERIT (1 << 17)
+#define PR_GET_SPECULATION_CTRL 52
+#define PR_SET_SPECULATION_CTRL 53
+#define PR_SPEC_STORE_BYPASS 0
+#define PR_SPEC_INDIRECT_BRANCH 1
+#define PR_SPEC_L1D_FLUSH 2
+#define PR_SPEC_NOT_AFFECTED 0
+#define PR_SPEC_PRCTL (1UL << 0)
+#define PR_SPEC_ENABLE (1UL << 1)
+#define PR_SPEC_DISABLE (1UL << 2)
+#define PR_SPEC_FORCE_DISABLE (1UL << 3)
+#define PR_SPEC_DISABLE_NOEXEC (1UL << 4)
+#define PR_PAC_RESET_KEYS 54
+#define PR_PAC_APIAKEY (1UL << 0)
+#define PR_PAC_APIBKEY (1UL << 1)
+#define PR_PAC_APDAKEY (1UL << 2)
+#define PR_PAC_APDBKEY (1UL << 3)
+#define PR_PAC_APGAKEY (1UL << 4)
+#define PR_SET_TAGGED_ADDR_CTRL 55
+#define PR_GET_TAGGED_ADDR_CTRL 56
+#define PR_TAGGED_ADDR_ENABLE (1UL << 0)
+#define PR_MTE_TCF_NONE 0UL
+#define PR_MTE_TCF_SYNC (1UL << 1)
+#define PR_MTE_TCF_ASYNC (1UL << 2)
+#define PR_MTE_TCF_MASK (PR_MTE_TCF_SYNC | PR_MTE_TCF_ASYNC)
+#define PR_MTE_TAG_SHIFT 3
+#define PR_MTE_TAG_MASK (0xffffUL << PR_MTE_TAG_SHIFT)
+#define PR_MTE_TCF_SHIFT 1
+#define PR_SET_IO_FLUSHER 57
+#define PR_GET_IO_FLUSHER 58
+#define PR_SET_SYSCALL_USER_DISPATCH 59
+#define PR_SYS_DISPATCH_OFF 0
+#define PR_SYS_DISPATCH_ON 1
+#define SYSCALL_DISPATCH_FILTER_ALLOW 0
+#define SYSCALL_DISPATCH_FILTER_BLOCK 1
+#define PR_PAC_SET_ENABLED_KEYS 60
+#define PR_PAC_GET_ENABLED_KEYS 61
+#define PR_SCHED_CORE 62
+#define PR_SCHED_CORE_GET 0
+#define PR_SCHED_CORE_CREATE 1
+#define PR_SCHED_CORE_SHARE_TO 2
+#define PR_SCHED_CORE_SHARE_FROM 3
+#define PR_SCHED_CORE_MAX 4
+#define PR_SCHED_CORE_SCOPE_THREAD 0
+#define PR_SCHED_CORE_SCOPE_THREAD_GROUP 1
+#define PR_SCHED_CORE_SCOPE_PROCESS_GROUP 2
+#define PR_SME_SET_VL 63
+#define PR_SME_SET_VL_ONEXEC (1 << 18)
+#define PR_SME_GET_VL 64
+#define PR_SME_VL_LEN_MASK 0xffff
+#define PR_SME_VL_INHERIT (1 << 17)
+#define PR_SET_MDWE 65
+#define PR_MDWE_REFUSE_EXEC_GAIN (1UL << 0)
+#define PR_MDWE_NO_INHERIT (1UL << 1)
+#define PR_GET_MDWE 66
+#define PR_SET_VMA 0x53564d41
+#define PR_SET_VMA_ANON_NAME 0
+#define PR_GET_AUXV 0x41555856
+#define PR_SET_MEMORY_MERGE 67
+#define PR_GET_MEMORY_MERGE 68
+#define PR_RISCV_V_SET_CONTROL 69
+#define PR_RISCV_V_GET_CONTROL 70
+#define PR_RISCV_V_VSTATE_CTRL_DEFAULT 0
+#define PR_RISCV_V_VSTATE_CTRL_OFF 1
+#define PR_RISCV_V_VSTATE_CTRL_ON 2
+#define PR_RISCV_V_VSTATE_CTRL_INHERIT (1 << 4)
+#define PR_RISCV_V_VSTATE_CTRL_CUR_MASK 0x3
+#define PR_RISCV_V_VSTATE_CTRL_NEXT_MASK 0xc
+#define PR_RISCV_V_VSTATE_CTRL_MASK 0x1f
+#define PR_RISCV_SET_ICACHE_FLUSH_CTX 71
+#define PR_RISCV_CTX_SW_FENCEI_ON 0
+#define PR_RISCV_CTX_SW_FENCEI_OFF 1
+#define PR_RISCV_SCOPE_PER_PROCESS 0
+#define PR_RISCV_SCOPE_PER_THREAD 1
+#define PR_PPC_GET_DEXCR 72
+#define PR_PPC_SET_DEXCR 73
+#define PR_PPC_DEXCR_SBHE 0
+#define PR_PPC_DEXCR_IBRTPD 1
+#define PR_PPC_DEXCR_SRAPD 2
+#define PR_PPC_DEXCR_NPHIE 3
+#define PR_PPC_DEXCR_CTRL_EDITABLE 0x1
+#define PR_PPC_DEXCR_CTRL_SET 0x2
+#define PR_PPC_DEXCR_CTRL_CLEAR 0x4
+#define PR_PPC_DEXCR_CTRL_SET_ONEXEC 0x8
+#define PR_PPC_DEXCR_CTRL_CLEAR_ONEXEC 0x10
+#define PR_PPC_DEXCR_CTRL_MASK 0x1f
 #endif

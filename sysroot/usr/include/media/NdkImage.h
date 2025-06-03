@@ -36,13 +36,12 @@
 #ifndef _NDK_IMAGE_H
 #define _NDK_IMAGE_H
 
+#include <stdint.h>
 #include <sys/cdefs.h>
 
 #include "NdkMediaError.h"
 
-#if __ANDROID_API__ >= 26
 #include <android/hardware_buffer.h>
-#endif /* __ANDROID_API__ >= 26 */
 
 __BEGIN_DECLS
 
@@ -51,7 +50,10 @@ __BEGIN_DECLS
  */
 typedef struct AImage AImage;
 
-// Formats not listed here will not be supported by AImageReader
+/**
+ * AImage supported formats: AImageReader only guarantees the support for the formats
+ * listed here.
+ */
 enum AIMAGE_FORMATS {
     /**
      * 32 bits RGBA format, 8 bits for each of the four channels.
@@ -500,7 +502,51 @@ enum AIMAGE_FORMATS {
      * <p>When an {@link AImage} of this format is obtained from an {@link AImageReader} or
      * {@link AImage_getNumberOfPlanes()} method will return zero.</p>
      */
-    AIMAGE_FORMAT_PRIVATE           = 0x22
+    AIMAGE_FORMAT_PRIVATE           = 0x22,
+
+    /**
+     * Android Y8 format.
+     *
+     * <p>Y8 is a planar format comprised of a WxH Y plane only, with each pixel
+     * being represented by 8 bits.</p>
+     *
+     * <p>This format assumes
+     * <ul>
+     * <li>an even width</li>
+     * <li>an even height</li>
+     * <li>a horizontal stride multiple of 16 pixels</li>
+     * </ul>
+     * </p>
+     *
+     * <pre> size = stride * height </pre>
+     *
+     * <p>For example, the {@link AImage} object can provide data
+     * in this format from a {@link ACameraDevice} (if supported) through a
+     * {@link AImageReader} object. The number of planes returned by
+     * {@link AImage_getNumberOfPlanes} will always be 1. The pixel stride returned by
+     * {@link AImage_getPlanePixelStride} will always be 1, and the
+     * {@link AImage_getPlaneRowStride} described the vertical neighboring pixel distance
+     * (in bytes) between adjacent rows.</p>
+     *
+     */
+    AIMAGE_FORMAT_Y8 = 0x20203859,
+
+    /**
+     * Compressed HEIC format.
+     *
+     * <p>This format defines the HEIC brand of High Efficiency Image File
+     * Format as described in ISO/IEC 23008-12.</p>
+     */
+    AIMAGE_FORMAT_HEIC = 0x48454946,
+
+    /**
+     * Depth augmented compressed JPEG format.
+     *
+     * <p>JPEG compressed main image along with XMP embedded depth metadata
+     * following ISO 16684-1:2011(E).</p>
+     */
+    AIMAGE_FORMAT_DEPTH_JPEG = 0x69656963,
+
 };
 
 /**
@@ -516,8 +562,6 @@ typedef struct AImageCropRect {
     int32_t bottom;
 } AImageCropRect;
 
-#if __ANDROID_API__ >= 24
-
 /**
  * Return the image back the the system and delete the AImage object from memory.
  *
@@ -527,15 +571,19 @@ typedef struct AImageCropRect {
  * return {@link AMEDIA_ERROR_INVALID_OBJECT}. Application still needs to call this method on those
  * {@link AImage} objects to fully delete the {@link AImage} object from memory.</p>
  *
+ * Available since API level 24.
+ *
  * @param image The {@link AImage} to be deleted.
  */
-void AImage_delete(AImage* image);
+void AImage_delete(AImage* image) __INTRODUCED_IN(24);
 
 /**
  * Query the width of the input {@link AImage}.
  *
+ * Available since API level 24.
+ *
  * @param image the {@link AImage} of interest.
- * @param width the width of the image will be filled here if the method call succeeeds.
+ * @param width the width of the image will be filled here if the method call succeeds.
  *
  * @return <ul>
  *         <li>{@link AMEDIA_OK} if the method call succeeds.</li>
@@ -543,13 +591,15 @@ void AImage_delete(AImage* image);
  *         <li>{@link AMEDIA_ERROR_INVALID_OBJECT} if the {@link AImageReader} generated this
  *                 image has been deleted.</li></ul>
  */
-media_status_t AImage_getWidth(const AImage* image, /*out*/int32_t* width);
+media_status_t AImage_getWidth(const AImage* image, /*out*/int32_t* width) __INTRODUCED_IN(24);
 
 /**
  * Query the height of the input {@link AImage}.
  *
+ * Available since API level 24.
+ *
  * @param image the {@link AImage} of interest.
- * @param height the height of the image will be filled here if the method call succeeeds.
+ * @param height the height of the image will be filled here if the method call succeeds.
  *
  * @return <ul>
  *         <li>{@link AMEDIA_OK} if the method call succeeds.</li>
@@ -557,15 +607,17 @@ media_status_t AImage_getWidth(const AImage* image, /*out*/int32_t* width);
  *         <li>{@link AMEDIA_ERROR_INVALID_OBJECT} if the {@link AImageReader} generated this
  *                 image has been deleted.</li></ul>
  */
-media_status_t AImage_getHeight(const AImage* image, /*out*/int32_t* height);
+media_status_t AImage_getHeight(const AImage* image, /*out*/int32_t* height) __INTRODUCED_IN(24);
 
 /**
  * Query the format of the input {@link AImage}.
  *
  * <p>The format value will be one of AIMAGE_FORMAT_* enum value.</p>
  *
+ * Available since API level 24.
+ *
  * @param image the {@link AImage} of interest.
- * @param format the format of the image will be filled here if the method call succeeeds.
+ * @param format the format of the image will be filled here if the method call succeeds.
  *
  * @return <ul>
  *         <li>{@link AMEDIA_OK} if the method call succeeds.</li>
@@ -573,7 +625,7 @@ media_status_t AImage_getHeight(const AImage* image, /*out*/int32_t* height);
  *         <li>{@link AMEDIA_ERROR_INVALID_OBJECT} if the {@link AImageReader} generated this
  *                 image has been deleted.</li></ul>
  */
-media_status_t AImage_getFormat(const AImage* image, /*out*/int32_t* format);
+media_status_t AImage_getFormat(const AImage* image, /*out*/int32_t* format) __INTRODUCED_IN(24);
 
 /**
  * Query the cropped rectangle of the input {@link AImage}.
@@ -581,8 +633,10 @@ media_status_t AImage_getFormat(const AImage* image, /*out*/int32_t* format);
  * <p>The crop rectangle specifies the region of valid pixels in the image, using coordinates in the
  * largest-resolution plane.</p>
  *
+ * Available since API level 24.
+ *
  * @param image the {@link AImage} of interest.
- * @param rect the cropped rectangle of the image will be filled here if the method call succeeeds.
+ * @param rect the cropped rectangle of the image will be filled here if the method call succeeds.
  *
  * @return <ul>
  *         <li>{@link AMEDIA_OK} if the method call succeeds.</li>
@@ -590,7 +644,7 @@ media_status_t AImage_getFormat(const AImage* image, /*out*/int32_t* format);
  *         <li>{@link AMEDIA_ERROR_INVALID_OBJECT} if the {@link AImageReader} generated this
  *                 image has been deleted.</li></ul>
  */
-media_status_t AImage_getCropRect(const AImage* image, /*out*/AImageCropRect* rect);
+media_status_t AImage_getCropRect(const AImage* image, /*out*/AImageCropRect* rect) __INTRODUCED_IN(24);
 
 /**
  * Query the timestamp of the input {@link AImage}.
@@ -605,8 +659,10 @@ media_status_t AImage_getCropRect(const AImage* image, /*out*/AImageCropRect* re
  * {@link ACameraCaptureSession_captureCallbacks#onCaptureCompleted} callback.
  * </p>
  *
+ * Available since API level 24.
+ *
  * @param image the {@link AImage} of interest.
- * @param timestampNs the timestamp of the image will be filled here if the method call succeeeds.
+ * @param timestampNs the timestamp of the image will be filled here if the method call succeeds.
  *
  * @return <ul>
  *         <li>{@link AMEDIA_OK} if the method call succeeds.</li>
@@ -614,7 +670,7 @@ media_status_t AImage_getCropRect(const AImage* image, /*out*/AImageCropRect* re
  *         <li>{@link AMEDIA_ERROR_INVALID_OBJECT} if the {@link AImageReader} generated this
  *                 image has been deleted.</li></ul>
  */
-media_status_t AImage_getTimestamp(const AImage* image, /*out*/int64_t* timestampNs);
+media_status_t AImage_getTimestamp(const AImage* image, /*out*/int64_t* timestampNs) __INTRODUCED_IN(24);
 
 /**
  * Query the number of planes of the input {@link AImage}.
@@ -622,9 +678,11 @@ media_status_t AImage_getTimestamp(const AImage* image, /*out*/int64_t* timestam
  * <p>The number of plane of an {@link AImage} is determined by its format, which can be queried by
  * {@link AImage_getFormat} method.</p>
  *
+ * Available since API level 24.
+ *
  * @param image the {@link AImage} of interest.
  * @param numPlanes the number of planes of the image will be filled here if the method call
- *         succeeeds.
+ *         succeeds.
  *
  * @return <ul>
  *         <li>{@link AMEDIA_OK} if the method call succeeds.</li>
@@ -632,7 +690,7 @@ media_status_t AImage_getTimestamp(const AImage* image, /*out*/int64_t* timestam
  *         <li>{@link AMEDIA_ERROR_INVALID_OBJECT} if the {@link AImageReader} generated this
  *                 image has been deleted.</li></ul>
  */
-media_status_t AImage_getNumberOfPlanes(const AImage* image, /*out*/int32_t* numPlanes);
+media_status_t AImage_getNumberOfPlanes(const AImage* image, /*out*/int32_t* numPlanes) __INTRODUCED_IN(24);
 
 /**
  * Query the pixel stride of the input {@link AImage}.
@@ -644,9 +702,11 @@ media_status_t AImage_getNumberOfPlanes(const AImage* image, /*out*/int32_t* num
  * being returned.
  * For formats where pixel stride is well defined, the pixel stride is always greater than 0.</p>
  *
+ * Available since API level 24.
+ *
  * @param image the {@link AImage} of interest.
  * @param planeIdx the index of the plane. Must be less than the number of planes of input image.
- * @param pixelStride the pixel stride of the image will be filled here if the method call succeeeds.
+ * @param pixelStride the pixel stride of the image will be filled here if the method call succeeds.
  *
  * @return <ul>
  *         <li>{@link AMEDIA_OK} if the method call succeeds.</li>
@@ -660,7 +720,7 @@ media_status_t AImage_getNumberOfPlanes(const AImage* image, /*out*/int32_t* num
  *                 for CPU access.</li></ul>
  */
 media_status_t AImage_getPlanePixelStride(
-        const AImage* image, int planeIdx, /*out*/int32_t* pixelStride);
+        const AImage* image, int planeIdx, /*out*/int32_t* pixelStride) __INTRODUCED_IN(24);
 
 /**
  * Query the row stride of the input {@link AImage}.
@@ -671,9 +731,11 @@ media_status_t AImage_getPlanePixelStride(
  * being returned.
  * For formats where row stride is well defined, the row stride is always greater than 0.</p>
  *
+ * Available since API level 24.
+ *
  * @param image the {@link AImage} of interest.
  * @param planeIdx the index of the plane. Must be less than the number of planes of input image.
- * @param rowStride the row stride of the image will be filled here if the method call succeeeds.
+ * @param rowStride the row stride of the image will be filled here if the method call succeeds.
  *
  * @return <ul>
  *         <li>{@link AMEDIA_OK} if the method call succeeds.</li>
@@ -687,7 +749,7 @@ media_status_t AImage_getPlanePixelStride(
  *                 for CPU access.</li></ul>
  */
 media_status_t AImage_getPlaneRowStride(
-        const AImage* image, int planeIdx, /*out*/int32_t* rowStride);
+        const AImage* image, int planeIdx, /*out*/int32_t* rowStride) __INTRODUCED_IN(24);
 
 /**
  * Get the data pointer of the input image for direct application access.
@@ -696,10 +758,12 @@ media_status_t AImage_getPlaneRowStride(
  * pointer from previous AImage_getPlaneData call becomes invalid. Do NOT use it after the
  * {@link AImage} or the parent {@link AImageReader} is deleted.</p>
  *
+ * Available since API level 24.
+ *
  * @param image the {@link AImage} of interest.
  * @param planeIdx the index of the plane. Must be less than the number of planes of input image.
- * @param data the data pointer of the image will be filled here if the method call succeeeds.
- * @param dataLength the valid length of data will be filled here if the method call succeeeds.
+ * @param data the data pointer of the image will be filled here if the method call succeeds.
+ * @param dataLength the valid length of data will be filled here if the method call succeeds.
  *
  * @return <ul>
  *         <li>{@link AMEDIA_OK} if the method call succeeds.</li>
@@ -712,11 +776,7 @@ media_status_t AImage_getPlaneRowStride(
  */
 media_status_t AImage_getPlaneData(
         const AImage* image, int planeIdx,
-        /*out*/uint8_t** data, /*out*/int* dataLength);
-
-#endif /* __ANDROID_API__ >= 24 */
-
-#if __ANDROID_API__ >= 26
+        /*out*/uint8_t** data, /*out*/int* dataLength) __INTRODUCED_IN(24);
 
 /**
  * Return the image back the the system and delete the AImage object from memory asynchronously.
@@ -726,13 +786,15 @@ media_status_t AImage_getPlaneData(
  * signal the release of the hardware buffer back to the {@link AImageReader}'s queue using
  * releaseFenceFd.</p>
  *
+ * Available since API level 26.
+ *
  * @param image The {@link AImage} to be deleted.
  * @param releaseFenceFd A sync fence fd defined in {@link sync.h}, which signals the release of
  *         underlying {@link AHardwareBuffer}.
  *
  * @see sync.h
  */
-void AImage_deleteAsync(AImage* image, int releaseFenceFd);
+void AImage_deleteAsync(AImage* image, int releaseFenceFd) __INTRODUCED_IN(26);
 
 /**
  * Get the hardware buffer handle of the input image intended for GPU and/or hardware access.
@@ -751,8 +813,10 @@ void AImage_deleteAsync(AImage* image, int releaseFenceFd);
  * {@link AImageReader_setBufferRemovedListener} to be notified when the buffer is no longer used
  * by {@link AImageReader}.</p>
  *
+ * Available since API level 26.
+ *
  * @param image the {@link AImage} of interest.
- * @param outBuffer The memory area pointed to by buffer will contain the acquired AHardwareBuffer
+ * @param buffer The memory area pointed to by buffer will contain the acquired AHardwareBuffer
  *         handle.
  * @return <ul>
  *         <li>{@link AMEDIA_OK} if the method call succeeds.</li>
@@ -760,9 +824,26 @@ void AImage_deleteAsync(AImage* image, int releaseFenceFd);
  *
  * @see AImageReader_ImageCallback
  */
-media_status_t AImage_getHardwareBuffer(const AImage* image, /*out*/AHardwareBuffer** buffer);
+media_status_t AImage_getHardwareBuffer(const AImage* image, /*out*/AHardwareBuffer** buffer) __INTRODUCED_IN(26);
 
-#endif /* __ANDROID_API__ >= 26 */
+/**
+ * Query the dataspace of the input {@link AImage}.
+ *
+ * Available since API level 34.
+ *
+ * @param image the {@link AImage} of interest.
+ * @param dataSpace the dataspace of the image will be filled here if the method call succeeds.
+ *                  This must be one of the ADATASPACE_* enum value defined in
+ *                  {@link ADataSpace}.
+ *
+ * @return <ul>
+ *         <li>{@link AMEDIA_OK} if the method call succeeds.</li>
+ *         <li>{@link AMEDIA_ERROR_INVALID_PARAMETER} if image or dataSpace is NULL.</li>
+ *         <li>{@link AMEDIA_ERROR_INVALID_OBJECT} if the {@link AImageReader} generated this
+ *                 image has been deleted.</li></ul>
+ */
+media_status_t AImage_getDataSpace(const AImage* image,
+                                   /*out*/int32_t* dataSpace) __INTRODUCED_IN(34);
 
 __END_DECLS
 

@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_DVBDMX_H_
 #define _UAPI_DVBDMX_H_
 #include <linux/types.h>
@@ -85,6 +73,30 @@ struct dmx_stc {
   unsigned int base;
   __u64 stc;
 };
+enum dmx_buffer_flags {
+  DMX_BUFFER_FLAG_HAD_CRC32_DISCARD = 1 << 0,
+  DMX_BUFFER_FLAG_TEI = 1 << 1,
+  DMX_BUFFER_PKT_COUNTER_MISMATCH = 1 << 2,
+  DMX_BUFFER_FLAG_DISCONTINUITY_DETECTED = 1 << 3,
+  DMX_BUFFER_FLAG_DISCONTINUITY_INDICATOR = 1 << 4,
+};
+struct dmx_buffer {
+  __u32 index;
+  __u32 bytesused;
+  __u32 offset;
+  __u32 length;
+  __u32 flags;
+  __u32 count;
+};
+struct dmx_requestbuffers {
+  __u32 count;
+  __u32 size;
+};
+struct dmx_exportbuffer {
+  __u32 index;
+  __u32 flags;
+  __s32 fd;
+};
 #define DMX_START _IO('o', 41)
 #define DMX_STOP _IO('o', 42)
 #define DMX_SET_FILTER _IOW('o', 43, struct dmx_sct_filter_params)
@@ -98,4 +110,9 @@ typedef enum dmx_output dmx_output_t;
 typedef enum dmx_input dmx_input_t;
 typedef enum dmx_ts_pes dmx_pes_type_t;
 typedef struct dmx_filter dmx_filter_t;
+#define DMX_REQBUFS _IOWR('o', 60, struct dmx_requestbuffers)
+#define DMX_QUERYBUF _IOWR('o', 61, struct dmx_buffer)
+#define DMX_EXPBUF _IOWR('o', 62, struct dmx_exportbuffer)
+#define DMX_QBUF _IOWR('o', 63, struct dmx_buffer)
+#define DMX_DQBUF _IOWR('o', 64, struct dmx_buffer)
 #endif

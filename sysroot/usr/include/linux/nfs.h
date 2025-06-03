@@ -1,26 +1,15 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_LINUX_NFS_H
 #define _UAPI_LINUX_NFS_H
 #include <linux/types.h>
 #define NFS_PROGRAM 100003
 #define NFS_PORT 2049
+#define NFS_RDMA_PORT 20049
 #define NFS_MAXDATA 8192
 #define NFS_MAXPATHLEN 1024
 #define NFS_MAXNAMLEN 255
@@ -58,7 +47,6 @@ enum nfs_stat {
   NFSERR_NOSPC = 28,
   NFSERR_ROFS = 30,
   NFSERR_MLINK = 31,
-  NFSERR_OPNOTSUPP = 45,
   NFSERR_NAMETOOLONG = 63,
   NFSERR_NOTEMPTY = 66,
   NFSERR_DQUOT = 69,

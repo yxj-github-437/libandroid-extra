@@ -1,27 +1,25 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _LINUX_SOCKIOS_H
 #define _LINUX_SOCKIOS_H
+#include <asm/bitsperlong.h>
 #include <asm/sockios.h>
 #define SIOCINQ FIONREAD
 #define SIOCOUTQ TIOCOUTQ
 #define SOCK_IOC_TYPE 0x89
+#define SIOCGSTAMP_NEW _IOR(SOCK_IOC_TYPE, 0x06, long long[2])
+#define SIOCGSTAMPNS_NEW _IOR(SOCK_IOC_TYPE, 0x07, long long[2])
+#if __BITS_PER_LONG == 64 || defined(__x86_64__) && defined(__ILP32__)
+#define SIOCGSTAMP SIOCGSTAMP_OLD
+#define SIOCGSTAMPNS SIOCGSTAMPNS_OLD
+#else
+#define SIOCGSTAMP ((sizeof(struct timeval)) == 8 ? SIOCGSTAMP_OLD : SIOCGSTAMP_NEW)
+#define SIOCGSTAMPNS ((sizeof(struct timespec)) == 8 ? SIOCGSTAMPNS_OLD : SIOCGSTAMPNS_NEW)
+#endif
 #define SIOCADDRT 0x890B
 #define SIOCDELRT 0x890C
 #define SIOCRTMSG 0x890D

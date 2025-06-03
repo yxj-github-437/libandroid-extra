@@ -14,19 +14,81 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_VERSIONING_H
-#define ANDROID_VERSIONING_H
+#pragma once
 
-#define __INTRODUCED_IN(api_level) __attribute__((annotate("introduced_in=" #api_level)))
-#define __INTRODUCED_IN_FUTURE __attribute__((annotate("introduced_in_future")))
-#define __DEPRECATED_IN(api_level) __attribute__((annotate("deprecated_in=" #api_level)))
-#define __REMOVED_IN(api_level) __attribute__((annotate("obsoleted_in=" #api_level)))
-#define __INTRODUCED_IN_32(api_level) __attribute__((annotate("introduced_in_32=" #api_level)))
-#define __INTRODUCED_IN_64(api_level) __attribute__((annotate("introduced_in_64=" #api_level)))
-#define __INTRODUCED_IN_ARM(api_level) __attribute__((annotate("introduced_in_arm=" #api_level)))
-#define __INTRODUCED_IN_X86(api_level) __attribute__((annotate("introduced_in_x86=" #api_level)))
-#define __INTRODUCED_IN_MIPS(api_level) __attribute__((annotate("introduced_in_mips=" #api_level)))
+/**
+ * @def __ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__
+ *
+ * Controls whether calling APIs newer than the developer's minSdkVersion are a
+ * build error (when not defined) or allowed as a weak reference with a
+ * __builtin_available() guard (when defined).
+ *
+ * See https://developer.android.com/ndk/guides/using-newer-apis for more
+ * details.
+ */
+#if defined(__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__)
+// In this mode, Clang will emit weak references to the APIs if the
+// minSdkVersion is less than the __what argument. This allows the libraries to
+// load even on systems too old to contain the API, but calls must be guarded
+// with `__builtin_available(android api_level, *)` to avoid segfaults.
+#define __BIONIC_AVAILABILITY(__what, ...) __attribute__((__availability__(android,__what __VA_OPT__(,) __VA_ARGS__)))
 
-#define __VERSIONER_NO_GUARD __attribute__((annotate("versioner_no_guard")))
+// When the caller is using weak API references, we should expose the decls for
+// APIs which are not available in the caller's minSdkVersion, otherwise there's
+// no way to take advantage of the weak references.
+#define __BIONIC_AVAILABILITY_GUARD(api_level) 1
+#else
+// The 'strict' flag is required for NDK clients where the code was not written
+// to handle the case where the API was available at build-time but not at
+// run-time. Most 3p code ported to Android was not written to use
+// `__builtin_available()` for run-time availability checking, and so would not
+// compile in this mode (or worse, if the build doesn't use
+// -Werror=unguarded-availability, it would build but crash at runtime).
+#define __BIONIC_AVAILABILITY(__what, ...) __attribute__((__availability__(android,strict,__what __VA_OPT__(,) __VA_ARGS__)))
 
-#endif /* ANDROID_VERSIONING_H */
+// When the caller is using strict API references, we hide APIs which are not
+// available in the caller's minSdkVersion. This is a bionic-only deviation in
+// behavior from the rest of the NDK headers, but it's necessary to maintain
+// source compatibility with 3p libraries that either can't correctly detect API
+// availability (either incorrectly detecting as always-available or as
+// never-available, but neither is true), or define their own polyfills which
+// conflict with our declarations.
+//
+// https://github.com/android/ndk/issues/2081
+#define __BIONIC_AVAILABILITY_GUARD(api_level) (__ANDROID_MIN_SDK_VERSION__ >= (api_level))
+#endif
+
+#ifndef __clang__
+#define __BIONIC_AVAILABILITY(__what, ...) __attribute__((annotated(#__what)))
+#endif
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc23-extensions"
+// Passing no argument for the '...' parameter of a variadic macro is a C23 extension
+#define __INTRODUCED_IN(api_level) __BIONIC_AVAILABILITY(introduced=api_level)
+#pragma clang diagnostic pop
+
+#define __DEPRECATED_IN(api_level, msg) __BIONIC_AVAILABILITY(deprecated=api_level, message=msg)
+#define __REMOVED_IN(api_level, msg) __BIONIC_AVAILABILITY(obsoleted=api_level, message=msg)
+
+// The same availability attribute can't be annotated multiple times. Therefore, the macros are
+// defined for the configuration that it is valid for so that declarations like the below doesn't
+// cause inconsistent availability values which is an error with -Wavailability:
+//
+// void foo() __INTRODUCED_IN_32(30) __INTRODUCED_IN_64(31);
+//
+#if !defined(__LP64__)
+#ifdef __clang__
+# define __INTRODUCED_IN_32(api_level) __BIONIC_AVAILABILITY(introduced=api_level)
+#else
+# define __INTRODUCED_IN_32(api_level) __BIONIC_AVAILABILITY(introduced_in_32=api_level)
+#endif
+#define __INTRODUCED_IN_64(api_level)
+#else
+#define __INTRODUCED_IN_32(api_level)
+#ifdef __clang__
+# define __INTRODUCED_IN_64(api_level) __BIONIC_AVAILABILITY(introduced=api_level)
+#else
+# define __INTRODUCED_IN_64(api_level) __BIONIC_AVAILABILITY(introduced_in_64=api_level)
+#endif
+#endif

@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_LINUX_STAT_H
 #define _UAPI_LINUX_STAT_H
 #include <linux/types.h>
@@ -77,7 +65,15 @@ struct statx {
   __u32 stx_rdev_minor;
   __u32 stx_dev_major;
   __u32 stx_dev_minor;
-  __u64 __spare2[14];
+  __u64 stx_mnt_id;
+  __u32 stx_dio_mem_align;
+  __u32 stx_dio_offset_align;
+  __u64 stx_subvol;
+  __u32 stx_atomic_write_unit_min;
+  __u32 stx_atomic_write_unit_max;
+  __u32 stx_atomic_write_segments_max;
+  __u32 __spare1[1];
+  __u64 __spare3[9];
 };
 #define STATX_TYPE 0x00000001U
 #define STATX_MODE 0x00000002U
@@ -92,12 +88,21 @@ struct statx {
 #define STATX_BLOCKS 0x00000400U
 #define STATX_BASIC_STATS 0x000007ffU
 #define STATX_BTIME 0x00000800U
-#define STATX_ALL 0x00000fffU
+#define STATX_MNT_ID 0x00001000U
+#define STATX_DIOALIGN 0x00002000U
+#define STATX_MNT_ID_UNIQUE 0x00004000U
+#define STATX_SUBVOL 0x00008000U
+#define STATX_WRITE_ATOMIC 0x00010000U
 #define STATX__RESERVED 0x80000000U
+#define STATX_ALL 0x00000fffU
 #define STATX_ATTR_COMPRESSED 0x00000004
 #define STATX_ATTR_IMMUTABLE 0x00000010
 #define STATX_ATTR_APPEND 0x00000020
 #define STATX_ATTR_NODUMP 0x00000040
 #define STATX_ATTR_ENCRYPTED 0x00000800
 #define STATX_ATTR_AUTOMOUNT 0x00001000
+#define STATX_ATTR_MOUNT_ROOT 0x00002000
+#define STATX_ATTR_VERITY 0x00100000
+#define STATX_ATTR_DAX 0x00200000
+#define STATX_ATTR_WRITE_ATOMIC 0x00400000
 #endif

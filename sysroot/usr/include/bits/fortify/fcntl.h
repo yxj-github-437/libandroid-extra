@@ -30,29 +30,25 @@
 #error "Never include this file directly; instead, include <fcntl.h>"
 #endif
 
-
-#if __ANDROID_API__ >= 17
-int __open_2(const char*, int) __INTRODUCED_IN(17);
-int __openat_2(int, const char*, int) __INTRODUCED_IN(17);
-#endif /* __ANDROID_API__ >= 17 */
-
+int __open_2(const char* _Nonnull, int);
+int __openat_2(int, const char* _Nonnull, int);
 /*
  * These are the easiest way to call the real open even in clang FORTIFY.
  */
-int __open_real(const char*, int, ...) __RENAME(open);
-int __openat_real(int, const char*, int, ...) __RENAME(openat);
+int __open_real(const char* _Nonnull, int, ...) __RENAME(open);
+int __openat_real(int, const char* _Nonnull, int, ...) __RENAME(openat);
 
 #if defined(__BIONIC_FORTIFY)
 #define __open_too_many_args_error "too many arguments"
 #define __open_too_few_args_error "called with O_CREAT or O_TMPFILE, but missing mode"
-#define __open_useless_modes_warning "has superfluous mode bits; missing O_CREAT?"
+#define __open_useless_modes_warning "has superfluous mode bits; missing O_CREAT or O_TMPFILE?"
 /* O_TMPFILE shares bits with O_DIRECTORY. */
 #define __open_modes_useful(flags) (((flags) & O_CREAT) || ((flags) & O_TMPFILE) == O_TMPFILE)
+
 #if defined(__clang__)
 
-#if __ANDROID_API__ >= __ANDROID_API_J_MR1__
 __BIONIC_ERROR_FUNCTION_VISIBILITY
-int open(const char* pathname, int flags, mode_t modes, ...) __overloadable
+int open(const char* _Nonnull pathname, int flags, mode_t modes, ...) __overloadable
         __errorattr(__open_too_many_args_error);
 
 /*
@@ -62,14 +58,18 @@ int open(const char* pathname, int flags, mode_t modes, ...) __overloadable
  * open(const char *, int, ...).
  */
 __BIONIC_FORTIFY_INLINE
-int open(const char* const __pass_object_size pathname, int flags)
+int open(const char* _Nonnull const __pass_object_size pathname, int flags)
         __overloadable
         __clang_error_if(__open_modes_useful(flags), "'open' " __open_too_few_args_error) {
+#if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
     return __open_2(pathname, flags);
+#else
+    return __open_real(pathname, flags);
+#endif
 }
 
 __BIONIC_FORTIFY_INLINE
-int open(const char* const __pass_object_size pathname, int flags, mode_t modes)
+int open(const char* _Nonnull const __pass_object_size pathname, int flags, mode_t modes)
         __overloadable
         __clang_warning_if(!__open_modes_useful(flags) && modes,
                            "'open' " __open_useless_modes_warning) {
@@ -77,31 +77,74 @@ int open(const char* const __pass_object_size pathname, int flags, mode_t modes)
 }
 
 __BIONIC_ERROR_FUNCTION_VISIBILITY
-int openat(int dirfd, const char* pathname, int flags, mode_t modes, ...)
+int openat(int dirfd, const char* _Nonnull pathname, int flags, mode_t modes, ...)
         __overloadable
         __errorattr(__open_too_many_args_error);
 
 __BIONIC_FORTIFY_INLINE
-int openat(int dirfd, const char* const __pass_object_size pathname, int flags)
+int openat(int dirfd, const char* _Nonnull const __pass_object_size pathname, int flags)
         __overloadable
         __clang_error_if(__open_modes_useful(flags), "'openat' " __open_too_few_args_error) {
+#if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
     return __openat_2(dirfd, pathname, flags);
+#else
+    return __openat_real(dirfd, pathname, flags);
+#endif
 }
 
 __BIONIC_FORTIFY_INLINE
-int openat(int dirfd, const char* const __pass_object_size pathname, int flags, mode_t modes)
+int openat(int dirfd, const char* _Nonnull const __pass_object_size pathname, int flags, mode_t modes)
         __overloadable
         __clang_warning_if(!__open_modes_useful(flags) && modes,
                            "'openat' " __open_useless_modes_warning) {
     return __openat_real(dirfd, pathname, flags, modes);
 }
-#endif /* __ANDROID_API__ >= __ANDROID_API_J_MR1__ */
+
+/* Note that open == open64, so we reuse those bits in the open64 variants below.  */
+
+__BIONIC_ERROR_FUNCTION_VISIBILITY
+int open64(const char* _Nonnull pathname, int flags, mode_t modes, ...) __overloadable
+        __errorattr(__open_too_many_args_error);
+
+__BIONIC_FORTIFY_INLINE
+int open64(const char* _Nonnull const __pass_object_size pathname, int flags)
+        __overloadable
+        __clang_error_if(__open_modes_useful(flags), "'open64' " __open_too_few_args_error) {
+    return open(pathname, flags);
+}
+
+__BIONIC_FORTIFY_INLINE
+int open64(const char* _Nonnull const __pass_object_size pathname, int flags, mode_t modes)
+        __overloadable
+        __clang_warning_if(!__open_modes_useful(flags) && modes,
+                           "'open64' " __open_useless_modes_warning) {
+    return open(pathname, flags, modes);
+}
+
+__BIONIC_ERROR_FUNCTION_VISIBILITY
+int openat64(int dirfd, const char* _Nonnull pathname, int flags, mode_t modes, ...)
+        __overloadable
+        __errorattr(__open_too_many_args_error);
+
+__BIONIC_FORTIFY_INLINE
+int openat64(int dirfd, const char* _Nonnull const __pass_object_size pathname, int flags)
+        __overloadable
+        __clang_error_if(__open_modes_useful(flags), "'openat64' " __open_too_few_args_error) {
+    return openat(dirfd, pathname, flags);
+}
+
+__BIONIC_FORTIFY_INLINE
+int openat64(int dirfd, const char* _Nonnull const __pass_object_size pathname, int flags, mode_t modes)
+        __overloadable
+        __clang_warning_if(!__open_modes_useful(flags) && modes,
+                           "'openat64' " __open_useless_modes_warning) {
+    return openat(dirfd, pathname, flags, modes);
+}
 
 #else /* defined(__clang__) */
 __errordecl(__creat_missing_mode, __open_too_few_args_error);
 __errordecl(__creat_too_many_args, __open_too_many_args_error);
 
-#if __ANDROID_API__ >= __ANDROID_API_J_MR1__
 __BIONIC_FORTIFY_VARIADIC
 int open(const char* pathname, int flags, ...) {
     if (__builtin_constant_p(flags)) {
@@ -114,9 +157,11 @@ int open(const char* pathname, int flags, ...) {
         __creat_too_many_args();  /* Compile time error. */
     }
 
+#if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
     if ((__builtin_va_arg_pack_len() == 0) && !__builtin_constant_p(flags)) {
         return __open_2(pathname, flags);
     }
+#endif
 
     return __open_real(pathname, flags, __builtin_va_arg_pack());
 }
@@ -133,13 +178,24 @@ int openat(int dirfd, const char* pathname, int flags, ...) {
         __creat_too_many_args();  /* Compile time error. */
     }
 
+#if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
     if ((__builtin_va_arg_pack_len() == 0) && !__builtin_constant_p(flags)) {
         return __openat_2(dirfd, pathname, flags);
     }
+#endif
 
     return __openat_real(dirfd, pathname, flags, __builtin_va_arg_pack());
 }
-#endif /* __ANDROID_API__ >= __ANDROID_API_J_MR1__ */
+
+__BIONIC_FORTIFY_VARIADIC
+int open64(const char* pathname, int flags, ...) {
+    return open(pathname, flags, __builtin_va_arg_pack());
+}
+
+__BIONIC_FORTIFY_VARIADIC
+int openat64(int dirfd, const char* pathname, int flags, ...) {
+    return openat(dirfd, pathname, flags, __builtin_va_arg_pack());
+}
 
 #endif /* defined(__clang__) */
 

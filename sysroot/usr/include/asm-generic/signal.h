@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI__ASM_GENERIC_SIGNAL_H
 #define _UAPI__ASM_GENERIC_SIGNAL_H
 #include <linux/types.h>
@@ -60,15 +48,6 @@
 #ifndef __SIGRTMAX
 #define __SIGRTMAX _KERNEL__NSIG
 #endif
-#define SA_NOCLDSTOP 0x00000001
-#define SA_NOCLDWAIT 0x00000002
-#define SA_SIGINFO 0x00000004
-#define SA_ONSTACK 0x08000000
-#define SA_RESTART 0x10000000
-#define SA_NODEFER 0x40000000
-#define SA_RESETHAND 0x80000000
-#define SA_NOMASK SA_NODEFER
-#define SA_ONESHOT SA_RESETHAND
 #if !defined(MINSIGSTKSZ) || !defined(SIGSTKSZ)
 #define MINSIGSTKSZ 2048
 #define SIGSTKSZ 8192
@@ -82,7 +61,7 @@ typedef unsigned long old_sigset_t;
 #ifdef SA_RESTORER
 #define __ARCH_HAS_SA_RESTORER
 #endif
-struct sigaction {
+struct __kernel_sigaction {
   __sighandler_t sa_handler;
   unsigned long sa_flags;
 #ifdef SA_RESTORER
@@ -91,9 +70,9 @@ struct sigaction {
   sigset_t sa_mask;
 };
 typedef struct sigaltstack {
-  void __user * ss_sp;
+  void  * ss_sp;
   int ss_flags;
-  size_t ss_size;
+  __kernel_size_t ss_size;
 } stack_t;
 #endif
 #endif

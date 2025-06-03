@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef __LINUX_USB_VIDEO_H
 #define __LINUX_USB_VIDEO_H
 #include <linux/types.h>
@@ -139,6 +127,32 @@
 #define UVC_CONTROL_CAP_DISABLED (1 << 2)
 #define UVC_CONTROL_CAP_AUTOUPDATE (1 << 3)
 #define UVC_CONTROL_CAP_ASYNCHRONOUS (1 << 4)
+enum uvc_color_primaries_values {
+  UVC_COLOR_PRIMARIES_UNSPECIFIED,
+  UVC_COLOR_PRIMARIES_BT_709_SRGB,
+  UVC_COLOR_PRIMARIES_BT_470_2_M,
+  UVC_COLOR_PRIMARIES_BT_470_2_B_G,
+  UVC_COLOR_PRIMARIES_SMPTE_170M,
+  UVC_COLOR_PRIMARIES_SMPTE_240M,
+};
+enum uvc_transfer_characteristics_values {
+  UVC_TRANSFER_CHARACTERISTICS_UNSPECIFIED,
+  UVC_TRANSFER_CHARACTERISTICS_BT_709,
+  UVC_TRANSFER_CHARACTERISTICS_BT_470_2_M,
+  UVC_TRANSFER_CHARACTERISTICS_BT_470_2_B_G,
+  UVC_TRANSFER_CHARACTERISTICS_SMPTE_170M,
+  UVC_TRANSFER_CHARACTERISTICS_SMPTE_240M,
+  UVC_TRANSFER_CHARACTERISTICS_LINEAR,
+  UVC_TRANSFER_CHARACTERISTICS_SRGB,
+};
+enum uvc_matrix_coefficients {
+  UVC_MATRIX_COEFFICIENTS_UNSPECIFIED,
+  UVC_MATRIX_COEFFICIENTS_BT_709,
+  UVC_MATRIX_COEFFICIENTS_FCC,
+  UVC_MATRIX_COEFFICIENTS_BT_470_2_B_G,
+  UVC_MATRIX_COEFFICIENTS_SMPTE_170M,
+  UVC_MATRIX_COEFFICIENTS_SMPTE_240M,
+};
 struct uvc_descriptor_header {
   __u8 bLength;
   __u8 bDescriptorType;
@@ -148,22 +162,22 @@ struct uvc_header_descriptor {
   __u8 bLength;
   __u8 bDescriptorType;
   __u8 bDescriptorSubType;
-  __u16 bcdUVC;
-  __u16 wTotalLength;
-  __u32 dwClockFrequency;
+  __le16 bcdUVC;
+  __le16 wTotalLength;
+  __le32 dwClockFrequency;
   __u8 bInCollection;
   __u8 baInterfaceNr[];
 } __attribute__((__packed__));
 #define UVC_DT_HEADER_SIZE(n) (12 + (n))
 #define UVC_HEADER_DESCRIPTOR(n) uvc_header_descriptor_ ##n
-#define DECLARE_UVC_HEADER_DESCRIPTOR(n) struct UVC_HEADER_DESCRIPTOR(n) { __u8 bLength; __u8 bDescriptorType; __u8 bDescriptorSubType; __u16 bcdUVC; __u16 wTotalLength; __u32 dwClockFrequency; __u8 bInCollection; __u8 baInterfaceNr[n]; \
+#define DECLARE_UVC_HEADER_DESCRIPTOR(n) struct UVC_HEADER_DESCRIPTOR(n) { __u8 bLength; __u8 bDescriptorType; __u8 bDescriptorSubType; __le16 bcdUVC; __le16 wTotalLength; __le32 dwClockFrequency; __u8 bInCollection; __u8 baInterfaceNr[n]; \
 } __attribute__((packed))
 struct uvc_input_terminal_descriptor {
   __u8 bLength;
   __u8 bDescriptorType;
   __u8 bDescriptorSubType;
   __u8 bTerminalID;
-  __u16 wTerminalType;
+  __le16 wTerminalType;
   __u8 bAssocTerminal;
   __u8 iTerminal;
 } __attribute__((__packed__));
@@ -173,7 +187,7 @@ struct uvc_output_terminal_descriptor {
   __u8 bDescriptorType;
   __u8 bDescriptorSubType;
   __u8 bTerminalID;
-  __u16 wTerminalType;
+  __le16 wTerminalType;
   __u8 bAssocTerminal;
   __u8 bSourceID;
   __u8 iTerminal;
@@ -184,12 +198,12 @@ struct uvc_camera_terminal_descriptor {
   __u8 bDescriptorType;
   __u8 bDescriptorSubType;
   __u8 bTerminalID;
-  __u16 wTerminalType;
+  __le16 wTerminalType;
   __u8 bAssocTerminal;
   __u8 iTerminal;
-  __u16 wObjectiveFocalLengthMin;
-  __u16 wObjectiveFocalLengthMax;
-  __u16 wOcularFocalLength;
+  __le16 wObjectiveFocalLengthMin;
+  __le16 wObjectiveFocalLengthMax;
+  __le16 wOcularFocalLength;
   __u8 bControlSize;
   __u8 bmControls[3];
 } __attribute__((__packed__));
@@ -213,12 +227,13 @@ struct uvc_processing_unit_descriptor {
   __u8 bDescriptorSubType;
   __u8 bUnitID;
   __u8 bSourceID;
-  __u16 wMaxMultiplier;
+  __le16 wMaxMultiplier;
   __u8 bControlSize;
   __u8 bmControls[2];
   __u8 iProcessing;
+  __u8 bmVideoStandards;
 } __attribute__((__packed__));
-#define UVC_DT_PROCESSING_UNIT_SIZE(n) (9 + (n))
+#define UVC_DT_PROCESSING_UNIT_SIZE(n) (10 + (n))
 struct uvc_extension_unit_descriptor {
   __u8 bLength;
   __u8 bDescriptorType;
@@ -240,7 +255,7 @@ struct uvc_control_endpoint_descriptor {
   __u8 bLength;
   __u8 bDescriptorType;
   __u8 bDescriptorSubType;
-  __u16 wMaxTransferSize;
+  __le16 wMaxTransferSize;
 } __attribute__((__packed__));
 #define UVC_DT_CONTROL_ENDPOINT_SIZE 5
 struct uvc_input_header_descriptor {
@@ -248,7 +263,7 @@ struct uvc_input_header_descriptor {
   __u8 bDescriptorType;
   __u8 bDescriptorSubType;
   __u8 bNumFormats;
-  __u16 wTotalLength;
+  __le16 wTotalLength;
   __u8 bEndpointAddress;
   __u8 bmInfo;
   __u8 bTerminalLink;
@@ -260,14 +275,14 @@ struct uvc_input_header_descriptor {
 } __attribute__((__packed__));
 #define UVC_DT_INPUT_HEADER_SIZE(n,p) (13 + (n * p))
 #define UVC_INPUT_HEADER_DESCRIPTOR(n,p) uvc_input_header_descriptor_ ##n_ ##p
-#define DECLARE_UVC_INPUT_HEADER_DESCRIPTOR(n,p) struct UVC_INPUT_HEADER_DESCRIPTOR(n, p) { __u8 bLength; __u8 bDescriptorType; __u8 bDescriptorSubType; __u8 bNumFormats; __u16 wTotalLength; __u8 bEndpointAddress; __u8 bmInfo; __u8 bTerminalLink; __u8 bStillCaptureMethod; __u8 bTriggerSupport; __u8 bTriggerUsage; __u8 bControlSize; __u8 bmaControls[p][n]; \
+#define DECLARE_UVC_INPUT_HEADER_DESCRIPTOR(n,p) struct UVC_INPUT_HEADER_DESCRIPTOR(n, p) { __u8 bLength; __u8 bDescriptorType; __u8 bDescriptorSubType; __u8 bNumFormats; __le16 wTotalLength; __u8 bEndpointAddress; __u8 bmInfo; __u8 bTerminalLink; __u8 bStillCaptureMethod; __u8 bTriggerSupport; __u8 bTriggerUsage; __u8 bControlSize; __u8 bmaControls[p][n]; \
 } __attribute__((packed))
 struct uvc_output_header_descriptor {
   __u8 bLength;
   __u8 bDescriptorType;
   __u8 bDescriptorSubType;
   __u8 bNumFormats;
-  __u16 wTotalLength;
+  __le16 wTotalLength;
   __u8 bEndpointAddress;
   __u8 bTerminalLink;
   __u8 bControlSize;
@@ -275,7 +290,7 @@ struct uvc_output_header_descriptor {
 } __attribute__((__packed__));
 #define UVC_DT_OUTPUT_HEADER_SIZE(n,p) (9 + (n * p))
 #define UVC_OUTPUT_HEADER_DESCRIPTOR(n,p) uvc_output_header_descriptor_ ##n_ ##p
-#define DECLARE_UVC_OUTPUT_HEADER_DESCRIPTOR(n,p) struct UVC_OUTPUT_HEADER_DESCRIPTOR(n, p) { __u8 bLength; __u8 bDescriptorType; __u8 bDescriptorSubType; __u8 bNumFormats; __u16 wTotalLength; __u8 bEndpointAddress; __u8 bTerminalLink; __u8 bControlSize; __u8 bmaControls[p][n]; \
+#define DECLARE_UVC_OUTPUT_HEADER_DESCRIPTOR(n,p) struct UVC_OUTPUT_HEADER_DESCRIPTOR(n, p) { __u8 bLength; __u8 bDescriptorType; __u8 bDescriptorSubType; __u8 bNumFormats; __le16 wTotalLength; __u8 bEndpointAddress; __u8 bTerminalLink; __u8 bControlSize; __u8 bmaControls[p][n]; \
 } __attribute__((packed))
 struct uvc_color_matching_descriptor {
   __u8 bLength;
@@ -315,7 +330,7 @@ struct uvc_format_uncompressed {
   __u8 bDefaultFrameIndex;
   __u8 bAspectRatioX;
   __u8 bAspectRatioY;
-  __u8 bmInterfaceFlags;
+  __u8 bmInterlaceFlags;
   __u8 bCopyProtect;
 } __attribute__((__packed__));
 #define UVC_DT_FORMAT_UNCOMPRESSED_SIZE 27
@@ -325,18 +340,18 @@ struct uvc_frame_uncompressed {
   __u8 bDescriptorSubType;
   __u8 bFrameIndex;
   __u8 bmCapabilities;
-  __u16 wWidth;
-  __u16 wHeight;
-  __u32 dwMinBitRate;
-  __u32 dwMaxBitRate;
-  __u32 dwMaxVideoFrameBufferSize;
-  __u32 dwDefaultFrameInterval;
+  __le16 wWidth;
+  __le16 wHeight;
+  __le32 dwMinBitRate;
+  __le32 dwMaxBitRate;
+  __le32 dwMaxVideoFrameBufferSize;
+  __le32 dwDefaultFrameInterval;
   __u8 bFrameIntervalType;
-  __u32 dwFrameInterval[];
+  __le32 dwFrameInterval[];
 } __attribute__((__packed__));
 #define UVC_DT_FRAME_UNCOMPRESSED_SIZE(n) (26 + 4 * (n))
 #define UVC_FRAME_UNCOMPRESSED(n) uvc_frame_uncompressed_ ##n
-#define DECLARE_UVC_FRAME_UNCOMPRESSED(n) struct UVC_FRAME_UNCOMPRESSED(n) { __u8 bLength; __u8 bDescriptorType; __u8 bDescriptorSubType; __u8 bFrameIndex; __u8 bmCapabilities; __u16 wWidth; __u16 wHeight; __u32 dwMinBitRate; __u32 dwMaxBitRate; __u32 dwMaxVideoFrameBufferSize; __u32 dwDefaultFrameInterval; __u8 bFrameIntervalType; __u32 dwFrameInterval[n]; \
+#define DECLARE_UVC_FRAME_UNCOMPRESSED(n) struct UVC_FRAME_UNCOMPRESSED(n) { __u8 bLength; __u8 bDescriptorType; __u8 bDescriptorSubType; __u8 bFrameIndex; __u8 bmCapabilities; __le16 wWidth; __le16 wHeight; __le32 dwMinBitRate; __le32 dwMaxBitRate; __le32 dwMaxVideoFrameBufferSize; __le32 dwDefaultFrameInterval; __u8 bFrameIntervalType; __le32 dwFrameInterval[n]; \
 } __attribute__((packed))
 struct uvc_format_mjpeg {
   __u8 bLength;
@@ -348,7 +363,7 @@ struct uvc_format_mjpeg {
   __u8 bDefaultFrameIndex;
   __u8 bAspectRatioX;
   __u8 bAspectRatioY;
-  __u8 bmInterfaceFlags;
+  __u8 bmInterlaceFlags;
   __u8 bCopyProtect;
 } __attribute__((__packed__));
 #define UVC_DT_FORMAT_MJPEG_SIZE 11
@@ -358,17 +373,17 @@ struct uvc_frame_mjpeg {
   __u8 bDescriptorSubType;
   __u8 bFrameIndex;
   __u8 bmCapabilities;
-  __u16 wWidth;
-  __u16 wHeight;
-  __u32 dwMinBitRate;
-  __u32 dwMaxBitRate;
-  __u32 dwMaxVideoFrameBufferSize;
-  __u32 dwDefaultFrameInterval;
+  __le16 wWidth;
+  __le16 wHeight;
+  __le32 dwMinBitRate;
+  __le32 dwMaxBitRate;
+  __le32 dwMaxVideoFrameBufferSize;
+  __le32 dwDefaultFrameInterval;
   __u8 bFrameIntervalType;
-  __u32 dwFrameInterval[];
+  __le32 dwFrameInterval[];
 } __attribute__((__packed__));
 #define UVC_DT_FRAME_MJPEG_SIZE(n) (26 + 4 * (n))
 #define UVC_FRAME_MJPEG(n) uvc_frame_mjpeg_ ##n
-#define DECLARE_UVC_FRAME_MJPEG(n) struct UVC_FRAME_MJPEG(n) { __u8 bLength; __u8 bDescriptorType; __u8 bDescriptorSubType; __u8 bFrameIndex; __u8 bmCapabilities; __u16 wWidth; __u16 wHeight; __u32 dwMinBitRate; __u32 dwMaxBitRate; __u32 dwMaxVideoFrameBufferSize; __u32 dwDefaultFrameInterval; __u8 bFrameIntervalType; __u32 dwFrameInterval[n]; \
+#define DECLARE_UVC_FRAME_MJPEG(n) struct UVC_FRAME_MJPEG(n) { __u8 bLength; __u8 bDescriptorType; __u8 bDescriptorSubType; __u8 bFrameIndex; __u8 bmCapabilities; __le16 wWidth; __le16 wHeight; __le32 dwMinBitRate; __le32 dwMaxBitRate; __le32 dwMaxVideoFrameBufferSize; __le32 dwDefaultFrameInterval; __u8 bFrameIntervalType; __le32 dwFrameInterval[n]; \
 } __attribute__((packed))
 #endif

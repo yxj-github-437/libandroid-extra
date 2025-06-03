@@ -13,9 +13,8 @@
 #define _GNU_SOURCE
 #include <stddef.h>
 #include <stdarg.h>
-#include <signal.h>
-#include <string.h>
 #include <stdint.h>
+#include <sys/ucontext.h>
 
 
 extern void __start_context(void);

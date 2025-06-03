@@ -1,23 +1,12 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef __LINUX_IF_PACKET_H
 #define __LINUX_IF_PACKET_H
+#include <asm/byteorder.h>
 #include <linux/types.h>
 struct sockaddr_pkt {
   unsigned short spkt_family;
@@ -63,6 +52,8 @@ struct sockaddr_ll {
 #define PACKET_QDISC_BYPASS 20
 #define PACKET_ROLLOVER_STATS 21
 #define PACKET_FANOUT_DATA 22
+#define PACKET_IGNORE_OUTGOING 23
+#define PACKET_VNET_HDR_SZ 24
 #define PACKET_FANOUT_HASH 0
 #define PACKET_FANOUT_LB 1
 #define PACKET_FANOUT_CPU 2
@@ -73,6 +64,7 @@ struct sockaddr_ll {
 #define PACKET_FANOUT_EBPF 7
 #define PACKET_FANOUT_FLAG_ROLLOVER 0x1000
 #define PACKET_FANOUT_FLAG_UNIQUEID 0x2000
+#define PACKET_FANOUT_FLAG_IGNORE_OUTGOING 0x4000
 #define PACKET_FANOUT_FLAG_DEFRAG 0x8000
 struct tpacket_stats {
   unsigned int tp_packets;
@@ -110,13 +102,14 @@ struct tpacket_auxdata {
 #define TP_STATUS_BLK_TMO (1 << 5)
 #define TP_STATUS_VLAN_TPID_VALID (1 << 6)
 #define TP_STATUS_CSUM_VALID (1 << 7)
+#define TP_STATUS_GSO_TCP (1 << 8)
 #define TP_STATUS_AVAILABLE 0
 #define TP_STATUS_SEND_REQUEST (1 << 0)
 #define TP_STATUS_SENDING (1 << 1)
 #define TP_STATUS_WRONG_FORMAT (1 << 2)
 #define TP_STATUS_TS_SOFTWARE (1 << 29)
 #define TP_STATUS_TS_SYS_HARDWARE (1 << 30)
-#define TP_STATUS_TS_RAW_HARDWARE (1 << 31)
+#define TP_STATUS_TS_RAW_HARDWARE (1U << 31)
 #define TP_FT_REQ_FILL_RXHASH 0x1
 struct tpacket_hdr {
   unsigned long tp_status;
@@ -216,6 +209,16 @@ struct packet_mreq {
   unsigned short mr_type;
   unsigned short mr_alen;
   unsigned char mr_address[8];
+};
+struct fanout_args {
+#ifdef __LITTLE_ENDIAN_BITFIELD
+  __u16 id;
+  __u16 type_flags;
+#else
+  __u16 type_flags;
+  __u16 id;
+#endif
+  __u32 max_num_members;
 };
 #define PACKET_MR_MULTICAST 0
 #define PACKET_MR_PROMISC 1

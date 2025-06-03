@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _IP_VS_H
 #define _IP_VS_H
 #include <linux/types.h>
@@ -85,6 +73,15 @@
 #define IP_VS_PENAME_MAXLEN 16
 #define IP_VS_IFNAME_MAXLEN 16
 #define IP_VS_PEDATA_MAXLEN 255
+enum {
+  IP_VS_CONN_F_TUNNEL_TYPE_IPIP = 0,
+  IP_VS_CONN_F_TUNNEL_TYPE_GUE,
+  IP_VS_CONN_F_TUNNEL_TYPE_GRE,
+  IP_VS_CONN_F_TUNNEL_TYPE_MAX,
+};
+#define IP_VS_TUNNEL_ENCAP_FLAG_NOCSUM (0)
+#define IP_VS_TUNNEL_ENCAP_FLAG_CSUM (1 << 0)
+#define IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM (1 << 1)
 struct ip_vs_service_user {
   __u16 protocol;
   __be32 addr;
@@ -150,11 +147,11 @@ struct ip_vs_get_dests {
   __be16 port;
   __u32 fwmark;
   unsigned int num_dests;
-  struct ip_vs_dest_entry entrytable[0];
+  struct ip_vs_dest_entry entrytable[];
 };
 struct ip_vs_get_services {
   unsigned int num_services;
-  struct ip_vs_service_entry entrytable[0];
+  struct ip_vs_service_entry entrytable[];
 };
 struct ip_vs_timeout_user {
   int tcp_timeout;
@@ -236,6 +233,9 @@ enum {
   IPVS_DEST_ATTR_STATS,
   IPVS_DEST_ATTR_ADDR_FAMILY,
   IPVS_DEST_ATTR_STATS64,
+  IPVS_DEST_ATTR_TUN_TYPE,
+  IPVS_DEST_ATTR_TUN_PORT,
+  IPVS_DEST_ATTR_TUN_FLAGS,
   __IPVS_DEST_ATTR_MAX,
 };
 #define IPVS_DEST_ATTR_MAX (__IPVS_DEST_ATTR_MAX - 1)

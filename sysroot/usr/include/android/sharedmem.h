@@ -21,12 +21,14 @@
 
 /**
  * @file sharedmem.h
+ * @brief Shared memory buffers that can be shared between processes.
  */
 
 #ifndef ANDROID_SHARED_MEMORY_H
 #define ANDROID_SHARED_MEMORY_H
 
 #include <stddef.h>
+#include <sys/cdefs.h>
 
 /******************************************************************
  *
@@ -44,38 +46,46 @@
  *   - DO NOT CHANGE THE LAYOUT OR SIZE OF STRUCTURES
  */
 
-/**
- * Structures and functions for a shared memory buffer that can be shared across process.
- */
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#if __ANDROID_API__ >= __ANDROID_API_O__
-
 /**
  * Create a shared memory region.
  *
- * Create shared memory region and returns an file descriptor.  The resulting file descriptor can be
- * mmap'ed to process memory space with PROT_READ | PROT_WRITE | PROT_EXEC. Access to shared memory
- * region can be restricted with {@link ASharedMemory_setProt}.
+ * Create a shared memory region and returns a file descriptor.  The resulting file descriptor can be
+ * mapped into the process' memory using mmap(2) with `PROT_READ | PROT_WRITE | PROT_EXEC`.
+ * Access to shared memory regions can be restricted with {@link ASharedMemory_setProt}.
  *
- * Use close() to release the shared memory region.
+ * Use close(2) to release the shared memory region.
+ *
+ * Use <a href="/reference/android/os/ParcelFileDescriptor">android.os.ParcelFileDescriptor</a>
+ * to pass the file descriptor to another process. File descriptors may also be sent to other
+ * processes over a Unix domain socket with sendmsg(2) and `SCM_RIGHTS`. See sendmsg(3) and
+ * cmsg(3) man pages for more information.
+ *
+ * If you intend to share this file descriptor with a child process after
+ * calling exec(3), note that you will need to use fcntl(2) with `F_SETFD`
+ * to clear the `FD_CLOEXEC` flag for this to work on all versions of Android.
+ *
+ * Available since API level 26.
  *
  * \param name an optional name.
  * \param size size of the shared memory region
- * \return file descriptor that denotes the shared memory; error code on failure.
+ * \return file descriptor that denotes the shared memory;
+ *         -1 and sets `errno` on failure, or `-EINVAL` if the error is that size was 0.
  */
-int ASharedMemory_create(const char *name, size_t size);
+int ASharedMemory_create(const char *name, size_t size) __INTRODUCED_IN(26);
 
 /**
  * Get the size of the shared memory region.
  *
+ * Available since API level 26.
+ *
  * \param fd file descriptor of the shared memory region
- * \return size in bytes; 0 if fd is not a valid shared memory file descriptor.
+ * \return size in bytes; 0 if `fd` is not a valid shared memory file descriptor.
  */
-size_t ASharedMemory_getSize(int fd);
+size_t ASharedMemory_getSize(int fd) __INTRODUCED_IN(26);
 
 /**
  * Restrict access of shared memory region.
@@ -92,7 +102,8 @@ size_t ASharedMemory_getSize(int fd);
  *     int fd = ASharedMemory_create("memory", 128);
  *
  *     // By default it has PROT_READ | PROT_WRITE | PROT_EXEC.
- *     char *buffer = (char *) mmap(NULL, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+ *     size_t memSize = ASharedMemory_getSize(fd);
+ *     char *buffer = (char *) mmap(NULL, memSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
  *
  *     strcpy(buffer, "This is an example."); // trivially initialize content
  *
@@ -101,14 +112,14 @@ size_t ASharedMemory_getSize(int fd);
  *
  *     // share fd with another process here and the other process can only map with PROT_READ.
  *
+ * Available since API level 26.
+ *
  * \param fd   file descriptor of the shared memory region.
- * \param prot any bitwise-or'ed combination of PROT_READ, PROT_WRITE, PROT_EXEC denoting
+ * \param prot any bitwise-or'ed combination of `PROT_READ`, `PROT_WRITE`, `PROT_EXEC` denoting
  *             updated access. Note access can only be removed, but not added back.
- * \return 0 for success, error code on failure.
+ * \return 0 for success, -1 and sets `errno` on failure.
  */
-int ASharedMemory_setProt(int fd, int prot);
-
-#endif
+int ASharedMemory_setProt(int fd, int prot) __INTRODUCED_IN(26);
 
 #ifdef __cplusplus
 };

@@ -1,33 +1,20 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _LINUX_FDREG_H
 #define _LINUX_FDREG_H
-#ifdef FDPATCHES
-#define FD_IOPORT fdc_state[fdc].address
-#else
-#define FD_IOPORT 0x3f0
-#endif
-#define FD_STATUS (4 + FD_IOPORT)
-#define FD_DATA (5 + FD_IOPORT)
-#define FD_DOR (2 + FD_IOPORT)
-#define FD_DIR (7 + FD_IOPORT)
-#define FD_DCR (7 + FD_IOPORT)
+#define FD_SRA 0
+#define FD_SRB 1
+#define FD_DOR 2
+#define FD_TDR 3
+#define FD_DSR 4
+#define FD_STATUS 4
+#define FD_DATA 5
+#define FD_DIR 7
+#define FD_DCR 7
 #define STATUS_BUSYMASK 0x0F
 #define STATUS_BUSY 0x10
 #define STATUS_DMA 0x20

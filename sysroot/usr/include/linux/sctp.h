@@ -1,26 +1,17 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_SCTP_H
 #define _UAPI_SCTP_H
 #include <linux/types.h>
 #include <linux/socket.h>
 typedef __s32 sctp_assoc_t;
+#define SCTP_FUTURE_ASSOC 0
+#define SCTP_CURRENT_ASSOC 1
+#define SCTP_ALL_ASSOC 2
 #define SCTP_RTOINFO 0
 #define SCTP_ASSOCINFO 1
 #define SCTP_INITMSG 2
@@ -58,6 +49,9 @@ typedef __s32 sctp_assoc_t;
 #define SCTP_RECVRCVINFO 32
 #define SCTP_RECVNXTINFO 33
 #define SCTP_DEFAULT_SNDINFO 34
+#define SCTP_AUTH_DEACTIVATE_KEY 35
+#define SCTP_REUSE_PORT 36
+#define SCTP_PEER_ADDR_THLDS_V2 37
 #define SCTP_SOCKOPT_BINDX_ADD 100
 #define SCTP_SOCKOPT_BINDX_REM 101
 #define SCTP_SOCKOPT_PEELOFF 102
@@ -79,6 +73,16 @@ typedef __s32 sctp_assoc_t;
 #define SCTP_SOCKOPT_PEELOFF_FLAGS 122
 #define SCTP_STREAM_SCHEDULER 123
 #define SCTP_STREAM_SCHEDULER_VALUE 124
+#define SCTP_INTERLEAVING_SUPPORTED 125
+#define SCTP_SENDMSG_CONNECT 126
+#define SCTP_EVENT 127
+#define SCTP_ASCONF_SUPPORTED 128
+#define SCTP_AUTH_SUPPORTED 129
+#define SCTP_ECN_SUPPORTED 130
+#define SCTP_EXPOSE_POTENTIALLY_FAILED_STATE 131
+#define SCTP_EXPOSE_PF_STATE SCTP_EXPOSE_POTENTIALLY_FAILED_STATE
+#define SCTP_REMOTE_UDP_ENCAPS_PORT 132
+#define SCTP_PLPMTUD_PROBE_INTERVAL 133
 #define SCTP_PR_SCTP_NONE 0x0000
 #define SCTP_PR_SCTP_TTL 0x0010
 #define SCTP_PR_SCTP_RTX 0x0020
@@ -143,11 +147,20 @@ struct sctp_nxtinfo {
   __u32 nxt_length;
   sctp_assoc_t nxt_assoc_id;
 };
+struct sctp_prinfo {
+  __u16 pr_policy;
+  __u32 pr_value;
+};
+struct sctp_authinfo {
+  __u16 auth_keynumber;
+};
 enum sctp_sinfo_flags {
   SCTP_UNORDERED = (1 << 0),
   SCTP_ADDR_OVER = (1 << 1),
   SCTP_ABORT = (1 << 2),
   SCTP_SACK_IMMEDIATELY = (1 << 3),
+  SCTP_SENDALL = (1 << 6),
+  SCTP_PR_SCTP_ALL = (1 << 7),
   SCTP_NOTIFICATION = MSG_NOTIFICATION,
   SCTP_EOF = MSG_FIN,
 };
@@ -167,6 +180,14 @@ typedef enum sctp_cmsg_type {
 #define SCTP_RCVINFO SCTP_RCVINFO
   SCTP_NXTINFO,
 #define SCTP_NXTINFO SCTP_NXTINFO
+  SCTP_PRINFO,
+#define SCTP_PRINFO SCTP_PRINFO
+  SCTP_AUTHINFO,
+#define SCTP_AUTHINFO SCTP_AUTHINFO
+  SCTP_DSTADDRV4,
+#define SCTP_DSTADDRV4 SCTP_DSTADDRV4
+  SCTP_DSTADDRV6,
+#define SCTP_DSTADDRV6 SCTP_DSTADDRV6
 } sctp_cmsg_t;
 struct sctp_assoc_change {
   __u16 sac_type;
@@ -177,7 +198,7 @@ struct sctp_assoc_change {
   __u16 sac_outbound_streams;
   __u16 sac_inbound_streams;
   sctp_assoc_t sac_assoc_id;
-  __u8 sac_info[0];
+  __u8 sac_info[];
 };
 enum sctp_sac_state {
   SCTP_COMM_UP,
@@ -202,6 +223,8 @@ enum sctp_spc_state {
   SCTP_ADDR_ADDED,
   SCTP_ADDR_MADE_PRIM,
   SCTP_ADDR_CONFIRMED,
+  SCTP_ADDR_POTENTIALLY_FAILED,
+#define SCTP_ADDR_PF SCTP_ADDR_POTENTIALLY_FAILED
 };
 struct sctp_remote_error {
   __u16 sre_type;
@@ -209,7 +232,7 @@ struct sctp_remote_error {
   __u32 sre_length;
   __be16 sre_error;
   sctp_assoc_t sre_assoc_id;
-  __u8 sre_data[0];
+  __u8 sre_data[];
 };
 struct sctp_send_failed {
   __u16 ssf_type;
@@ -218,7 +241,16 @@ struct sctp_send_failed {
   __u32 ssf_error;
   struct sctp_sndrcvinfo ssf_info;
   sctp_assoc_t ssf_assoc_id;
-  __u8 ssf_data[0];
+  __u8 ssf_data[];
+};
+struct sctp_send_failed_event {
+  __u16 ssf_type;
+  __u16 ssf_flags;
+  __u32 ssf_length;
+  __u32 ssf_error;
+  struct sctp_sndinfo ssfe_info;
+  sctp_assoc_t ssf_assoc_id;
+  __u8 ssf_data[];
 };
 enum sctp_ssf_flags {
   SCTP_DATA_UNSENT,
@@ -243,6 +275,8 @@ struct sctp_pdapi_event {
   __u32 pdapi_length;
   __u32 pdapi_indication;
   sctp_assoc_t pdapi_assoc_id;
+  __u32 pdapi_stream;
+  __u32 pdapi_seq;
 };
 enum {
   SCTP_PARTIAL_DELIVERY_ABORTED = 0,
@@ -257,7 +291,10 @@ struct sctp_authkey_event {
   sctp_assoc_t auth_assoc_id;
 };
 enum {
-  SCTP_AUTH_NEWKEY = 0,
+  SCTP_AUTH_NEW_KEY,
+#define SCTP_AUTH_NEWKEY SCTP_AUTH_NEW_KEY
+  SCTP_AUTH_FREE_KEY,
+  SCTP_AUTH_NO_AUTH,
 };
 struct sctp_sender_dry_event {
   __u16 sender_dry_type;
@@ -288,6 +325,8 @@ struct sctp_assoc_reset_event {
 };
 #define SCTP_ASSOC_CHANGE_DENIED 0x0004
 #define SCTP_ASSOC_CHANGE_FAILED 0x0008
+#define SCTP_STREAM_CHANGE_DENIED SCTP_ASSOC_CHANGE_DENIED
+#define SCTP_STREAM_CHANGE_FAILED SCTP_ASSOC_CHANGE_FAILED
 struct sctp_stream_change_event {
   __u16 strchange_type;
   __u16 strchange_flags;
@@ -310,6 +349,7 @@ struct sctp_event_subscribe {
   __u8 sctp_stream_reset_event;
   __u8 sctp_assoc_reset_event;
   __u8 sctp_stream_change_event;
+  __u8 sctp_send_failure_event_event;
 };
 union sctp_notification {
   struct {
@@ -329,9 +369,12 @@ union sctp_notification {
   struct sctp_stream_reset_event sn_strreset_event;
   struct sctp_assoc_reset_event sn_assocreset_event;
   struct sctp_stream_change_event sn_strchange_event;
+  struct sctp_send_failed_event sn_send_failed_event;
 };
 enum sctp_sn_type {
   SCTP_SN_TYPE_BASE = (1 << 15),
+  SCTP_DATA_IO_EVENT = SCTP_SN_TYPE_BASE,
+#define SCTP_DATA_IO_EVENT SCTP_DATA_IO_EVENT
   SCTP_ASSOC_CHANGE,
 #define SCTP_ASSOC_CHANGE SCTP_ASSOC_CHANGE
   SCTP_PEER_ADDR_CHANGE,
@@ -356,6 +399,10 @@ enum sctp_sn_type {
 #define SCTP_ASSOC_RESET_EVENT SCTP_ASSOC_RESET_EVENT
   SCTP_STREAM_CHANGE_EVENT,
 #define SCTP_STREAM_CHANGE_EVENT SCTP_STREAM_CHANGE_EVENT
+  SCTP_SEND_FAILED_EVENT,
+#define SCTP_SEND_FAILED_EVENT SCTP_SEND_FAILED_EVENT
+  SCTP_SN_TYPE_MAX = SCTP_SEND_FAILED_EVENT,
+#define SCTP_SN_TYPE_MAX SCTP_SN_TYPE_MAX
 };
 typedef enum sctp_sn_error {
   SCTP_FAILED_THRESHOLD,
@@ -404,6 +451,8 @@ enum sctp_spp_flags {
   SPP_SACKDELAY_DISABLE = 1 << 6,
   SPP_SACKDELAY = SPP_SACKDELAY_ENABLE | SPP_SACKDELAY_DISABLE,
   SPP_HB_TIME_IS_ZERO = 1 << 7,
+  SPP_IPV6_FLOWLABEL = 1 << 8,
+  SPP_DSCP = 1 << 9,
 };
 struct sctp_paddrparams {
   sctp_assoc_t spp_assoc_id;
@@ -413,6 +462,8 @@ struct sctp_paddrparams {
   __u32 spp_pathmtu;
   __u32 spp_sackdelay;
   __u32 spp_flags;
+  __u32 spp_ipv6_flowlabel;
+  __u8 spp_dscp;
 } __attribute__((packed, aligned(4)));
 struct sctp_authchunk {
   __u8 sauth_chunk;
@@ -462,6 +513,7 @@ struct sctp_paddrinfo {
 enum sctp_spinfo_state {
   SCTP_INACTIVE,
   SCTP_PF,
+#define SCTP_POTENTIALLY_FAILED SCTP_PF
   SCTP_ACTIVE,
   SCTP_UNCONFIRMED,
   SCTP_UNKNOWN = 0xffff
@@ -506,7 +558,7 @@ struct sctp_getaddrs_old {
 struct sctp_getaddrs {
   sctp_assoc_t assoc_id;
   __u32 addr_num;
-  __u8 addrs[0];
+  __u8 addrs[];
 };
 struct sctp_assoc_stats {
   sctp_assoc_t sas_assoc_id;
@@ -542,6 +594,13 @@ struct sctp_paddrthlds {
   struct sockaddr_storage spt_address;
   __u16 spt_pathmaxrxt;
   __u16 spt_pathpfthld;
+};
+struct sctp_paddrthlds_v2 {
+  sctp_assoc_t spt_assoc_id;
+  struct sockaddr_storage spt_address;
+  __u16 spt_pathmaxrxt;
+  __u16 spt_pathpfthld;
+  __u16 spt_pathcpthld;
 };
 struct sctp_prstatus {
   sctp_assoc_t sprstat_assoc_id;
@@ -623,10 +682,28 @@ struct sctp_add_streams {
   uint16_t sas_instrms;
   uint16_t sas_outstrms;
 };
+struct sctp_event {
+  sctp_assoc_t se_assoc_id;
+  uint16_t se_type;
+  uint8_t se_on;
+};
+struct sctp_udpencaps {
+  sctp_assoc_t sue_assoc_id;
+  struct sockaddr_storage sue_address;
+  uint16_t sue_port;
+};
 enum sctp_sched_type {
   SCTP_SS_FCFS,
+  SCTP_SS_DEFAULT = SCTP_SS_FCFS,
   SCTP_SS_PRIO,
   SCTP_SS_RR,
-  SCTP_SS_MAX = SCTP_SS_RR
+  SCTP_SS_FC,
+  SCTP_SS_WFQ,
+  SCTP_SS_MAX = SCTP_SS_WFQ
+};
+struct sctp_probeinterval {
+  sctp_assoc_t spi_assoc_id;
+  struct sockaddr_storage spi_address;
+  __u32 spi_interval;
 };
 #endif

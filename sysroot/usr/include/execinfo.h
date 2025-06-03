@@ -44,8 +44,12 @@ __BEGIN_DECLS
  * Returns the number of addresses stored in "buffer", which is not greater
  * than "size". If the return value is equal to "size" then the number of
  * addresses may have been truncated.
+ *
+ * Available since API level 33.
  */
-int backtrace(void** buffer, int size);
+
+#if __BIONIC_AVAILABILITY_GUARD(33) || __ANDROID_EXTRA
+int backtrace(void* _Nonnull * _Nonnull buffer, int size) __INTRODUCED_IN(33);
 
 /**
  * [backtrace_symbols(3)](https://man7.org/linux/man-pages/man3/backtrace_symbols.3.html)
@@ -54,16 +58,21 @@ int backtrace(void** buffer, int size);
  *
  * Returns a pointer to allocated memory, on error NULL is returned. It is
  * the responsibility of the caller to free the returned memory.
+ *
+ * Available since API level 33.
  */
-char** backtrace_symbols(void* const* buffer, int size);
+char* _Nullable * _Nullable backtrace_symbols(void* _Nonnull const* _Nonnull buffer, int size) __INTRODUCED_IN(33);
 
 /**
  * [backtrace_symbols_fd(3)](https://man7.org/linux/man-pages/man3/backtrace_symbols_fd.3.html)
  * Given an array of void* pointers, translate the addresses into an array
  * of strings that represent the backtrace and write to the file represented
  * by "fd". The file is written such that one line equals one void* address.
+ *
+ * Available since API level 33.
  */
-void backtrace_symbols_fd(void* const* buffer, int size, int fd);
+void backtrace_symbols_fd(void* _Nonnull const* _Nonnull buffer, int size, int fd) __INTRODUCED_IN(33);
+#endif /* __BIONIC_AVAILABILITY_GUARD(33) */
 
 
 __END_DECLS

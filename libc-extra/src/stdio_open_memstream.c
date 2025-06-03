@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 
 #define MINIMUM(a, b) (((a) < (b)) ? (a) : (b))
@@ -25,13 +26,6 @@ struct state
 #define MUL_NO_OVERFLOW ((size_t)1 << (sizeof(size_t) * 4))
 
 #define explicit_bzero(p, s) memset(p, 0, s)
-
-// Portable code should use sysconf(_SC_PAGE_SIZE) directly instead.
-static int getpagesize()
-{
-    // We dont use sysconf(3) here because that drags in stdio, which makes static binaries fat.
-    return PAGE_SIZE;
-}
 
 static void* recallocarray(void* ptr, size_t oldnmemb, size_t newnmemb, size_t size)
 {

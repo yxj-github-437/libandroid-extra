@@ -1,27 +1,15 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _DRM_MODE_H
 #define _DRM_MODE_H
 #include "drm.h"
 #ifdef __cplusplus
+extern "C" {
 #endif
-#define DRM_DISPLAY_INFO_LEN 32
 #define DRM_CONNECTOR_NAME_LEN 32
 #define DRM_DISPLAY_MODE_LEN 32
 #define DRM_PROP_NAME_LEN 32
@@ -32,6 +20,7 @@
 #define DRM_MODE_TYPE_DEFAULT (1 << 4)
 #define DRM_MODE_TYPE_USERDEF (1 << 5)
 #define DRM_MODE_TYPE_DRIVER (1 << 6)
+#define DRM_MODE_TYPE_ALL (DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_USERDEF | DRM_MODE_TYPE_DRIVER)
 #define DRM_MODE_FLAG_PHSYNC (1 << 0)
 #define DRM_MODE_FLAG_NHSYNC (1 << 1)
 #define DRM_MODE_FLAG_PVSYNC (1 << 2)
@@ -59,10 +48,20 @@
 #define DRM_MODE_PICTURE_ASPECT_NONE 0
 #define DRM_MODE_PICTURE_ASPECT_4_3 1
 #define DRM_MODE_PICTURE_ASPECT_16_9 2
+#define DRM_MODE_PICTURE_ASPECT_64_27 3
+#define DRM_MODE_PICTURE_ASPECT_256_135 4
+#define DRM_MODE_CONTENT_TYPE_NO_DATA 0
+#define DRM_MODE_CONTENT_TYPE_GRAPHICS 1
+#define DRM_MODE_CONTENT_TYPE_PHOTO 2
+#define DRM_MODE_CONTENT_TYPE_CINEMA 3
+#define DRM_MODE_CONTENT_TYPE_GAME 4
 #define DRM_MODE_FLAG_PIC_AR_MASK (0x0F << 19)
 #define DRM_MODE_FLAG_PIC_AR_NONE (DRM_MODE_PICTURE_ASPECT_NONE << 19)
 #define DRM_MODE_FLAG_PIC_AR_4_3 (DRM_MODE_PICTURE_ASPECT_4_3 << 19)
 #define DRM_MODE_FLAG_PIC_AR_16_9 (DRM_MODE_PICTURE_ASPECT_16_9 << 19)
+#define DRM_MODE_FLAG_PIC_AR_64_27 (DRM_MODE_PICTURE_ASPECT_64_27 << 19)
+#define DRM_MODE_FLAG_PIC_AR_256_135 (DRM_MODE_PICTURE_ASPECT_256_135 << 19)
+#define DRM_MODE_FLAG_ALL (DRM_MODE_FLAG_PHSYNC | DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_PVSYNC | DRM_MODE_FLAG_NVSYNC | DRM_MODE_FLAG_INTERLACE | DRM_MODE_FLAG_DBLSCAN | DRM_MODE_FLAG_CSYNC | DRM_MODE_FLAG_PCSYNC | DRM_MODE_FLAG_NCSYNC | DRM_MODE_FLAG_HSKEW | DRM_MODE_FLAG_DBLCLK | DRM_MODE_FLAG_CLKDIV2 | DRM_MODE_FLAG_3D_MASK)
 #define DRM_MODE_DPMS_ON 0
 #define DRM_MODE_DPMS_STANDBY 1
 #define DRM_MODE_DPMS_SUSPEND 2
@@ -87,6 +86,9 @@
 #define DRM_MODE_REFLECT_X (1 << 4)
 #define DRM_MODE_REFLECT_Y (1 << 5)
 #define DRM_MODE_REFLECT_MASK (DRM_MODE_REFLECT_X | DRM_MODE_REFLECT_Y)
+#define DRM_MODE_CONTENT_PROTECTION_UNDESIRED 0
+#define DRM_MODE_CONTENT_PROTECTION_DESIRED 1
+#define DRM_MODE_CONTENT_PROTECTION_ENABLED 2
 struct drm_mode_modeinfo {
   __u32 clock;
   __u16 hdisplay;
@@ -177,12 +179,17 @@ struct drm_mode_get_encoder {
 enum drm_mode_subconnector {
   DRM_MODE_SUBCONNECTOR_Automatic = 0,
   DRM_MODE_SUBCONNECTOR_Unknown = 0,
+  DRM_MODE_SUBCONNECTOR_VGA = 1,
   DRM_MODE_SUBCONNECTOR_DVID = 3,
   DRM_MODE_SUBCONNECTOR_DVIA = 4,
   DRM_MODE_SUBCONNECTOR_Composite = 5,
   DRM_MODE_SUBCONNECTOR_SVIDEO = 6,
   DRM_MODE_SUBCONNECTOR_Component = 8,
   DRM_MODE_SUBCONNECTOR_SCART = 9,
+  DRM_MODE_SUBCONNECTOR_DisplayPort = 10,
+  DRM_MODE_SUBCONNECTOR_HDMIA = 11,
+  DRM_MODE_SUBCONNECTOR_Native = 15,
+  DRM_MODE_SUBCONNECTOR_Wireless = 18,
 };
 #define DRM_MODE_CONNECTOR_Unknown 0
 #define DRM_MODE_CONNECTOR_VGA 1
@@ -202,6 +209,9 @@ enum drm_mode_subconnector {
 #define DRM_MODE_CONNECTOR_VIRTUAL 15
 #define DRM_MODE_CONNECTOR_DSI 16
 #define DRM_MODE_CONNECTOR_DPI 17
+#define DRM_MODE_CONNECTOR_WRITEBACK 18
+#define DRM_MODE_CONNECTOR_SPI 19
+#define DRM_MODE_CONNECTOR_USB 20
 struct drm_mode_get_connector {
   __u64 encoders_ptr;
   __u64 modes_ptr;
@@ -345,13 +355,37 @@ struct drm_mode_crtc_lut {
   __u64 blue;
 };
 struct drm_color_ctm {
-  __s64 matrix[9];
+  __u64 matrix[9];
 };
 struct drm_color_lut {
   __u16 red;
   __u16 green;
   __u16 blue;
   __u16 reserved;
+};
+struct drm_plane_size_hint {
+  __u16 width;
+  __u16 height;
+};
+struct hdr_metadata_infoframe {
+  __u8 eotf;
+  __u8 metadata_type;
+  struct {
+    __u16 x, y;
+  } display_primaries[3];
+  struct {
+    __u16 x, y;
+  } white_point;
+  __u16 max_display_mastering_luminance;
+  __u16 min_display_mastering_luminance;
+  __u16 max_cll;
+  __u16 max_fall;
+};
+struct hdr_output_metadata {
+  __u32 metadata_type;
+  union {
+    struct hdr_metadata_infoframe hdmi_metadata_type1;
+  };
 };
 #define DRM_MODE_PAGE_FLIP_EVENT 0x01
 #define DRM_MODE_PAGE_FLIP_ASYNC 0x02
@@ -447,6 +481,17 @@ struct drm_mode_get_lease {
 struct drm_mode_revoke_lease {
   __u32 lessee_id;
 };
+struct drm_mode_rect {
+  __s32 x1;
+  __s32 y1;
+  __s32 x2;
+  __s32 y2;
+};
+struct drm_mode_closefb {
+  __u32 fb_id;
+  __u32 pad;
+};
 #ifdef __cplusplus
+}
 #endif
 #endif

@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_LINUX_SWITCHTEC_IOCTL_H
 #define _UAPI_LINUX_SWITCHTEC_IOCTL_H
 #include <linux/types.h>
@@ -32,7 +20,15 @@
 #define SWITCHTEC_IOCTL_PART_VENDOR5 10
 #define SWITCHTEC_IOCTL_PART_VENDOR6 11
 #define SWITCHTEC_IOCTL_PART_VENDOR7 12
-#define SWITCHTEC_IOCTL_NUM_PARTITIONS 13
+#define SWITCHTEC_IOCTL_PART_BL2_0 13
+#define SWITCHTEC_IOCTL_PART_BL2_1 14
+#define SWITCHTEC_IOCTL_PART_MAP_0 15
+#define SWITCHTEC_IOCTL_PART_MAP_1 16
+#define SWITCHTEC_IOCTL_PART_KEY_0 17
+#define SWITCHTEC_IOCTL_PART_KEY_1 18
+#define SWITCHTEC_NUM_PARTITIONS_GEN3 13
+#define SWITCHTEC_NUM_PARTITIONS_GEN4 19
+#define SWITCHTEC_IOCTL_NUM_PARTITIONS SWITCHTEC_NUM_PARTITIONS_GEN3
 struct switchtec_ioctl_flash_info {
   __u64 flash_length;
   __u32 num_partitions;
@@ -46,13 +42,21 @@ struct switchtec_ioctl_flash_part_info {
   __u32 length;
   __u32 active;
 };
-struct switchtec_ioctl_event_summary {
+struct switchtec_ioctl_event_summary_legacy {
   __u64 global;
   __u64 part_bitmap;
   __u32 local_part;
   __u32 padding;
   __u32 part[48];
   __u32 pff[48];
+};
+struct switchtec_ioctl_event_summary {
+  __u64 global;
+  __u64 part_bitmap;
+  __u32 local_part;
+  __u32 padding;
+  __u32 part[48];
+  __u32 pff[255];
 };
 #define SWITCHTEC_IOCTL_EVENT_STACK_ERROR 0
 #define SWITCHTEC_IOCTL_EVENT_PPU_ERROR 1
@@ -83,7 +87,10 @@ struct switchtec_ioctl_event_summary {
 #define SWITCHTEC_IOCTL_EVENT_FORCE_SPEED 26
 #define SWITCHTEC_IOCTL_EVENT_CREDIT_TIMEOUT 27
 #define SWITCHTEC_IOCTL_EVENT_LINK_STATE 28
-#define SWITCHTEC_IOCTL_MAX_EVENTS 29
+#define SWITCHTEC_IOCTL_EVENT_GFMS 29
+#define SWITCHTEC_IOCTL_EVENT_INTERCOMM_REQ_NOTIFY 30
+#define SWITCHTEC_IOCTL_EVENT_UEC 31
+#define SWITCHTEC_IOCTL_MAX_EVENTS 32
 #define SWITCHTEC_IOCTL_EVENT_LOCAL_PART_IDX - 1
 #define SWITCHTEC_IOCTL_EVENT_IDX_ALL - 2
 #define SWITCHTEC_IOCTL_EVENT_FLAG_CLEAR (1 << 0)
@@ -113,6 +120,7 @@ struct switchtec_ioctl_pff_port {
 #define SWITCHTEC_IOCTL_FLASH_INFO _IOR('W', 0x40, struct switchtec_ioctl_flash_info)
 #define SWITCHTEC_IOCTL_FLASH_PART_INFO _IOWR('W', 0x41, struct switchtec_ioctl_flash_part_info)
 #define SWITCHTEC_IOCTL_EVENT_SUMMARY _IOR('W', 0x42, struct switchtec_ioctl_event_summary)
+#define SWITCHTEC_IOCTL_EVENT_SUMMARY_LEGACY _IOR('W', 0x42, struct switchtec_ioctl_event_summary_legacy)
 #define SWITCHTEC_IOCTL_EVENT_CTL _IOWR('W', 0x43, struct switchtec_ioctl_event_ctl)
 #define SWITCHTEC_IOCTL_PFF_TO_PORT _IOWR('W', 0x44, struct switchtec_ioctl_pff_port)
 #define SWITCHTEC_IOCTL_PORT_TO_PFF _IOWR('W', 0x45, struct switchtec_ioctl_pff_port)

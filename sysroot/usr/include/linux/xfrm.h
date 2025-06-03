@@ -1,25 +1,14 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _LINUX_XFRM_H
 #define _LINUX_XFRM_H
 #include <linux/in6.h>
 #include <linux/types.h>
+#include <linux/stddef.h>
 typedef union {
   __be32 a4;
   __be32 a6[4];
@@ -35,7 +24,7 @@ struct xfrm_sec_ctx {
   __u8 ctx_alg;
   __u16 ctx_len;
   __u32 ctx_sid;
-  char ctx_str[0];
+  char ctx_str[] __counted_by(ctx_len);
 };
 #define XFRM_SC_DOI_RESERVED 0
 #define XFRM_SC_DOI_LSM 1
@@ -85,24 +74,24 @@ struct xfrm_replay_state_esn {
   __u32 oseq_hi;
   __u32 seq_hi;
   __u32 replay_window;
-  __u32 bmp[0];
+  __u32 bmp[];
 };
 struct xfrm_algo {
   char alg_name[64];
   unsigned int alg_key_len;
-  char alg_key[0];
+  char alg_key[];
 };
 struct xfrm_algo_auth {
   char alg_name[64];
   unsigned int alg_key_len;
   unsigned int alg_trunc_len;
-  char alg_key[0];
+  char alg_key[];
 };
 struct xfrm_algo_aead {
   char alg_name[64];
   unsigned int alg_key_len;
   unsigned int alg_icv_len;
-  char alg_key[0];
+  char alg_key[];
 };
 struct xfrm_stats {
   __u32 replay_window;
@@ -121,6 +110,10 @@ enum {
   XFRM_POLICY_FWD = 2,
   XFRM_POLICY_MASK = 3,
   XFRM_POLICY_MAX = 3
+};
+enum xfrm_sa_dir {
+  XFRM_SA_DIR_IN = 1,
+  XFRM_SA_DIR_OUT = 2
 };
 enum {
   XFRM_SHARE_ANY,
@@ -182,6 +175,10 @@ enum {
 #define XFRM_MSG_GETSPDINFO XFRM_MSG_GETSPDINFO
   XFRM_MSG_MAPPING,
 #define XFRM_MSG_MAPPING XFRM_MSG_MAPPING
+  XFRM_MSG_SETDEFAULT,
+#define XFRM_MSG_SETDEFAULT XFRM_MSG_SETDEFAULT
+  XFRM_MSG_GETDEFAULT,
+#define XFRM_MSG_GETDEFAULT XFRM_MSG_GETDEFAULT
   __XFRM_MSG_MAX
 };
 #define XFRM_MSG_MAX (__XFRM_MSG_MAX - 1)
@@ -258,8 +255,14 @@ enum xfrm_attr_type_t {
   XFRMA_ADDRESS_FILTER,
   XFRMA_PAD,
   XFRMA_OFFLOAD_DEV,
-  XFRMA_OUTPUT_MARK,
+  XFRMA_SET_MARK,
+  XFRMA_SET_MARK_MASK,
+  XFRMA_IF_ID,
+  XFRMA_MTIMER_THRESH,
+  XFRMA_SA_DIR,
+  XFRMA_NAT_KEEPALIVE_INTERVAL,
   __XFRMA_MAX
+#define XFRMA_OUTPUT_MARK XFRMA_SET_MARK
 #define XFRMA_MAX (__XFRMA_MAX - 1)
 };
 struct xfrm_mark {
@@ -325,6 +328,7 @@ struct xfrm_usersa_info {
 #define XFRM_STATE_ESN 128
 };
 #define XFRM_SA_XFLAG_DONT_ENCAP_DSCP 1
+#define XFRM_SA_XFLAG_OSEQ_MAY_WRAP 2
 struct xfrm_usersa_id {
   xfrm_address_t daddr;
   __be32 spi;
@@ -426,6 +430,15 @@ struct xfrm_user_offload {
 };
 #define XFRM_OFFLOAD_IPV6 1
 #define XFRM_OFFLOAD_INBOUND 2
+#define XFRM_OFFLOAD_PACKET 4
+struct xfrm_userpolicy_default {
+#define XFRM_USERPOLICY_UNSPEC 0
+#define XFRM_USERPOLICY_BLOCK 1
+#define XFRM_USERPOLICY_ACCEPT 2
+  __u8 in;
+  __u8 fwd;
+  __u8 out;
+};
 #define XFRMGRP_ACQUIRE 1
 #define XFRMGRP_EXPIRE 2
 #define XFRMGRP_SA 4

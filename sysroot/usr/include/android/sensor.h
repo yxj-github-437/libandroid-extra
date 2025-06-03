@@ -15,6 +15,9 @@
  */
 
 /**
+ * Structures and functions to receive and process sensor events in
+ * native code.
+ *
  * @addtogroup Sensor
  * @{
  */
@@ -25,6 +28,8 @@
 
 #ifndef ANDROID_SENSOR_H
 #define ANDROID_SENSOR_H
+
+#include <sys/cdefs.h>
 
 /******************************************************************
  *
@@ -42,18 +47,21 @@
  *   - DO NOT CHANGE THE LAYOUT OR SIZE OF STRUCTURES
  */
 
-/**
- * Structures and functions to receive and process sensor events in
- * native code.
- *
- */
-
 #include <android/looper.h>
 
 #include <stdbool.h>
 #include <sys/types.h>
 #include <math.h>
 #include <stdint.h>
+
+// This file may also be built on glibc or on Windows/MacOS libc's, so no-op
+// and deprecated definitions are provided.
+#if !defined(__INTRODUCED_IN)
+#define __INTRODUCED_IN(__api_level) /* nothing */
+#endif
+#if !defined(__DEPRECATED_IN)
+#define __DEPRECATED_IN(__api_level, msg) __attribute__((__deprecated__(msg)))
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -64,6 +72,7 @@ typedef struct AHardwareBuffer AHardwareBuffer;
 #define ASENSOR_RESOLUTION_INVALID     (nanf(""))
 #define ASENSOR_FIFO_COUNT_INVALID     (-1)
 #define ASENSOR_DELAY_INVALID          INT32_MIN
+#define ASENSOR_INVALID                (-1)
 
 /* (Keep in sync with hardware/sensors-base.h and Sensor.java.) */
 
@@ -208,6 +217,42 @@ enum {
      */
     ASENSOR_TYPE_HEART_BEAT = 31,
     /**
+     * A constant describing a dynamic sensor meta event sensor.
+     *
+     * A sensor event of this type is received when a dynamic sensor is added to or removed from
+     * the system. This sensor type should always use special trigger report mode.
+     */
+    ASENSOR_TYPE_DYNAMIC_SENSOR_META = 32,
+    /**
+     * This sensor type is for delivering additional sensor information aside
+     * from sensor event data.
+     *
+     * Additional information may include:
+     *     - {@link ASENSOR_ADDITIONAL_INFO_INTERNAL_TEMPERATURE}
+     *     - {@link ASENSOR_ADDITIONAL_INFO_SAMPLING}
+     *     - {@link ASENSOR_ADDITIONAL_INFO_SENSOR_PLACEMENT}
+     *     - {@link ASENSOR_ADDITIONAL_INFO_UNTRACKED_DELAY}
+     *     - {@link ASENSOR_ADDITIONAL_INFO_VEC3_CALIBRATION}
+     *
+     * This type will never bind to a sensor. In other words, no sensor in the
+     * sensor list can have the type {@link ASENSOR_TYPE_ADDITIONAL_INFO}.
+     *
+     * If a device supports the sensor additional information feature, it will
+     * report additional information events via {@link ASensorEvent} and will
+     * have the type of {@link ASensorEvent} set to
+     * {@link ASENSOR_TYPE_ADDITIONAL_INFO} and the sensor of {@link ASensorEvent} set
+     * to the handle of the reporting sensor.
+     *
+     * Additional information reports consist of multiple frames ordered by
+     * {@link ASensorEvent#timestamp}. The first frame in the report will have
+     * a {@link AAdditionalInfoEvent#type} of
+     * {@link ASENSOR_ADDITIONAL_INFO_BEGIN}, and the last frame in the report
+     * will have a {@link AAdditionalInfoEvent#type} of
+     * {@link ASENSOR_ADDITIONAL_INFO_END}.
+     *
+     */
+    ASENSOR_TYPE_ADDITIONAL_INFO = 33,
+    /**
      * {@link ASENSOR_TYPE_LOW_LATENCY_OFFBODY_DETECT}
      */
     ASENSOR_TYPE_LOW_LATENCY_OFFBODY_DETECT = 34,
@@ -215,6 +260,67 @@ enum {
      * {@link ASENSOR_TYPE_ACCELEROMETER_UNCALIBRATED}
      */
     ASENSOR_TYPE_ACCELEROMETER_UNCALIBRATED = 35,
+    /**
+     * {@link ASENSOR_TYPE_HINGE_ANGLE}
+     * reporting-mode: on-change
+     *
+     * The hinge angle sensor value is returned in degrees.
+     */
+    ASENSOR_TYPE_HINGE_ANGLE = 36,
+    /**
+     * {@link ASENSOR_TYPE_HEAD_TRACKER}
+     * reporting-mode: continuous
+     *
+     * Measures the orientation and rotational velocity of a user's head. Only for internal use
+     * within the Android system.
+     */
+    ASENSOR_TYPE_HEAD_TRACKER = 37,
+    /**
+     * {@link ASENSOR_TYPE_ACCELEROMETER_LIMITED_AXES}
+     * reporting-mode: continuous
+     *
+     * The first three values are in SI units (m/s^2) and measure the acceleration of the device
+     * minus the force of gravity. The last three values indicate which acceleration axes are
+     * supported. A value of 1.0 means supported and a value of 0 means not supported.
+     */
+    ASENSOR_TYPE_ACCELEROMETER_LIMITED_AXES = 38,
+    /**
+     * {@link ASENSOR_TYPE_GYROSCOPE_LIMITED_AXES}
+     * reporting-mode: continuous
+     *
+     * The first three values are in radians/second and measure the rate of rotation around the X,
+     * Y and Z axis. The last three values indicate which rotation axes are supported. A value of
+     * 1.0 means supported and a value of 0 means not supported.
+     */
+    ASENSOR_TYPE_GYROSCOPE_LIMITED_AXES = 39,
+    /**
+     * {@link ASENSOR_TYPE_ACCELEROMETER_LIMITED_AXES_UNCALIBRATED}
+     * reporting-mode: continuous
+     *
+     * The first three values are in SI units (m/s^2) and measure the acceleration of the device
+     * minus the force of gravity. The middle three values represent the estimated bias for each
+     * axis. The last three values indicate which acceleration axes are supported. A value of 1.0
+     * means supported and a value of 0 means not supported.
+     */
+    ASENSOR_TYPE_ACCELEROMETER_LIMITED_AXES_UNCALIBRATED = 40,
+    /**
+     * {@link ASENSOR_TYPE_GYROSCOPE_LIMITED_AXES_UNCALIBRATED}
+     * reporting-mode: continuous
+     *
+     * The first three values are in radians/second and measure the rate of rotation around the X,
+     * Y and Z axis. The middle three values represent the estimated drift around each axis in
+     * rad/s. The last three values indicate which rotation axes are supported. A value of 1.0 means
+     * supported and a value of 0 means not supported.
+     */
+    ASENSOR_TYPE_GYROSCOPE_LIMITED_AXES_UNCALIBRATED = 41,
+    /**
+     * {@link ASENSOR_TYPE_HEADING}
+     * reporting-mode: continuous
+     *
+     * A heading sensor measures the direction in which the device is pointing
+     * relative to true north in degrees.
+     */
+    ASENSOR_TYPE_HEADING = 42,
 };
 
 /**
@@ -271,6 +377,51 @@ enum {
     ASENSOR_DIRECT_CHANNEL_TYPE_SHARED_MEMORY = 1,
     /** AHardwareBuffer */
     ASENSOR_DIRECT_CHANNEL_TYPE_HARDWARE_BUFFER = 2
+};
+
+/**
+ * Sensor Additional Info Types.
+ *
+ * Used to populate {@link AAdditionalInfoEvent#type}.
+ */
+enum {
+    /** Marks the beginning of additional information frames */
+    ASENSOR_ADDITIONAL_INFO_BEGIN = 0,
+
+    /** Marks the end of additional information frames */
+    ASENSOR_ADDITIONAL_INFO_END = 1,
+
+    /**
+     * Estimation of the delay that is not tracked by sensor timestamps. This
+     * includes delay introduced by sensor front-end filtering, data transport,
+     * etc.
+     * float[2]: delay in seconds, standard deviation of estimated value
+     */
+    ASENSOR_ADDITIONAL_INFO_UNTRACKED_DELAY = 0x10000,
+
+    /** float: Celsius temperature */
+    ASENSOR_ADDITIONAL_INFO_INTERNAL_TEMPERATURE,
+
+    /**
+     * First three rows of a homogeneous matrix, which represents calibration to
+     * a three-element vector raw sensor reading.
+     * float[12]: 3x4 matrix in row major order
+     */
+    ASENSOR_ADDITIONAL_INFO_VEC3_CALIBRATION,
+
+    /**
+     * Location and orientation of sensor element in the device frame: origin is
+     * the geometric center of the mobile device screen surface; the axis
+     * definition corresponds to Android sensor definitions.
+     * float[12]: 3x4 matrix in row major order
+     */
+    ASENSOR_ADDITIONAL_INFO_SENSOR_PLACEMENT,
+
+    /**
+     * float[2]: raw sample period in seconds,
+     *           standard deviation of sampling period
+     */
+    ASENSOR_ADDITIONAL_INFO_SAMPLING,
 };
 
 /*
@@ -341,7 +492,11 @@ typedef struct ADynamicSensorEvent {
     int32_t  handle;
 } ADynamicSensorEvent;
 
-typedef struct {
+typedef struct AAdditionalInfoEvent {
+    /**
+     * Event type, such as ASENSOR_ADDITIONAL_INFO_BEGIN, ASENSOR_ADDITIONAL_INFO_END and others.
+     * Refer to {@link ASENSOR_TYPE_ADDITIONAL_INFO} for the expected reporting behavior.
+     */
     int32_t type;
     int32_t serial;
     union {
@@ -350,30 +505,148 @@ typedef struct {
     };
 } AAdditionalInfoEvent;
 
-/* NOTE: changes to this struct has to be backward compatible */
+typedef struct AHeadTrackerEvent {
+    /**
+     * The fields rx, ry, rz are an Euler vector (rotation vector, i.e. a vector
+     * whose direction indicates the axis of rotation and magnitude indicates
+     * the angle to rotate around that axis) representing the transform from
+     * the (arbitrary, possibly slowly drifting) reference frame to the
+     * head frame. Expressed in radians. Magnitude of the vector must be
+     * in the range [0, pi], while the value of individual axes are
+     * in the range [-pi, pi].
+     */
+    float rx;
+    float ry;
+    float rz;
+
+    /**
+     * The fields vx, vy, vz are an Euler vector (rotation vector) representing
+     * the angular velocity of the head (relative to itself), in radians per
+     * second. The direction of this vector indicates the axis of rotation, and
+     * the magnitude indicates the rate of rotation.
+     */
+    float vx;
+    float vy;
+    float vz;
+
+    /**
+     * This value changes each time the reference frame is suddenly and
+     * significantly changed, for example if an orientation filter algorithm
+     * used for determining the orientation has had its state reset.
+     */
+    int32_t discontinuity_count;
+} AHeadTrackerEvent;
+
+typedef struct ALimitedAxesImuEvent {
+    union {
+        float calib[3];
+        struct {
+            float x;
+            float y;
+            float z;
+        };
+    };
+    union {
+        float supported[3];
+        struct {
+            float x_supported;
+            float y_supported;
+            float z_supported;
+        };
+    };
+} ALimitedAxesImuEvent;
+
+typedef struct ALimitedAxesImuUncalibratedEvent {
+    union {
+        float uncalib[3];
+        struct {
+            float x_uncalib;
+            float y_uncalib;
+            float z_uncalib;
+        };
+    };
+    union {
+        float bias[3];
+        struct {
+            float x_bias;
+            float y_bias;
+            float z_bias;
+        };
+    };
+    union {
+        float supported[3];
+        struct {
+            float x_supported;
+            float y_supported;
+            float z_supported;
+        };
+    };
+} ALimitedAxesImuUncalibratedEvent;
+
+typedef struct AHeadingEvent {
+    /**
+     * The direction in which the device is pointing relative to true north in
+     * degrees. The value must be between 0.0 (inclusive) and 360.0 (exclusive),
+     * with 0 indicating north, 90 east, 180 south, and 270 west.
+     */
+    float heading;
+    /**
+     * Accuracy is defined at 68% confidence. In the case where the underlying
+     * distribution is assumed Gaussian normal, this would be considered one
+     * standard deviation. For example, if the heading returns 60 degrees, and
+     * accuracy returns 10 degrees, then there is a 68 percent probability of
+     * the true heading being between 50 degrees and 70 degrees.
+     */
+    float accuracy;
+} AHeadingEvent;
+
+// LINT.IfChange
+/**
+ * Information that describes a sensor event, refer to
+ * <a href="/reference/android/hardware/SensorEvent">SensorEvent</a> for additional
+ * documentation.
+ *
+ * NOTE: changes to this struct has to be backward compatible and reflected in
+ * sensors_event_t
+ */
 typedef struct ASensorEvent {
-    int32_t version; /* sizeof(struct ASensorEvent) */
+    /* sizeof(struct ASensorEvent) */
+    int32_t version;
+    /** The sensor that generates this event */
     int32_t sensor;
+    /** Sensor type for the event, such as {@link ASENSOR_TYPE_ACCELEROMETER} */
     int32_t type;
+    /** do not use */
     int32_t reserved0;
+    /**
+     * The time in nanoseconds at which the event happened, and its behavior
+     * is identical to <a href="/reference/android/hardware/SensorEvent#timestamp">
+     * SensorEvent::timestamp</a> in Java API.
+     */
     int64_t timestamp;
     union {
         union {
             float           data[16];
             ASensorVector   vector;
             ASensorVector   acceleration;
+            ASensorVector   gyro;
             ASensorVector   magnetic;
             float           temperature;
             float           distance;
             float           light;
             float           pressure;
             float           relative_humidity;
+            AUncalibratedEvent uncalibrated_acceleration;
             AUncalibratedEvent uncalibrated_gyro;
             AUncalibratedEvent uncalibrated_magnetic;
             AMetaDataEvent meta_data;
             AHeartRateEvent heart_rate;
             ADynamicSensorEvent dynamic_sensor_meta;
             AAdditionalInfoEvent additional_info;
+            AHeadTrackerEvent head_tracker;
+            ALimitedAxesImuEvent limited_axes_imu;
+            ALimitedAxesImuUncalibratedEvent limited_axes_imu_uncalibrated;
+            AHeadingEvent heading;
         };
         union {
             uint64_t        data[8];
@@ -384,6 +657,7 @@ typedef struct ASensorEvent {
     uint32_t flags;
     int32_t reserved1[3];
 } ASensorEvent;
+// LINT.ThenChange(hardware/libhardware/include/hardware/sensors.h)
 
 struct ASensorManager;
 /**
@@ -420,6 +694,7 @@ struct ASensorEventQueue;
  * - ASensorEventQueue_hasEvents()
  * - ASensorEventQueue_getEvents()
  * - ASensorEventQueue_setEventRate()
+ * - ASensorEventQueue_requestAdditionalInfoEvents()
  */
 typedef struct ASensorEventQueue ASensorEventQueue;
 
@@ -444,6 +719,7 @@ struct ASensor;
  * - ASensor_getStringType()
  * - ASensor_getReportingMode()
  * - ASensor_isWakeUpSensor()
+ * - ASensor_getHandle()
  */
 typedef struct ASensor ASensor;
 /**
@@ -472,13 +748,9 @@ typedef ASensorRef const* ASensorList;
  *     ASensorManager* sensorManager = ASensorManager_getInstance();
  *
  */
-#if __ANDROID_API__ >= __ANDROID_API_O__
-__attribute__ ((deprecated)) ASensorManager* ASensorManager_getInstance();
-#else
-ASensorManager* ASensorManager_getInstance();
-#endif
+ASensorManager* ASensorManager_getInstance()
+        __DEPRECATED_IN(26, "Use ASensorManager_getInstanceForPackage instead");
 
-#if __ANDROID_API__ >= __ANDROID_API_O__
 /**
  * Get a reference to the sensor manager. ASensorManager is a singleton
  * per package as different packages may have access to different sensors.
@@ -487,14 +759,43 @@ ASensorManager* ASensorManager_getInstance();
  *
  *     ASensorManager* sensorManager = ASensorManager_getInstanceForPackage("foo.bar.baz");
  *
+ * Available since API level 26.
  */
-ASensorManager* ASensorManager_getInstanceForPackage(const char* packageName);
-#endif
+ASensorManager* ASensorManager_getInstanceForPackage(const char* packageName) __INTRODUCED_IN(26);
 
 /**
- * Returns the list of available sensors.
+ * Returns the list of available sensors. The returned list is owned by the
+ * sensor manager and will not change between calls to this function.
+ *
+ * \param manager the {@link ASensorManager} instance obtained from
+ *                {@link ASensorManager_getInstanceForPackage}.
+ * \param list    the returned list of sensors.
+ * \return positive number of returned sensors or negative error code.
+ *         BAD_VALUE: manager is NULL.
  */
 int ASensorManager_getSensorList(ASensorManager* manager, ASensorList* list);
+
+/**
+ * Returns the list of available dynamic sensors. If there are no dynamic
+ * sensors available, returns nullptr in list.
+ *
+ * Each time this is called, the previously returned list is deallocated and
+ * must no longer be used.
+ *
+ * Clients should call this if they receive a sensor update from
+ * {@link ASENSOR_TYPE_DYNAMIC_SENSOR_META} indicating the sensors have changed.
+ * If this happens, previously received lists from this method will be stale.
+ *
+ * Available since API level 33.
+ *
+ * \param manager the {@link ASensorManager} instance obtained from
+ *                {@link ASensorManager_getInstanceForPackage}.
+ * \param list    the returned list of dynamic sensors.
+ * \return positive number of returned sensors or negative error code.
+ *         BAD_VALUE: manager is NULL.
+ */
+ssize_t ASensorManager_getDynamicSensorList(
+        ASensorManager* manager, ASensorList* list) __INTRODUCED_IN(33);
 
 /**
  * Returns the default sensor for the given type, or NULL if no sensor
@@ -502,13 +803,13 @@ int ASensorManager_getSensorList(ASensorManager* manager, ASensorList* list);
  */
 ASensor const* ASensorManager_getDefaultSensor(ASensorManager* manager, int type);
 
-#if __ANDROID_API__ >= 21
 /**
  * Returns the default sensor with the given type and wakeUp properties or NULL if no sensor
  * of this type and wakeUp properties exists.
+ *
+ * Available since API level 21.
  */
-ASensor const* ASensorManager_getDefaultSensorEx(ASensorManager* manager, int type, bool wakeUp);
-#endif
+ASensor const* ASensorManager_getDefaultSensorEx(ASensorManager* manager, int type, bool wakeUp) __INTRODUCED_IN(21);
 
 /**
  * Creates a new sensor event queue and associate it with a looper.
@@ -525,12 +826,13 @@ ASensorEventQueue* ASensorManager_createEventQueue(ASensorManager* manager,
  */
 int ASensorManager_destroyEventQueue(ASensorManager* manager, ASensorEventQueue* queue);
 
-#if __ANDROID_API__ >= __ANDROID_API_O__
 /**
  * Create direct channel based on shared memory
  *
  * Create a direct channel of {@link ASENSOR_DIRECT_CHANNEL_TYPE_SHARED_MEMORY} to be used
  * for configuring sensor direct report.
+ *
+ * Available since API level 26.
  *
  * \param manager the {@link ASensorManager} instance obtained from
  *                {@link ASensorManager_getInstanceForPackage}.
@@ -542,13 +844,15 @@ int ASensorManager_destroyEventQueue(ASensorManager* manager, ASensorEventQueue*
  *         {@link ASensorManager_destroyDirectChannel} and
  *         {@link ASensorManager_configureDirectReport}, or value less or equal to 0 for failures.
  */
-int ASensorManager_createSharedMemoryDirectChannel(ASensorManager* manager, int fd, size_t size);
+int ASensorManager_createSharedMemoryDirectChannel(ASensorManager* manager, int fd, size_t size) __INTRODUCED_IN(26);
 
 /**
  * Create direct channel based on AHardwareBuffer
  *
  * Create a direct channel of {@link ASENSOR_DIRECT_CHANNEL_TYPE_HARDWARE_BUFFER} type to be used
  * for configuring sensor direct report.
+ *
+ * Available since API level 26.
  *
  * \param manager the {@link ASensorManager} instance obtained from
  *                {@link ASensorManager_getInstanceForPackage}.
@@ -560,14 +864,17 @@ int ASensorManager_createSharedMemoryDirectChannel(ASensorManager* manager, int 
  *         {@link ASensorManager_configureDirectReport}, or value less or equal to 0 for failures.
  */
 int ASensorManager_createHardwareBufferDirectChannel(
-        ASensorManager* manager, AHardwareBuffer const * buffer, size_t size);
+        ASensorManager* manager, AHardwareBuffer const * buffer, size_t size) __INTRODUCED_IN(26);
 
 /**
  * Destroy a direct channel
  *
- * Destroy a direct channel previously created using {@link ASensorManager_createDirectChannel}.
- * The buffer used for creating direct channel does not get destroyed with
- * {@link ASensorManager_destroy} and has to be close or released separately.
+ * Destroy a direct channel previously created by using one of
+ * ASensorManager_create*DirectChannel() derivative functions.
+ * Note that the buffer used for creating the direct channel does not get destroyed with
+ * ASensorManager_destroyDirectChannel and has to be closed or released separately.
+ *
+ * Available since API level 26.
  *
  * \param manager the {@link ASensorManager} instance obtained from
  *                {@link ASensorManager_getInstanceForPackage}.
@@ -575,7 +882,7 @@ int ASensorManager_createHardwareBufferDirectChannel(
  *                  {@link ASensorManager_createSharedMemoryDirectChannel} or
  *                  {@link ASensorManager_createHardwareBufferDirectChannel}.
  */
-void ASensorManager_destroyDirectChannel(ASensorManager* manager, int channelId);
+void ASensorManager_destroyDirectChannel(ASensorManager* manager, int channelId) __INTRODUCED_IN(26);
 
 /**
  * Configure direct report on channel
@@ -601,6 +908,8 @@ void ASensorManager_destroyDirectChannel(ASensorManager* manager, int channelId)
  *
  *     ASensorManager_configureDirectReport(manager, sensor, channel_id, ASENSOR_DIRECT_RATE_FAST);
  *
+ * Available since API level 26.
+ *
  * \param manager   the {@link ASensorManager} instance obtained from
  *                  {@link ASensorManager_getInstanceForPackage}.
  * \param sensor    a {@link ASensor} to denote which sensor to be operate. It can be NULL if rate
@@ -609,12 +918,11 @@ void ASensorManager_destroyDirectChannel(ASensorManager* manager, int channelId)
  * \param channelId channel id (a positive integer) returned from
  *                  {@link ASensorManager_createSharedMemoryDirectChannel} or
  *                  {@link ASensorManager_createHardwareBufferDirectChannel}.
- *
+ * \param rate      one of predefined ASENSOR_DIRECT_RATE_... that is supported by the sensor.
  * \return positive token for success or negative error code.
  */
-int ASensorManager_configureDirectReport(
-        ASensorManager* manager, ASensor const* sensor, int channelId, int rate);
-#endif
+int ASensorManager_configureDirectReport(ASensorManager* manager,
+        ASensor const* sensor, int channelId, int rate) __INTRODUCED_IN(26);
 
 /*****************************************************************************/
 
@@ -627,7 +935,7 @@ int ASensorManager_configureDirectReport(
  * \param queue {@link ASensorEventQueue} for sensor event to be report to.
  * \param sensor {@link ASensor} to be enabled.
  * \param samplingPeriodUs sampling period of sensor in microseconds.
- * \param maxBatchReportLatencyus maximum time interval between two batch of sensor events are
+ * \param maxBatchReportLatencyUs maximum time interval between two batches of sensor events are
  *                                delievered in microseconds. For sensor streaming, set to 0.
  * \return 0 on success or a negative error code on failure.
  */
@@ -687,7 +995,7 @@ int ASensorEventQueue_hasEvents(ASensorEventQueue* queue);
  * Retrieve next available events from the queue to a specified event array.
  *
  * \param queue {@link ASensorEventQueue} to get events from
- * \param events pointer to an array of {@link ASensorEvents}.
+ * \param events pointer to an array of {@link ASensorEvent}.
  * \param count max number of event that can be filled into array event.
  * \return number of events returned on success; negative error code when
  *         no events are pending or an error has occurred.
@@ -703,6 +1011,29 @@ int ASensorEventQueue_hasEvents(ASensorEventQueue* queue);
  */
 ssize_t ASensorEventQueue_getEvents(ASensorEventQueue* queue, ASensorEvent* events, size_t count);
 
+/**
+ * Request that {@link ASENSOR_TYPE_ADDITIONAL_INFO} events to be delivered on
+ * the given {@link ASensorEventQueue}.
+ *
+ * Sensor data events are always delivered to the {@link ASensorEventQueue}.
+ *
+ * The {@link ASENSOR_TYPE_ADDITIONAL_INFO} events will be returned through
+ * {@link ASensorEventQueue_getEvents}. The client is responsible for checking
+ * {@link ASensorEvent#type} to determine the event type prior to handling of
+ * the event.
+ *
+ * The client must be tolerant of any value for
+ * {@link AAdditionalInfoEvent#type}, as new values may be defined in the future
+ * and may delivered to the client.
+ *
+ * Available since API level 29.
+ *
+ * \param queue {@link ASensorEventQueue} to configure
+ * \param enable true to request {@link ASENSOR_TYPE_ADDITIONAL_INFO} events,
+ *        false to stop receiving events
+ * \return 0 on success or a negative error code on failure
+ */
+int ASensorEventQueue_requestAdditionalInfoEvents(ASensorEventQueue* queue, bool enable) __INTRODUCED_IN(29);
 
 /*****************************************************************************/
 
@@ -733,47 +1064,59 @@ float ASensor_getResolution(ASensor const* sensor);
  */
 int ASensor_getMinDelay(ASensor const* sensor);
 
-#if __ANDROID_API__ >= 21
 /**
  * Returns the maximum size of batches for this sensor. Batches will often be
  * smaller, as the hardware fifo might be used for other sensors.
+ *
+ * Available since API level 21.
  */
-int ASensor_getFifoMaxEventCount(ASensor const* sensor);
+int ASensor_getFifoMaxEventCount(ASensor const* sensor) __INTRODUCED_IN(21);
 
 /**
  * Returns the hardware batch fifo size reserved to this sensor.
+ *
+ * Available since API level 21.
  */
-int ASensor_getFifoReservedEventCount(ASensor const* sensor);
+int ASensor_getFifoReservedEventCount(ASensor const* sensor) __INTRODUCED_IN(21);
 
 /**
  * Returns this sensor's string type.
+ *
+ * Available since API level 21.
  */
-const char* ASensor_getStringType(ASensor const* sensor);
+const char* ASensor_getStringType(ASensor const* sensor) __INTRODUCED_IN(21);
 
 /**
  * Returns the reporting mode for this sensor. One of AREPORTING_MODE_* constants.
+ *
+ * Available since API level 21.
  */
-int ASensor_getReportingMode(ASensor const* sensor);
+int ASensor_getReportingMode(ASensor const* sensor) __INTRODUCED_IN(21);
 
 /**
  * Returns true if this is a wake up sensor, false otherwise.
+ *
+ * Available since API level 21.
  */
-bool ASensor_isWakeUpSensor(ASensor const* sensor);
-#endif /* __ANDROID_API__ >= 21 */
+bool ASensor_isWakeUpSensor(ASensor const* sensor) __INTRODUCED_IN(21);
 
-#if __ANDROID_API__ >= __ANDROID_API_O__
 /**
  * Test if sensor supports a certain type of direct channel.
  *
+ * Available since API level 26.
+ *
  * \param sensor  a {@link ASensor} to denote the sensor to be checked.
  * \param channelType  Channel type constant, either
- *                     {@ASENSOR_DIRECT_CHANNEL_TYPE_SHARED_MEMORY}
+ *                     {@link ASENSOR_DIRECT_CHANNEL_TYPE_SHARED_MEMORY}
  *                     or {@link ASENSOR_DIRECT_CHANNEL_TYPE_HARDWARE_BUFFER}.
  * \returns true if sensor supports the specified direct channel type.
  */
-bool ASensor_isDirectChannelTypeSupported(ASensor const* sensor, int channelType);
+bool ASensor_isDirectChannelTypeSupported(ASensor const* sensor, int channelType) __INTRODUCED_IN(26);
+
 /**
- * Get the highest direct rate level that a sensor support.
+ * Get the highest direct rate level that a sensor supports.
+ *
+ * Available since API level 26.
  *
  * \param sensor  a {@link ASensor} to denote the sensor to be checked.
  *
@@ -781,8 +1124,25 @@ bool ASensor_isDirectChannelTypeSupported(ASensor const* sensor, int channelType
  *         If return value is {@link ASENSOR_DIRECT_RATE_STOP}, it means the sensor
  *         does not support direct report.
  */
-int ASensor_getHighestDirectReportRateLevel(ASensor const* sensor);
-#endif
+int ASensor_getHighestDirectReportRateLevel(ASensor const* sensor) __INTRODUCED_IN(26);
+
+/**
+ * Returns the sensor's handle.
+ *
+ * The handle identifies the sensor within the system and is included in the
+ * sensor field of {@link ASensorEvent}, including those sent with type
+ * {@link ASENSOR_TYPE_ADDITIONAL_INFO}.
+ *
+ * A sensor's handle is able to be used to map {@link ASENSOR_TYPE_ADDITIONAL_INFO} events to the
+ * sensor that generated the event.
+ *
+ * It is important to note that the value returned by {@link ASensor_getHandle} is not the same as
+ * the value returned by the Java API <a href="/reference/android/hardware/Sensor#getId()">
+ * android.hardware.Sensor's getId()</a> and no mapping exists between the values.
+ *
+ * Available since API level 29.
+ */
+int ASensor_getHandle(ASensor const* sensor) __INTRODUCED_IN(29);
 
 #ifdef __cplusplus
 };

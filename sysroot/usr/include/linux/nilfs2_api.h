@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _LINUX_NILFS2_API_H
 #define _LINUX_NILFS2_API_H
 #include <linux/types.h>
@@ -39,6 +27,16 @@ enum {
 #define NILFS_CPINFO_FNS(flag,name) static inline int nilfs_cpinfo_ ##name(const struct nilfs_cpinfo * cpinfo) \
 { return ! ! (cpinfo->ci_flags & (1UL << NILFS_CPINFO_ ##flag)); \
 }
+struct nilfs_suinfo {
+  __u64 sui_lastmod;
+  __u32 sui_nblocks;
+  __u32 sui_flags;
+};
+enum {
+  NILFS_SUINFO_ACTIVE,
+  NILFS_SUINFO_DIRTY,
+  NILFS_SUINFO_ERROR,
+};
 #define NILFS_SUINFO_FNS(flag,name) static inline int nilfs_suinfo_ ##name(const struct nilfs_suinfo * si) \
 { return si->sui_flags & (1UL << NILFS_SUINFO_ ##flag); \
 }
@@ -61,6 +59,15 @@ enum {
 } static inline int nilfs_suinfo_update_ ##name(const struct nilfs_suinfo_update * sup) \
 { return ! ! (sup->sup_flags & (1UL << NILFS_SUINFO_UPDATE_ ##flag)); \
 }
+enum {
+  NILFS_CHECKPOINT,
+  NILFS_SNAPSHOT,
+};
+struct nilfs_cpmode {
+  __u64 cm_cno;
+  __u32 cm_mode;
+  __u32 cm_pad;
+};
 struct nilfs_argv {
   __u64 v_base;
   __u32 v_nmembs;

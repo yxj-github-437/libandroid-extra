@@ -26,8 +26,12 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _BITS_STRCASECMP_H_
-#define _BITS_STRCASECMP_H_
+#pragma once
+
+/**
+ * @file bits/strcasecmp.h
+ * @brief Case-insensitive string comparison.
+ */
 
 #include <sys/cdefs.h>
 #include <sys/types.h>
@@ -35,19 +39,41 @@
 
 __BEGIN_DECLS
 
-int strcasecmp(const char* __s1, const char* __s2) __attribute_pure__;
+/**
+ * [strcasecmp(3)](https://man7.org/linux/man-pages/man3/strcasecmp.3.html) compares two strings
+ * ignoring case.
+ *
+ * Returns an integer less than, equal to, or greater than zero if the first string is less than,
+ * equal to, or greater than the second string (ignoring case).
+ */
+int strcasecmp(const char* _Nonnull __s1, const char* _Nonnull __s2) __attribute_pure__;
 
-#if __ANDROID_API__ >= 23
-int strcasecmp_l(const char* __s1, const char* __s2, locale_t __l) __attribute_pure__ __INTRODUCED_IN(23);
-#endif /* __ANDROID_API__ >= 23 */
+/**
+ * Like strcasecmp() but taking a `locale_t`.
+ */
 
-int strncasecmp(const char* __s1, const char* __s2, size_t __n) __attribute_pure__;
+#if __BIONIC_AVAILABILITY_GUARD(23)
+int strcasecmp_l(const char* _Nonnull __s1, const char* _Nonnull __s2, locale_t _Nonnull __l) __attribute_pure__ __INTRODUCED_IN(23);
+#endif /* __BIONIC_AVAILABILITY_GUARD(23) */
 
-#if __ANDROID_API__ >= 23
-int strncasecmp_l(const char* __s1, const char* __s2, size_t __n, locale_t __l) __attribute_pure__ __INTRODUCED_IN(23);
-#endif /* __ANDROID_API__ >= 23 */
+
+/**
+ * [strncasecmp(3)](https://man7.org/linux/man-pages/man3/strncasecmp.3.html) compares the first
+ * `n` bytes of two strings ignoring case.
+ *
+ * Returns an integer less than, equal to, or greater than zero if the first `n` bytes of the
+ * first string is less than, equal to, or greater than the first `n` bytes of the second
+ * string (ignoring case).
+ */
+int strncasecmp(const char* _Nonnull __s1, const char* _Nonnull __s2, size_t __n) __attribute_pure__;
+
+/**
+ * Like strncasecmp() but taking a `locale_t`.
+ */
+
+#if __BIONIC_AVAILABILITY_GUARD(23)
+int strncasecmp_l(const char* _Nonnull __s1, const char* _Nonnull __s2, size_t __n, locale_t _Nonnull __l) __attribute_pure__ __INTRODUCED_IN(23);
+#endif /* __BIONIC_AVAILABILITY_GUARD(23) */
 
 
 __END_DECLS
-
-#endif

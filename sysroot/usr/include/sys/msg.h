@@ -26,8 +26,12 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _SYS_MSG_H_
-#define _SYS_MSG_H_
+#pragma once
+
+/**
+ * @file sys/msg.h
+ * @brief System V message queues. Not useful on Android because it's disallowed by SELinux.
+ */
 
 #include <sys/cdefs.h>
 #include <sys/ipc.h>
@@ -41,15 +45,17 @@ __BEGIN_DECLS
 typedef __kernel_ulong_t msgqnum_t;
 typedef __kernel_ulong_t msglen_t;
 
+/** Not useful on Android; disallowed by SELinux. */
 
-#if __ANDROID_API__ >= 26
-int msgctl(int __msg_id, int __cmd, struct msqid_ds* __buf) __INTRODUCED_IN(26);
+#if __BIONIC_AVAILABILITY_GUARD(26)
+int msgctl(int __msg_id, int __op, struct msqid_ds* _Nullable __buf) __INTRODUCED_IN(26);
+/** Not useful on Android; disallowed by SELinux. */
 int msgget(key_t __key, int __flags) __INTRODUCED_IN(26);
-ssize_t msgrcv(int __msg_id, void* __msgbuf_ptr, size_t __size, long __type, int __flags) __INTRODUCED_IN(26);
-int msgsnd(int __msg_id, const void* __msgbuf_ptr, size_t __size, int __flags) __INTRODUCED_IN(26);
-#endif /* __ANDROID_API__ >= 26 */
+/** Not useful on Android; disallowed by SELinux. */
+ssize_t msgrcv(int __msg_id, void* _Nonnull __msgbuf_ptr, size_t __size, long __type, int __flags) __INTRODUCED_IN(26);
+/** Not useful on Android; disallowed by SELinux. */
+int msgsnd(int __msg_id, const void* _Nonnull __msgbuf_ptr, size_t __size, int __flags) __INTRODUCED_IN(26);
+#endif /* __BIONIC_AVAILABILITY_GUARD(26) */
 
 
 __END_DECLS
-
-#endif

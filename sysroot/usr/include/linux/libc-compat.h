@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_LIBC_COMPAT_H
 #define _UAPI_LIBC_COMPAT_H
 #ifdef __GLIBC__
@@ -70,19 +58,6 @@
 #define __UAPI_DEF_IPV6_OPTIONS 1
 #define __UAPI_DEF_IN6_PKTINFO 1
 #define __UAPI_DEF_IP6_MTUINFO 1
-#endif
-#ifdef __NETIPX_IPX_H
-#define __UAPI_DEF_SOCKADDR_IPX 0
-#define __UAPI_DEF_IPX_ROUTE_DEFINITION 0
-#define __UAPI_DEF_IPX_INTERFACE_DEFINITION 0
-#define __UAPI_DEF_IPX_CONFIG_DATA 0
-#define __UAPI_DEF_IPX_ROUTE_DEF 0
-#else
-#define __UAPI_DEF_SOCKADDR_IPX 1
-#define __UAPI_DEF_IPX_ROUTE_DEFINITION 1
-#define __UAPI_DEF_IPX_INTERFACE_DEFINITION 1
-#define __UAPI_DEF_IPX_CONFIG_DATA 1
-#define __UAPI_DEF_IPX_ROUTE_DEF 1
 #endif
 #ifdef _SYS_XATTR_H
 #define __UAPI_DEF_XATTR 0
@@ -150,26 +125,8 @@
 #ifndef __UAPI_DEF_IP6_MTUINFO
 #define __UAPI_DEF_IP6_MTUINFO 1
 #endif
-#ifndef __UAPI_DEF_SOCKADDR_IPX
-#define __UAPI_DEF_SOCKADDR_IPX 1
-#endif
-#ifndef __UAPI_DEF_IPX_ROUTE_DEFINITION
-#define __UAPI_DEF_IPX_ROUTE_DEFINITION 1
-#endif
-#ifndef __UAPI_DEF_IPX_INTERFACE_DEFINITION
-#define __UAPI_DEF_IPX_INTERFACE_DEFINITION 1
-#endif
-#ifndef __UAPI_DEF_IPX_CONFIG_DATA
-#define __UAPI_DEF_IPX_CONFIG_DATA 1
-#endif
-#ifndef __UAPI_DEF_IPX_ROUTE_DEF
-#define __UAPI_DEF_IPX_ROUTE_DEF 1
-#endif
 #ifndef __UAPI_DEF_XATTR
 #define __UAPI_DEF_XATTR 1
 #endif
-#endif
-#ifndef __UAPI_DEF_ETHHDR
-#define __UAPI_DEF_ETHHDR 1
 #endif
 #endif

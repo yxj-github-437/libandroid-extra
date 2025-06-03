@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _DVBAUDIO_H_
 #define _DVBAUDIO_H_
 #include <linux/types.h>
@@ -48,12 +36,6 @@ typedef struct audio_status {
   int bypass_mode;
   audio_mixer_t mixer_state;
 } audio_status_t;
-typedef struct audio_karaoke {
-  int vocal1;
-  int vocal2;
-  int melody;
-} audio_karaoke_t;
-typedef __u16 audio_attributes_t;
 #define AUDIO_CAP_DTS 1
 #define AUDIO_CAP_LPCM 2
 #define AUDIO_CAP_MP1 4
@@ -78,9 +60,5 @@ typedef __u16 audio_attributes_t;
 #define AUDIO_SET_ID _IO('o', 13)
 #define AUDIO_SET_MIXER _IOW('o', 14, audio_mixer_t)
 #define AUDIO_SET_STREAMTYPE _IO('o', 15)
-#define AUDIO_SET_EXT_ID _IO('o', 16)
-#define AUDIO_SET_ATTRIBUTES _IOW('o', 17, audio_attributes_t)
-#define AUDIO_SET_KARAOKE _IOW('o', 18, audio_karaoke_t)
-#define AUDIO_GET_PTS _IOR('o', 19, __u64)
 #define AUDIO_BILINGUAL_CHANNEL_SELECT _IO('o', 20)
 #endif

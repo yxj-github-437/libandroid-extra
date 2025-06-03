@@ -1,25 +1,14 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef __OMAP_DRM_H__
 #define __OMAP_DRM_H__
 #include "drm.h"
 #ifdef __cplusplus
+extern "C" {
 #endif
 #define OMAP_PARAM_CHIPSET_ID 1
 struct drm_omap_param {
@@ -27,15 +16,14 @@ struct drm_omap_param {
   __u64 value;
 };
 #define OMAP_BO_SCANOUT 0x00000001
-#define OMAP_BO_CACHE_MASK 0x00000006
-#define OMAP_BO_TILED_MASK 0x00000f00
 #define OMAP_BO_CACHED 0x00000000
 #define OMAP_BO_WC 0x00000002
 #define OMAP_BO_UNCACHED 0x00000004
+#define OMAP_BO_CACHE_MASK 0x00000006
 #define OMAP_BO_TILED_8 0x00000100
 #define OMAP_BO_TILED_16 0x00000200
 #define OMAP_BO_TILED_32 0x00000300
-#define OMAP_BO_TILED (OMAP_BO_TILED_8 | OMAP_BO_TILED_16 | OMAP_BO_TILED_32)
+#define OMAP_BO_TILED_MASK 0x00000f00
 union omap_gem_size {
   __u32 bytes;
   struct {
@@ -84,5 +72,6 @@ struct drm_omap_gem_info {
 #define DRM_IOCTL_OMAP_GEM_CPU_FINI DRM_IOW(DRM_COMMAND_BASE + DRM_OMAP_GEM_CPU_FINI, struct drm_omap_gem_cpu_fini)
 #define DRM_IOCTL_OMAP_GEM_INFO DRM_IOWR(DRM_COMMAND_BASE + DRM_OMAP_GEM_INFO, struct drm_omap_gem_info)
 #ifdef __cplusplus
+}
 #endif
 #endif

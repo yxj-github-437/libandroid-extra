@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #define ZORRO_MANUF_PACIFIC_PERIPHERALS 0x00D3
 #define ZORRO_PROD_PACIFIC_PERIPHERALS_SE_2000_A500 ZORRO_ID(PACIFIC_PERIPHERALS, 0x00, 0)
 #define ZORRO_PROD_PACIFIC_PERIPHERALS_SCSI ZORRO_ID(PACIFIC_PERIPHERALS, 0x0A, 0)
@@ -366,6 +354,8 @@
 #define ZORRO_MANUF_VMC 0x1389
 #define ZORRO_PROD_VMC_ISDN_BLASTER_Z2 ZORRO_ID(VMC, 0x01, 0)
 #define ZORRO_PROD_VMC_HYPERCOM_4 ZORRO_ID(VMC, 0x02, 0)
+#define ZORRO_MANUF_CSLAB 0x1400
+#define ZORRO_PROD_CSLAB_WARP_1260 ZORRO_ID(CSLAB, 0x65, 0)
 #define ZORRO_MANUF_INFORMATION 0x157C
 #define ZORRO_PROD_INFORMATION_ISDN_ENGINE_I ZORRO_ID(INFORMATION, 0x64, 0)
 #define ZORRO_MANUF_VORTEX 0x2017

@@ -1,42 +1,15 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_LINUX_TCP_H
 #define _UAPI_LINUX_TCP_H
+#include <bits/tcphdr.h>
 #include <linux/types.h>
 #include <asm/byteorder.h>
 #include <linux/socket.h>
-struct tcphdr {
-  __be16 source;
-  __be16 dest;
-  __be32 seq;
-  __be32 ack_seq;
-#ifdef __LITTLE_ENDIAN_BITFIELD
-  __u16 res1 : 4, doff : 4, fin : 1, syn : 1, rst : 1, psh : 1, ack : 1, urg : 1, ece : 1, cwr : 1;
-#elif defined(__BIG_ENDIAN_BITFIELD)
-  __u16 doff : 4, res1 : 4, cwr : 1, ece : 1, urg : 1, ack : 1, psh : 1, rst : 1, syn : 1, fin : 1;
-#else
-#error "Adjust your <asm/byteorder.h> defines"
-#endif
-  __be16 window;
-  __sum16 check;
-  __be16 urg_ptr;
-};
 union tcp_word_hdr {
   struct tcphdr hdr;
   __be32 words[5];
@@ -89,6 +62,19 @@ enum {
 #define TCP_MD5SIG_EXT 32
 #define TCP_FASTOPEN_KEY 33
 #define TCP_FASTOPEN_NO_COOKIE 34
+#define TCP_ZEROCOPY_RECEIVE 35
+#define TCP_INQ 36
+#define TCP_CM_INQ TCP_INQ
+#define TCP_TX_DELAY 37
+#define TCP_AO_ADD_KEY 38
+#define TCP_AO_DEL_KEY 39
+#define TCP_AO_INFO 40
+#define TCP_AO_GET_KEYS 41
+#define TCP_AO_REPAIR 42
+#define TCP_IS_MPTCP 43
+#define TCP_REPAIR_ON 1
+#define TCP_REPAIR_OFF 0
+#define TCP_REPAIR_OFF_NO_WP - 1
 struct tcp_repair_opt {
   __u32 opt_code;
   __u32 opt_val;
@@ -106,12 +92,19 @@ enum {
   TCP_SEND_QUEUE,
   TCP_QUEUES_NR,
 };
+enum tcp_fastopen_client_fail {
+  TFO_STATUS_UNSPEC,
+  TFO_COOKIE_UNAVAILABLE,
+  TFO_DATA_NOT_ACKED,
+  TFO_SYN_RETRANSMITTED,
+};
 #define TCPI_OPT_TIMESTAMPS 1
 #define TCPI_OPT_SACK 2
 #define TCPI_OPT_WSCALE 4
 #define TCPI_OPT_ECN 8
 #define TCPI_OPT_ECN_SEEN 16
 #define TCPI_OPT_SYN_DATA 32
+#define TCPI_OPT_USEC_TS 64
 enum tcp_ca_state {
   TCP_CA_Open = 0,
 #define TCPF_CA_Open (1 << TCP_CA_Open)
@@ -132,7 +125,7 @@ struct tcp_info {
   __u8 tcpi_backoff;
   __u8 tcpi_options;
   __u8 tcpi_snd_wscale : 4, tcpi_rcv_wscale : 4;
-  __u8 tcpi_delivery_rate_app_limited : 1;
+  __u8 tcpi_delivery_rate_app_limited : 1, tcpi_fastopen_client_fail : 2;
   __u32 tcpi_rto;
   __u32 tcpi_ato;
   __u32 tcpi_snd_mss;
@@ -171,6 +164,19 @@ struct tcp_info {
   __u64 tcpi_busy_time;
   __u64 tcpi_rwnd_limited;
   __u64 tcpi_sndbuf_limited;
+  __u32 tcpi_delivered;
+  __u32 tcpi_delivered_ce;
+  __u64 tcpi_bytes_sent;
+  __u64 tcpi_bytes_retrans;
+  __u32 tcpi_dsack_dups;
+  __u32 tcpi_reord_seen;
+  __u32 tcpi_rcv_ooopack;
+  __u32 tcpi_snd_wnd;
+  __u32 tcpi_rcv_wnd;
+  __u32 tcpi_rehash;
+  __u16 tcpi_total_rto;
+  __u16 tcpi_total_rto_recoveries;
+  __u32 tcpi_total_rto_time;
 };
 enum {
   TCP_NLA_PAD,
@@ -186,15 +192,31 @@ enum {
   TCP_NLA_MIN_RTT,
   TCP_NLA_RECUR_RETRANS,
   TCP_NLA_DELIVERY_RATE_APP_LMT,
+  TCP_NLA_SNDQ_SIZE,
+  TCP_NLA_CA_STATE,
+  TCP_NLA_SND_SSTHRESH,
+  TCP_NLA_DELIVERED,
+  TCP_NLA_DELIVERED_CE,
+  TCP_NLA_BYTES_SENT,
+  TCP_NLA_BYTES_RETRANS,
+  TCP_NLA_DSACK_DUPS,
+  TCP_NLA_REORD_SEEN,
+  TCP_NLA_SRTT,
+  TCP_NLA_TIMEOUT_REHASH,
+  TCP_NLA_BYTES_NOTSENT,
+  TCP_NLA_EDT,
+  TCP_NLA_TTL,
+  TCP_NLA_REHASH,
 };
 #define TCP_MD5SIG_MAXKEYLEN 80
-#define TCP_MD5SIG_FLAG_PREFIX 1
+#define TCP_MD5SIG_FLAG_PREFIX 0x1
+#define TCP_MD5SIG_FLAG_IFINDEX 0x2
 struct tcp_md5sig {
   struct sockaddr_storage tcpm_addr;
   __u8 tcpm_flags;
   __u8 tcpm_prefixlen;
   __u16 tcpm_keylen;
-  __u32 __tcpm_pad;
+  int tcpm_ifindex;
   __u8 tcpm_key[TCP_MD5SIG_MAXKEYLEN];
 };
 struct tcp_diag_md5sig {
@@ -203,5 +225,82 @@ struct tcp_diag_md5sig {
   __u16 tcpm_keylen;
   __be32 tcpm_addr[4];
   __u8 tcpm_key[TCP_MD5SIG_MAXKEYLEN];
+};
+#define TCP_AO_MAXKEYLEN 80
+#define TCP_AO_KEYF_IFINDEX (1 << 0)
+#define TCP_AO_KEYF_EXCLUDE_OPT (1 << 1)
+struct tcp_ao_add {
+  struct sockaddr_storage addr;
+  char alg_name[64];
+  __s32 ifindex;
+  __u32 set_current : 1, set_rnext : 1, reserved : 30;
+  __u16 reserved2;
+  __u8 prefix;
+  __u8 sndid;
+  __u8 rcvid;
+  __u8 maclen;
+  __u8 keyflags;
+  __u8 keylen;
+  __u8 key[TCP_AO_MAXKEYLEN];
+} __attribute__((aligned(8)));
+struct tcp_ao_del {
+  struct sockaddr_storage addr;
+  __s32 ifindex;
+  __u32 set_current : 1, set_rnext : 1, del_async : 1, reserved : 29;
+  __u16 reserved2;
+  __u8 prefix;
+  __u8 sndid;
+  __u8 rcvid;
+  __u8 current_key;
+  __u8 rnext;
+  __u8 keyflags;
+} __attribute__((aligned(8)));
+struct tcp_ao_info_opt {
+  __u32 set_current : 1, set_rnext : 1, ao_required : 1, set_counters : 1, accept_icmps : 1, reserved : 27;
+  __u16 reserved2;
+  __u8 current_key;
+  __u8 rnext;
+  __u64 pkt_good;
+  __u64 pkt_bad;
+  __u64 pkt_key_not_found;
+  __u64 pkt_ao_required;
+  __u64 pkt_dropped_icmp;
+} __attribute__((aligned(8)));
+struct tcp_ao_getsockopt {
+  struct sockaddr_storage addr;
+  char alg_name[64];
+  __u8 key[TCP_AO_MAXKEYLEN];
+  __u32 nkeys;
+  __u16 is_current : 1, is_rnext : 1, get_all : 1, reserved : 13;
+  __u8 sndid;
+  __u8 rcvid;
+  __u8 prefix;
+  __u8 maclen;
+  __u8 keyflags;
+  __u8 keylen;
+  __s32 ifindex;
+  __u64 pkt_good;
+  __u64 pkt_bad;
+} __attribute__((aligned(8)));
+struct tcp_ao_repair {
+  __be32 snt_isn;
+  __be32 rcv_isn;
+  __u32 snd_sne;
+  __u32 rcv_sne;
+} __attribute__((aligned(8)));
+#define TCP_RECEIVE_ZEROCOPY_FLAG_TLB_CLEAN_HINT 0x1
+struct tcp_zerocopy_receive {
+  __u64 address;
+  __u32 length;
+  __u32 recv_skip_hint;
+  __u32 inq;
+  __s32 err;
+  __u64 copybuf_address;
+  __s32 copybuf_len;
+  __u32 flags;
+  __u64 msg_control;
+  __u64 msg_controllen;
+  __u32 msg_flags;
+  __u32 reserved;
 };
 #endif

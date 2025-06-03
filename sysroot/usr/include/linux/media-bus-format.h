@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef __LINUX_MEDIA_BUS_FORMAT_H
 #define __LINUX_MEDIA_BUS_FORMAT_H
 #define MEDIA_BUS_FMT_FIXED 0x0001
@@ -30,19 +18,30 @@
 #define MEDIA_BUS_FMT_RGB565_2X8_BE 0x1007
 #define MEDIA_BUS_FMT_RGB565_2X8_LE 0x1008
 #define MEDIA_BUS_FMT_RGB666_1X18 0x1009
+#define MEDIA_BUS_FMT_RGB666_2X9_BE 0x1025
+#define MEDIA_BUS_FMT_BGR666_1X18 0x1023
 #define MEDIA_BUS_FMT_RBG888_1X24 0x100e
 #define MEDIA_BUS_FMT_RGB666_1X24_CPADHI 0x1015
+#define MEDIA_BUS_FMT_BGR666_1X24_CPADHI 0x1024
+#define MEDIA_BUS_FMT_RGB565_1X24_CPADHI 0x1022
 #define MEDIA_BUS_FMT_RGB666_1X7X3_SPWG 0x1010
 #define MEDIA_BUS_FMT_BGR888_1X24 0x1013
+#define MEDIA_BUS_FMT_BGR888_3X8 0x101b
 #define MEDIA_BUS_FMT_GBR888_1X24 0x1014
 #define MEDIA_BUS_FMT_RGB888_1X24 0x100a
 #define MEDIA_BUS_FMT_RGB888_2X12_BE 0x100b
 #define MEDIA_BUS_FMT_RGB888_2X12_LE 0x100c
+#define MEDIA_BUS_FMT_RGB888_3X8 0x101c
+#define MEDIA_BUS_FMT_RGB888_3X8_DELTA 0x101d
 #define MEDIA_BUS_FMT_RGB888_1X7X4_SPWG 0x1011
 #define MEDIA_BUS_FMT_RGB888_1X7X4_JEIDA 0x1012
+#define MEDIA_BUS_FMT_RGB666_1X30_CPADLO 0x101e
+#define MEDIA_BUS_FMT_RGB888_1X30_CPADLO 0x101f
 #define MEDIA_BUS_FMT_ARGB8888_1X32 0x100d
 #define MEDIA_BUS_FMT_RGB888_1X32_PADHI 0x100f
 #define MEDIA_BUS_FMT_RGB101010_1X30 0x1018
+#define MEDIA_BUS_FMT_RGB666_1X36_CPADLO 0x1020
+#define MEDIA_BUS_FMT_RGB888_1X36_CPADLO 0x1021
 #define MEDIA_BUS_FMT_RGB121212_1X36 0x1019
 #define MEDIA_BUS_FMT_RGB161616_1X48 0x101a
 #define MEDIA_BUS_FMT_Y8_1X8 0x2001
@@ -56,6 +55,7 @@
 #define MEDIA_BUS_FMT_YUYV8_2X8 0x2008
 #define MEDIA_BUS_FMT_YVYU8_2X8 0x2009
 #define MEDIA_BUS_FMT_Y10_1X10 0x200a
+#define MEDIA_BUS_FMT_Y10_2X8_PADHI_LE 0x202c
 #define MEDIA_BUS_FMT_UYVY10_2X10 0x2018
 #define MEDIA_BUS_FMT_VYUY10_2X10 0x2019
 #define MEDIA_BUS_FMT_YUYV10_2X10 0x200b
@@ -65,6 +65,8 @@
 #define MEDIA_BUS_FMT_VYUY12_2X12 0x201d
 #define MEDIA_BUS_FMT_YUYV12_2X12 0x201e
 #define MEDIA_BUS_FMT_YVYU12_2X12 0x201f
+#define MEDIA_BUS_FMT_Y14_1X14 0x202d
+#define MEDIA_BUS_FMT_Y16_1X16 0x202e
 #define MEDIA_BUS_FMT_UYVY8_1X16 0x200f
 #define MEDIA_BUS_FMT_VYUY8_1X16 0x2010
 #define MEDIA_BUS_FMT_YUYV8_1X16 0x2011
@@ -123,4 +125,12 @@
 #define MEDIA_BUS_FMT_JPEG_1X8 0x4001
 #define MEDIA_BUS_FMT_S5C_UYVY_JPEG_1X8 0x5001
 #define MEDIA_BUS_FMT_AHSV8888_1X32 0x6001
+#define MEDIA_BUS_FMT_METADATA_FIXED 0x7001
+#define MEDIA_BUS_FMT_META_8 0x8001
+#define MEDIA_BUS_FMT_META_10 0x8002
+#define MEDIA_BUS_FMT_META_12 0x8003
+#define MEDIA_BUS_FMT_META_14 0x8004
+#define MEDIA_BUS_FMT_META_16 0x8005
+#define MEDIA_BUS_FMT_META_20 0x8006
+#define MEDIA_BUS_FMT_META_24 0x8007
 #endif

@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI__LINUX_RTNETLINK_H
 #define _UAPI__LINUX_RTNETLINK_H
 #include <linux/types.h>
@@ -131,8 +119,46 @@ enum {
 #define RTM_NEWSTATS RTM_NEWSTATS
   RTM_GETSTATS = 94,
 #define RTM_GETSTATS RTM_GETSTATS
+  RTM_SETSTATS,
+#define RTM_SETSTATS RTM_SETSTATS
   RTM_NEWCACHEREPORT = 96,
 #define RTM_NEWCACHEREPORT RTM_NEWCACHEREPORT
+  RTM_NEWCHAIN = 100,
+#define RTM_NEWCHAIN RTM_NEWCHAIN
+  RTM_DELCHAIN,
+#define RTM_DELCHAIN RTM_DELCHAIN
+  RTM_GETCHAIN,
+#define RTM_GETCHAIN RTM_GETCHAIN
+  RTM_NEWNEXTHOP = 104,
+#define RTM_NEWNEXTHOP RTM_NEWNEXTHOP
+  RTM_DELNEXTHOP,
+#define RTM_DELNEXTHOP RTM_DELNEXTHOP
+  RTM_GETNEXTHOP,
+#define RTM_GETNEXTHOP RTM_GETNEXTHOP
+  RTM_NEWLINKPROP = 108,
+#define RTM_NEWLINKPROP RTM_NEWLINKPROP
+  RTM_DELLINKPROP,
+#define RTM_DELLINKPROP RTM_DELLINKPROP
+  RTM_GETLINKPROP,
+#define RTM_GETLINKPROP RTM_GETLINKPROP
+  RTM_NEWVLAN = 112,
+#define RTM_NEWNVLAN RTM_NEWVLAN
+  RTM_DELVLAN,
+#define RTM_DELVLAN RTM_DELVLAN
+  RTM_GETVLAN,
+#define RTM_GETVLAN RTM_GETVLAN
+  RTM_NEWNEXTHOPBUCKET = 116,
+#define RTM_NEWNEXTHOPBUCKET RTM_NEWNEXTHOPBUCKET
+  RTM_DELNEXTHOPBUCKET,
+#define RTM_DELNEXTHOPBUCKET RTM_DELNEXTHOPBUCKET
+  RTM_GETNEXTHOPBUCKET,
+#define RTM_GETNEXTHOPBUCKET RTM_GETNEXTHOPBUCKET
+  RTM_NEWTUNNEL = 120,
+#define RTM_NEWTUNNEL RTM_NEWTUNNEL
+  RTM_DELTUNNEL,
+#define RTM_DELTUNNEL RTM_DELTUNNEL
+  RTM_GETTUNNEL,
+#define RTM_GETTUNNEL RTM_GETTUNNEL
   __RTM_MAX,
 #define RTM_MAX (((__RTM_MAX + 3) & ~3) - 1)
 };
@@ -193,7 +219,14 @@ enum {
 #define RTPROT_NTK 15
 #define RTPROT_DHCP 16
 #define RTPROT_MROUTED 17
+#define RTPROT_KEEPALIVED 18
 #define RTPROT_BABEL 42
+#define RTPROT_OPENR 99
+#define RTPROT_BGP 186
+#define RTPROT_ISIS 187
+#define RTPROT_OSPF 188
+#define RTPROT_RIP 189
+#define RTPROT_EIGRP 192
 enum rt_scope_t {
   RT_SCOPE_UNIVERSE = 0,
   RT_SCOPE_SITE = 200,
@@ -207,6 +240,9 @@ enum rt_scope_t {
 #define RTM_F_PREFIX 0x800
 #define RTM_F_LOOKUP_TABLE 0x1000
 #define RTM_F_FIB_MATCH 0x2000
+#define RTM_F_OFFLOAD 0x4000
+#define RTM_F_TRAP 0x8000
+#define RTM_F_OFFLOAD_FAILED 0x20000000
 enum rt_class_t {
   RT_TABLE_UNSPEC = 0,
   RT_TABLE_COMPAT = 252,
@@ -243,6 +279,10 @@ enum rtattr_type_t {
   RTA_PAD,
   RTA_UID,
   RTA_TTL_PROPAGATE,
+  RTA_IP_PROTO,
+  RTA_SPORT,
+  RTA_DPORT,
+  RTA_NH_ID,
   __RTA_MAX
 };
 #define RTA_MAX (__RTA_MAX - 1)
@@ -260,7 +300,8 @@ struct rtnexthop {
 #define RTNH_F_OFFLOAD 8
 #define RTNH_F_LINKDOWN 16
 #define RTNH_F_UNRESOLVED 32
-#define RTNH_COMPARE_MASK (RTNH_F_DEAD | RTNH_F_LINKDOWN | RTNH_F_OFFLOAD)
+#define RTNH_F_TRAP 64
+#define RTNH_COMPARE_MASK (RTNH_F_DEAD | RTNH_F_LINKDOWN | RTNH_F_OFFLOAD | RTNH_F_TRAP)
 #define RTNH_ALIGNTO 4
 #define RTNH_ALIGN(len) (((len) + RTNH_ALIGNTO - 1) & ~(RTNH_ALIGNTO - 1))
 #define RTNH_OK(rtnh,len) ((rtnh)->rtnh_len >= sizeof(struct rtnexthop) && ((int) (rtnh)->rtnh_len) <= (len))
@@ -270,7 +311,7 @@ struct rtnexthop {
 #define RTNH_DATA(rtnh) ((struct rtattr *) (((char *) (rtnh)) + RTNH_LENGTH(0)))
 struct rtvia {
   __kernel_sa_family_t rtvia_family;
-  __u8 rtvia_addr[0];
+  __u8 rtvia_addr[];
 };
 struct rta_cacheinfo {
   __u32 rta_clntref;
@@ -327,7 +368,8 @@ enum {
 #define RTAX_FEATURE_SACK (1 << 1)
 #define RTAX_FEATURE_TIMESTAMP (1 << 2)
 #define RTAX_FEATURE_ALLFRAG (1 << 3)
-#define RTAX_FEATURE_MASK (RTAX_FEATURE_ECN | RTAX_FEATURE_SACK | RTAX_FEATURE_TIMESTAMP | RTAX_FEATURE_ALLFRAG)
+#define RTAX_FEATURE_TCP_USEC_TS (1 << 4)
+#define RTAX_FEATURE_MASK (RTAX_FEATURE_ECN | RTAX_FEATURE_SACK | RTAX_FEATURE_TIMESTAMP | RTAX_FEATURE_ALLFRAG | RTAX_FEATURE_TCP_USEC_TS)
 struct rta_session {
   __u8 proto;
   __u8 pad1;
@@ -389,8 +431,10 @@ struct tcmsg {
   int tcm_ifindex;
   __u32 tcm_handle;
   __u32 tcm_parent;
+#define tcm_block_index tcm_parent
   __u32 tcm_info;
 };
+#define TCM_IFINDEX_MAGIC_BLOCK (0xFFFFFFFFU)
 enum {
   TCA_UNSPEC,
   TCA_KIND,
@@ -405,9 +449,14 @@ enum {
   TCA_DUMP_INVISIBLE,
   TCA_CHAIN,
   TCA_HW_OFFLOAD,
+  TCA_INGRESS_BLOCK,
+  TCA_EGRESS_BLOCK,
+  TCA_DUMP_FLAGS,
+  TCA_EXT_WARN_MSG,
   __TCA_MAX
 };
 #define TCA_MAX (__TCA_MAX - 1)
+#define TCA_DUMP_FLAGS_TERSE (1 << 0)
 #define TCA_RTA(r) ((struct rtattr *) (((char *) (r)) + NLMSG_ALIGN(sizeof(struct tcmsg))))
 #define TCA_PAYLOAD(n) NLMSG_PAYLOAD(n, sizeof(struct tcmsg))
 struct nduseroptmsg {
@@ -504,6 +553,16 @@ enum rtnetlink_groups {
 #define RTNLGRP_IPV4_MROUTE_R RTNLGRP_IPV4_MROUTE_R
   RTNLGRP_IPV6_MROUTE_R,
 #define RTNLGRP_IPV6_MROUTE_R RTNLGRP_IPV6_MROUTE_R
+  RTNLGRP_NEXTHOP,
+#define RTNLGRP_NEXTHOP RTNLGRP_NEXTHOP
+  RTNLGRP_BRVLAN,
+#define RTNLGRP_BRVLAN RTNLGRP_BRVLAN
+  RTNLGRP_MCTP_IFADDR,
+#define RTNLGRP_MCTP_IFADDR RTNLGRP_MCTP_IFADDR
+  RTNLGRP_TUNNEL,
+#define RTNLGRP_TUNNEL RTNLGRP_TUNNEL
+  RTNLGRP_STATS,
+#define RTNLGRP_STATS RTNLGRP_STATS
   __RTNLGRP_MAX
 };
 #define RTNLGRP_MAX (__RTNLGRP_MAX - 1)
@@ -520,14 +579,21 @@ enum {
   TCA_ROOT_FLAGS,
   TCA_ROOT_COUNT,
   TCA_ROOT_TIME_DELTA,
+  TCA_ROOT_EXT_WARN_MSG,
   __TCA_ROOT_MAX,
 #define TCA_ROOT_MAX (__TCA_ROOT_MAX - 1)
 };
 #define TA_RTA(r) ((struct rtattr *) (((char *) (r)) + NLMSG_ALIGN(sizeof(struct tcamsg))))
 #define TA_PAYLOAD(n) NLMSG_PAYLOAD(n, sizeof(struct tcamsg))
 #define TCA_FLAG_LARGE_DUMP_ON (1 << 0)
+#define TCA_ACT_FLAG_LARGE_DUMP_ON TCA_FLAG_LARGE_DUMP_ON
+#define TCA_ACT_FLAG_TERSE_DUMP (1 << 1)
 #define RTEXT_FILTER_VF (1 << 0)
 #define RTEXT_FILTER_BRVLAN (1 << 1)
 #define RTEXT_FILTER_BRVLAN_COMPRESSED (1 << 2)
 #define RTEXT_FILTER_SKIP_STATS (1 << 3)
+#define RTEXT_FILTER_MRP (1 << 4)
+#define RTEXT_FILTER_CFM_CONFIG (1 << 5)
+#define RTEXT_FILTER_CFM_STATUS (1 << 6)
+#define RTEXT_FILTER_MST (1 << 7)
 #endif

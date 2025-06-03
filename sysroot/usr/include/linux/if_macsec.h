@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_MACSEC_H
 #define _UAPI_MACSEC_H
 #include <linux/types.h>
@@ -23,8 +11,13 @@
 #define MACSEC_GENL_VERSION 1
 #define MACSEC_MAX_KEY_LEN 128
 #define MACSEC_KEYID_LEN 16
+#define MACSEC_SALT_LEN 12
+#define MACSEC_CIPHER_ID_GCM_AES_128 0x0080C20001000001ULL
+#define MACSEC_CIPHER_ID_GCM_AES_256 0x0080C20001000002ULL
+#define MACSEC_CIPHER_ID_GCM_AES_XPN_128 0x0080C20001000003ULL
+#define MACSEC_CIPHER_ID_GCM_AES_XPN_256 0x0080C20001000004ULL
 #define MACSEC_DEFAULT_CIPHER_ID 0x0080020001000001ULL
-#define MACSEC_DEFAULT_CIPHER_ALT 0x0080C20001000001ULL
+#define MACSEC_DEFAULT_CIPHER_ALT MACSEC_CIPHER_ID_GCM_AES_128
 #define MACSEC_MIN_ICV_LEN 8
 #define MACSEC_MAX_ICV_LEN 32
 #define MACSEC_STD_ICV_LEN 16
@@ -38,6 +31,7 @@ enum macsec_attrs {
   MACSEC_ATTR_RXSC_LIST,
   MACSEC_ATTR_TXSC_STATS,
   MACSEC_ATTR_SECY_STATS,
+  MACSEC_ATTR_OFFLOAD,
   __MACSEC_ATTR_END,
   NUM_MACSEC_ATTR = __MACSEC_ATTR_END,
   MACSEC_ATTR_MAX = __MACSEC_ATTR_END - 1,
@@ -82,9 +76,19 @@ enum macsec_sa_attrs {
   MACSEC_SA_ATTR_KEYID,
   MACSEC_SA_ATTR_STATS,
   MACSEC_SA_ATTR_PAD,
+  MACSEC_SA_ATTR_SSCI,
+  MACSEC_SA_ATTR_SALT,
   __MACSEC_SA_ATTR_END,
   NUM_MACSEC_SA_ATTR = __MACSEC_SA_ATTR_END,
   MACSEC_SA_ATTR_MAX = __MACSEC_SA_ATTR_END - 1,
+};
+enum macsec_offload_attrs {
+  MACSEC_OFFLOAD_ATTR_UNSPEC,
+  MACSEC_OFFLOAD_ATTR_TYPE,
+  MACSEC_OFFLOAD_ATTR_PAD,
+  __MACSEC_OFFLOAD_ATTR_END,
+  NUM_MACSEC_OFFLOAD_ATTR = __MACSEC_OFFLOAD_ATTR_END,
+  MACSEC_OFFLOAD_ATTR_MAX = __MACSEC_OFFLOAD_ATTR_END - 1,
 };
 enum macsec_nl_commands {
   MACSEC_CMD_GET_TXSC,
@@ -97,6 +101,7 @@ enum macsec_nl_commands {
   MACSEC_CMD_ADD_RXSA,
   MACSEC_CMD_DEL_RXSA,
   MACSEC_CMD_UPD_RXSA,
+  MACSEC_CMD_UPD_OFFLOAD,
 };
 enum macsec_rxsc_stats_attr {
   MACSEC_RXSC_STATS_ATTR_UNSPEC,

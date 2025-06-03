@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _DRM_H_
 #define _DRM_H_
 #ifdef __linux__
@@ -23,6 +11,7 @@
 #include <asm/ioctl.h>
 typedef unsigned int drm_handle_t;
 #else
+#include <stdint.h>
 #include <sys/ioccom.h>
 #include <sys/types.h>
 typedef int8_t __s8;
@@ -37,6 +26,7 @@ typedef size_t __kernel_size_t;
 typedef unsigned long drm_handle_t;
 #endif
 #ifdef __cplusplus
+extern "C" {
 #endif
 #define DRM_NAME "drm"
 #define DRM_MIN_ORDER 5
@@ -76,19 +66,19 @@ struct drm_version {
   int version_minor;
   int version_patchlevel;
   __kernel_size_t name_len;
-  char __user * name;
+  char  * name;
   __kernel_size_t date_len;
-  char __user * date;
+  char  * date;
   __kernel_size_t desc_len;
-  char __user * desc;
+  char  * desc;
 };
 struct drm_unique {
   __kernel_size_t unique_len;
-  char __user * unique;
+  char  * unique;
 };
 struct drm_list {
   int count;
-  struct drm_version __user * version;
+  struct drm_version  * version;
 };
 struct drm_block {
   int unused;
@@ -200,37 +190,37 @@ struct drm_buf_desc {
 };
 struct drm_buf_info {
   int count;
-  struct drm_buf_desc __user * list;
+  struct drm_buf_desc  * list;
 };
 struct drm_buf_free {
   int count;
-  int __user * list;
+  int  * list;
 };
 struct drm_buf_pub {
   int idx;
   int total;
   int used;
-  void __user * address;
+  void  * address;
 };
 struct drm_buf_map {
   int count;
 #ifdef __cplusplus
-  void __user * virt;
+  void  * virt;
 #else
-  void __user * __linux_virtual;
+  void  * __linux_virtual;
 #endif
-  struct drm_buf_pub __user * list;
+  struct drm_buf_pub  * list;
 };
 struct drm_dma {
   int context;
   int send_count;
-  int __user * send_indices;
-  int __user * send_sizes;
+  int  * send_indices;
+  int  * send_sizes;
   enum drm_dma_flags flags;
   int request_count;
   int request_size;
-  int __user * request_indices;
-  int __user * request_sizes;
+  int  * request_indices;
+  int  * request_sizes;
   int granted_count;
 };
 enum drm_ctx_flags {
@@ -243,7 +233,7 @@ struct drm_ctx {
 };
 struct drm_ctx_res {
   int count;
-  struct drm_ctx __user * contexts;
+  struct drm_ctx  * contexts;
 };
 struct drm_draw {
   drm_drawable_t handle;
@@ -362,6 +352,8 @@ struct drm_gem_open {
 #define DRM_CAP_PAGE_FLIP_TARGET 0x11
 #define DRM_CAP_CRTC_IN_VBLANK_EVENT 0x12
 #define DRM_CAP_SYNCOBJ 0x13
+#define DRM_CAP_SYNCOBJ_TIMELINE 0x14
+#define DRM_CAP_ATOMIC_ASYNC_PAGE_FLIP 0x15
 struct drm_get_cap {
   __u64 capability;
   __u64 value;
@@ -369,6 +361,9 @@ struct drm_get_cap {
 #define DRM_CLIENT_CAP_STEREO_3D 1
 #define DRM_CLIENT_CAP_UNIVERSAL_PLANES 2
 #define DRM_CLIENT_CAP_ATOMIC 3
+#define DRM_CLIENT_CAP_ASPECT_RATIO 4
+#define DRM_CLIENT_CAP_WRITEBACK_CONNECTORS 5
+#define DRM_CLIENT_CAP_CURSOR_PLANE_HOTSPOT 6
 struct drm_set_client_cap {
   __u64 capability;
   __u64 value;
@@ -397,8 +392,18 @@ struct drm_syncobj_handle {
   __s32 fd;
   __u32 pad;
 };
+struct drm_syncobj_transfer {
+  __u32 src_handle;
+  __u32 dst_handle;
+  __u64 src_point;
+  __u64 dst_point;
+  __u32 flags;
+  __u32 pad;
+};
 #define DRM_SYNCOBJ_WAIT_FLAGS_WAIT_ALL (1 << 0)
 #define DRM_SYNCOBJ_WAIT_FLAGS_WAIT_FOR_SUBMIT (1 << 1)
+#define DRM_SYNCOBJ_WAIT_FLAGS_WAIT_AVAILABLE (1 << 2)
+#define DRM_SYNCOBJ_WAIT_FLAGS_WAIT_DEADLINE (1 << 3)
 struct drm_syncobj_wait {
   __u64 handles;
   __s64 timeout_nsec;
@@ -406,11 +411,36 @@ struct drm_syncobj_wait {
   __u32 flags;
   __u32 first_signaled;
   __u32 pad;
+  __u64 deadline_nsec;
+};
+struct drm_syncobj_timeline_wait {
+  __u64 handles;
+  __u64 points;
+  __s64 timeout_nsec;
+  __u32 count_handles;
+  __u32 flags;
+  __u32 first_signaled;
+  __u32 pad;
+  __u64 deadline_nsec;
+};
+struct drm_syncobj_eventfd {
+  __u32 handle;
+  __u32 flags;
+  __u64 point;
+  __s32 fd;
+  __u32 pad;
 };
 struct drm_syncobj_array {
   __u64 handles;
   __u32 count_handles;
   __u32 pad;
+};
+#define DRM_SYNCOBJ_QUERY_FLAGS_LAST_SUBMITTED (1 << 0)
+struct drm_syncobj_timeline_array {
+  __u64 handles;
+  __u64 points;
+  __u32 count_handles;
+  __u32 flags;
 };
 struct drm_crtc_get_sequence {
   __u32 crtc_id;
@@ -427,9 +457,11 @@ struct drm_crtc_queue_sequence {
   __u64 user_data;
 };
 #ifdef __cplusplus
+}
 #endif
 #include "drm_mode.h"
 #ifdef __cplusplus
+extern "C" {
 #endif
 #define DRM_IOCTL_BASE 'd'
 #define DRM_IO(nr) _IO(DRM_IOCTL_BASE, nr)
@@ -537,6 +569,13 @@ struct drm_crtc_queue_sequence {
 #define DRM_IOCTL_MODE_LIST_LESSEES DRM_IOWR(0xC7, struct drm_mode_list_lessees)
 #define DRM_IOCTL_MODE_GET_LEASE DRM_IOWR(0xC8, struct drm_mode_get_lease)
 #define DRM_IOCTL_MODE_REVOKE_LEASE DRM_IOWR(0xC9, struct drm_mode_revoke_lease)
+#define DRM_IOCTL_SYNCOBJ_TIMELINE_WAIT DRM_IOWR(0xCA, struct drm_syncobj_timeline_wait)
+#define DRM_IOCTL_SYNCOBJ_QUERY DRM_IOWR(0xCB, struct drm_syncobj_timeline_array)
+#define DRM_IOCTL_SYNCOBJ_TRANSFER DRM_IOWR(0xCC, struct drm_syncobj_transfer)
+#define DRM_IOCTL_SYNCOBJ_TIMELINE_SIGNAL DRM_IOWR(0xCD, struct drm_syncobj_timeline_array)
+#define DRM_IOCTL_MODE_GETFB2 DRM_IOWR(0xCE, struct drm_mode_fb_cmd2)
+#define DRM_IOCTL_SYNCOBJ_EVENTFD DRM_IOWR(0xCF, struct drm_syncobj_eventfd)
+#define DRM_IOCTL_MODE_CLOSEFB DRM_IOWR(0xD0, struct drm_mode_closefb)
 #define DRM_COMMAND_BASE 0x40
 #define DRM_COMMAND_END 0xA0
 struct drm_event {
@@ -601,5 +640,6 @@ typedef struct drm_agp_info drm_agp_info_t;
 typedef struct drm_scatter_gather drm_scatter_gather_t;
 typedef struct drm_set_version drm_set_version_t;
 #ifdef __cplusplus
+}
 #endif
 #endif

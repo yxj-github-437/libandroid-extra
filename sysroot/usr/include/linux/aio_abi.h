@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef __LINUX__AIO_ABI_H
 #define __LINUX__AIO_ABI_H
 #include <linux/types.h>
@@ -27,11 +15,13 @@ enum {
   IOCB_CMD_PWRITE = 1,
   IOCB_CMD_FSYNC = 2,
   IOCB_CMD_FDSYNC = 3,
+  IOCB_CMD_POLL = 5,
   IOCB_CMD_NOOP = 6,
   IOCB_CMD_PREADV = 7,
   IOCB_CMD_PWRITEV = 8,
 };
 #define IOCB_FLAG_RESFD (1 << 0)
+#define IOCB_FLAG_IOPRIO (1 << 1)
 struct io_event {
   __u64 data;
   __u64 obj;

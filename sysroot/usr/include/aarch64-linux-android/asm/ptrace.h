@@ -1,26 +1,14 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI__ASM_PTRACE_H
 #define _UAPI__ASM_PTRACE_H
 #include <linux/types.h>
 #include <asm/hwcap.h>
-#include <asm/sigcontext.h>
+#include <asm/sve_context.h>
 #define PSR_MODE_EL0t 0x00000000
 #define PSR_MODE_EL1t 0x00000004
 #define PSR_MODE_EL1h 0x00000005
@@ -34,18 +22,30 @@
 #define PSR_I_BIT 0x00000080
 #define PSR_A_BIT 0x00000100
 #define PSR_D_BIT 0x00000200
+#define PSR_BTYPE_MASK 0x00000c00
+#define PSR_SSBS_BIT 0x00001000
 #define PSR_PAN_BIT 0x00400000
 #define PSR_UAO_BIT 0x00800000
+#define PSR_DIT_BIT 0x01000000
+#define PSR_TCO_BIT 0x02000000
 #define PSR_V_BIT 0x10000000
 #define PSR_C_BIT 0x20000000
 #define PSR_Z_BIT 0x40000000
 #define PSR_N_BIT 0x80000000
+#define PSR_BTYPE_SHIFT 10
 #define PSR_f 0xff000000
 #define PSR_s 0x00ff0000
 #define PSR_x 0x0000ff00
 #define PSR_c 0x000000ff
+#define PSR_BTYPE_NONE (0b00 << PSR_BTYPE_SHIFT)
+#define PSR_BTYPE_JC (0b01 << PSR_BTYPE_SHIFT)
+#define PSR_BTYPE_C (0b10 << PSR_BTYPE_SHIFT)
+#define PSR_BTYPE_J (0b11 << PSR_BTYPE_SHIFT)
+#define PTRACE_SYSEMU 31
+#define PTRACE_SYSEMU_SINGLESTEP 32
+#define PTRACE_PEEKMTETAGS 33
+#define PTRACE_POKEMTETAGS 34
 #ifndef __ASSEMBLY__
-#include <linux/prctl.h>
 struct user_pt_regs {
   __u64 regs[31];
   __u64 sp;
@@ -78,28 +78,54 @@ struct user_sve_header {
 #define SVE_PT_REGS_MASK (1 << 0)
 #define SVE_PT_REGS_FPSIMD 0
 #define SVE_PT_REGS_SVE SVE_PT_REGS_MASK
-#define SVE_PT_VL_INHERIT (PR_SVE_VL_INHERIT >> 16)
-#define SVE_PT_VL_ONEXEC (PR_SVE_SET_VL_ONEXEC >> 16)
-#define SVE_PT_REGS_OFFSET ((sizeof(struct sve_context) + (SVE_VQ_BYTES - 1)) / SVE_VQ_BYTES * SVE_VQ_BYTES)
+#define SVE_PT_VL_INHERIT ((1 << 17) >> 16)
+#define SVE_PT_VL_ONEXEC ((1 << 18) >> 16)
+#define SVE_PT_REGS_OFFSET ((sizeof(struct user_sve_header) + (__SVE_VQ_BYTES - 1)) / __SVE_VQ_BYTES * __SVE_VQ_BYTES)
 #define SVE_PT_FPSIMD_OFFSET SVE_PT_REGS_OFFSET
 #define SVE_PT_FPSIMD_SIZE(vq,flags) (sizeof(struct user_fpsimd_state))
-#define SVE_PT_SVE_ZREG_SIZE(vq) SVE_SIG_ZREG_SIZE(vq)
-#define SVE_PT_SVE_PREG_SIZE(vq) SVE_SIG_PREG_SIZE(vq)
-#define SVE_PT_SVE_FFR_SIZE(vq) SVE_SIG_FFR_SIZE(vq)
+#define SVE_PT_SVE_ZREG_SIZE(vq) __SVE_ZREG_SIZE(vq)
+#define SVE_PT_SVE_PREG_SIZE(vq) __SVE_PREG_SIZE(vq)
+#define SVE_PT_SVE_FFR_SIZE(vq) __SVE_FFR_SIZE(vq)
 #define SVE_PT_SVE_FPSR_SIZE sizeof(__u32)
 #define SVE_PT_SVE_FPCR_SIZE sizeof(__u32)
-#define __SVE_SIG_TO_PT(offset) ((offset) - SVE_SIG_REGS_OFFSET + SVE_PT_REGS_OFFSET)
 #define SVE_PT_SVE_OFFSET SVE_PT_REGS_OFFSET
-#define SVE_PT_SVE_ZREGS_OFFSET __SVE_SIG_TO_PT(SVE_SIG_ZREGS_OFFSET)
-#define SVE_PT_SVE_ZREG_OFFSET(vq,n) __SVE_SIG_TO_PT(SVE_SIG_ZREG_OFFSET(vq, n))
-#define SVE_PT_SVE_ZREGS_SIZE(vq) (SVE_PT_SVE_ZREG_OFFSET(vq, SVE_NUM_ZREGS) - SVE_PT_SVE_ZREGS_OFFSET)
-#define SVE_PT_SVE_PREGS_OFFSET(vq) __SVE_SIG_TO_PT(SVE_SIG_PREGS_OFFSET(vq))
-#define SVE_PT_SVE_PREG_OFFSET(vq,n) __SVE_SIG_TO_PT(SVE_SIG_PREG_OFFSET(vq, n))
-#define SVE_PT_SVE_PREGS_SIZE(vq) (SVE_PT_SVE_PREG_OFFSET(vq, SVE_NUM_PREGS) - SVE_PT_SVE_PREGS_OFFSET(vq))
-#define SVE_PT_SVE_FFR_OFFSET(vq) __SVE_SIG_TO_PT(SVE_SIG_FFR_OFFSET(vq))
-#define SVE_PT_SVE_FPSR_OFFSET(vq) ((SVE_PT_SVE_FFR_OFFSET(vq) + SVE_PT_SVE_FFR_SIZE(vq) + (SVE_VQ_BYTES - 1)) / SVE_VQ_BYTES * SVE_VQ_BYTES)
+#define SVE_PT_SVE_ZREGS_OFFSET (SVE_PT_REGS_OFFSET + __SVE_ZREGS_OFFSET)
+#define SVE_PT_SVE_ZREG_OFFSET(vq,n) (SVE_PT_REGS_OFFSET + __SVE_ZREG_OFFSET(vq, n))
+#define SVE_PT_SVE_ZREGS_SIZE(vq) (SVE_PT_SVE_ZREG_OFFSET(vq, __SVE_NUM_ZREGS) - SVE_PT_SVE_ZREGS_OFFSET)
+#define SVE_PT_SVE_PREGS_OFFSET(vq) (SVE_PT_REGS_OFFSET + __SVE_PREGS_OFFSET(vq))
+#define SVE_PT_SVE_PREG_OFFSET(vq,n) (SVE_PT_REGS_OFFSET + __SVE_PREG_OFFSET(vq, n))
+#define SVE_PT_SVE_PREGS_SIZE(vq) (SVE_PT_SVE_PREG_OFFSET(vq, __SVE_NUM_PREGS) - SVE_PT_SVE_PREGS_OFFSET(vq))
+#define SVE_PT_SVE_FFR_OFFSET(vq) (SVE_PT_REGS_OFFSET + __SVE_FFR_OFFSET(vq))
+#define SVE_PT_SVE_FPSR_OFFSET(vq) ((SVE_PT_SVE_FFR_OFFSET(vq) + SVE_PT_SVE_FFR_SIZE(vq) + (__SVE_VQ_BYTES - 1)) / __SVE_VQ_BYTES * __SVE_VQ_BYTES)
 #define SVE_PT_SVE_FPCR_OFFSET(vq) (SVE_PT_SVE_FPSR_OFFSET(vq) + SVE_PT_SVE_FPSR_SIZE)
-#define SVE_PT_SVE_SIZE(vq,flags) ((SVE_PT_SVE_FPCR_OFFSET(vq) + SVE_PT_SVE_FPCR_SIZE - SVE_PT_SVE_OFFSET + (SVE_VQ_BYTES - 1)) / SVE_VQ_BYTES * SVE_VQ_BYTES)
-#define SVE_PT_SIZE(vq,flags) (((flags) & SVE_PT_REGS_MASK) == SVE_PT_REGS_SVE ? SVE_PT_SVE_OFFSET + SVE_PT_SVE_SIZE(vq, flags) : SVE_PT_FPSIMD_OFFSET + SVE_PT_FPSIMD_SIZE(vq, flags))
+#define SVE_PT_SVE_SIZE(vq,flags) ((SVE_PT_SVE_FPCR_OFFSET(vq) + SVE_PT_SVE_FPCR_SIZE - SVE_PT_SVE_OFFSET + (__SVE_VQ_BYTES - 1)) / __SVE_VQ_BYTES * __SVE_VQ_BYTES)
+#define SVE_PT_SIZE(vq,flags) (((flags) & SVE_PT_REGS_MASK) == SVE_PT_REGS_SVE ? SVE_PT_SVE_OFFSET + SVE_PT_SVE_SIZE(vq, flags) : ((((flags) & SVE_PT_REGS_MASK) == SVE_PT_REGS_FPSIMD ? SVE_PT_FPSIMD_OFFSET + SVE_PT_FPSIMD_SIZE(vq, flags) : SVE_PT_REGS_OFFSET)))
+struct user_pac_mask {
+  __u64 data_mask;
+  __u64 insn_mask;
+};
+struct user_pac_address_keys {
+  __uint128_t apiakey;
+  __uint128_t apibkey;
+  __uint128_t apdakey;
+  __uint128_t apdbkey;
+};
+struct user_pac_generic_keys {
+  __uint128_t apgakey;
+};
+struct user_za_header {
+  __u32 size;
+  __u32 max_size;
+  __u16 vl;
+  __u16 max_vl;
+  __u16 flags;
+  __u16 __reserved;
+};
+#define ZA_PT_VL_INHERIT ((1 << 17) >> 16)
+#define ZA_PT_VL_ONEXEC ((1 << 18) >> 16)
+#define ZA_PT_ZA_OFFSET ((sizeof(struct user_za_header) + (__SVE_VQ_BYTES - 1)) / __SVE_VQ_BYTES * __SVE_VQ_BYTES)
+#define ZA_PT_ZAV_OFFSET(vq,n) (ZA_PT_ZA_OFFSET + ((vq * __SVE_VQ_BYTES) * n))
+#define ZA_PT_ZA_SIZE(vq) ((vq * __SVE_VQ_BYTES) * (vq * __SVE_VQ_BYTES))
+#define ZA_PT_SIZE(vq) (ZA_PT_ZA_OFFSET + ZA_PT_ZA_SIZE(vq))
 #endif
 #endif

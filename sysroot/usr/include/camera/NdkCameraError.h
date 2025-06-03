@@ -40,9 +40,13 @@
 
 __BEGIN_DECLS
 
-#if __ANDROID_API__ >= 24
-
+/**
+ * Camera status enum types.
+ */
 typedef enum {
+    /**
+     * Camera operation has succeeded.
+     */
     ACAMERA_OK = 0,
 
     ACAMERA_ERROR_BASE                  = -10000,
@@ -93,7 +97,7 @@ typedef enum {
     ACAMERA_ERROR_CAMERA_SERVICE        = ACAMERA_ERROR_BASE - 6,
 
     /**
-     * The {@link ACameraCaptureSession} has been closed and cannnot perform any operation other
+     * The {@link ACameraCaptureSession} has been closed and cannot perform any operation other
      * than {@link ACameraCaptureSession_close}.
      */
     ACAMERA_ERROR_SESSION_CLOSED        = ACAMERA_ERROR_BASE - 7,
@@ -106,7 +110,8 @@ typedef enum {
 
     /**
      * Camera device does not support the stream configuration provided by application in
-     * {@link ACameraDevice_createCaptureSession}.
+     * {@link ACameraDevice_createCaptureSession} or {@link
+     * ACameraDevice_isSessionConfigurationSupported}.
      */
     ACAMERA_ERROR_STREAM_CONFIGURE_FAIL = ACAMERA_ERROR_BASE - 9,
 
@@ -130,9 +135,12 @@ typedef enum {
      * The application does not have permission to open camera.
      */
     ACAMERA_ERROR_PERMISSION_DENIED     = ACAMERA_ERROR_BASE - 13,
-} camera_status_t;
 
-#endif /* __ANDROID_API__ >= 24 */
+    /**
+     * The operation is not supported by the camera device.
+     */
+    ACAMERA_ERROR_UNSUPPORTED_OPERATION = ACAMERA_ERROR_BASE - 14,
+} camera_status_t;
 
 __END_DECLS
 

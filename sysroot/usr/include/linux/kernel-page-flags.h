@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPILINUX_KERNEL_PAGE_FLAGS_H
 #define _UAPILINUX_KERNEL_PAGE_FLAGS_H
 #define KPF_LOCKED 0
@@ -41,7 +29,8 @@
 #define KPF_NOPAGE 20
 #define KPF_KSM 21
 #define KPF_THP 22
-#define KPF_BALLOON 23
+#define KPF_OFFLINE 23
 #define KPF_ZERO_PAGE 24
 #define KPF_IDLE 25
+#define KPF_PGTABLE 26
 #endif

@@ -1,0 +1,1609 @@
+From c6a6924a9a9bce8d8d5aaa8cc80ab21221bd4c7d Mon Sep 17 00:00:00 2001
+From: yxj-github-437 <2457369732@qq.com>
+Date: Wed, 4 Jun 2025 02:22:24 +0800
+Subject: [PATCH] fix ndk sysroot for GNUC compat
+
+---
+ sysroot/usr/include/SLES/OpenSLES_Platform.h |   4 +
+ sysroot/usr/include/android/versioning.h     |  16 +-
+ sysroot/usr/include/bits/fortify/fcntl.h     |  60 +++++
+ sysroot/usr/include/bits/fortify/poll.h      |  64 ++++-
+ sysroot/usr/include/bits/fortify/socket.h    |  60 +++++
+ sysroot/usr/include/bits/fortify/stat.h      |  23 +-
+ sysroot/usr/include/bits/fortify/stdio.h     | 109 ++++++++-
+ sysroot/usr/include/bits/fortify/stdlib.h    |  32 ++-
+ sysroot/usr/include/bits/fortify/string.h    | 133 +++++++++--
+ sysroot/usr/include/bits/fortify/strings.h   |  37 +++
+ sysroot/usr/include/bits/fortify/unistd.h    | 231 ++++++++++++++++++-
+ sysroot/usr/include/bits/ioctl.h             |   2 +-
+ sysroot/usr/include/bits/struct_file.h       |  81 ++++++-
+ sysroot/usr/include/complex.h                |   6 +
+ sysroot/usr/include/ctype.h                  | 121 +++-------
+ sysroot/usr/include/math.h                   |  16 ++
+ sysroot/usr/include/pthread.h                |  12 +
+ sysroot/usr/include/stdc-predef.h            |  15 ++
+ sysroot/usr/include/string.h                 |   2 +-
+ sysroot/usr/include/strings.h                |   4 +
+ sysroot/usr/include/sys/cdefs.h              |  75 ++++--
+ sysroot/usr/include/time.h                   |   2 +-
+ 22 files changed, 963 insertions(+), 142 deletions(-)
+ create mode 100644 sysroot/usr/include/stdc-predef.h
+
+diff --git a/sysroot/usr/include/SLES/OpenSLES_Platform.h b/sysroot/usr/include/SLES/OpenSLES_Platform.h
+index 5dc3006..b22af4f 100644
+--- a/sysroot/usr/include/SLES/OpenSLES_Platform.h
++++ b/sysroot/usr/include/SLES/OpenSLES_Platform.h
+@@ -55,7 +55,11 @@ typedef unsigned long long          sl_uint64_t;
+ #endif
+ 
+ #ifndef SL_API_DEPRECATED
++#if defined(__clang__)
+ #define SL_API_DEPRECATED(level) __attribute__((availability(android,deprecated=level)))
++#else
++#define SL_API_DEPRECATED(level) __attribute__((__annotate__("deprecated_in=" # level)))
++#endif
+ #endif
+ 
+ #endif /* _OPENSLES_PLATFORM_H_ */
+diff --git a/sysroot/usr/include/android/versioning.h b/sysroot/usr/include/android/versioning.h
+index 1cf6e51..7d8bc6e 100644
+--- a/sysroot/usr/include/android/versioning.h
++++ b/sysroot/usr/include/android/versioning.h
+@@ -58,6 +58,10 @@
+ #define __BIONIC_AVAILABILITY_GUARD(api_level) (__ANDROID_MIN_SDK_VERSION__ >= (api_level))
+ #endif
+ 
++#ifndef __clang__
++#define __BIONIC_AVAILABILITY(__what, ...) __attribute__((annotated(#__what)))
++#endif
++
+ #pragma clang diagnostic push
+ #pragma clang diagnostic ignored "-Wc23-extensions"
+ // Passing no argument for the '...' parameter of a variadic macro is a C23 extension
+@@ -74,9 +78,17 @@
+ // void foo() __INTRODUCED_IN_32(30) __INTRODUCED_IN_64(31);
+ //
+ #if !defined(__LP64__)
+-#define __INTRODUCED_IN_32(api_level) __BIONIC_AVAILABILITY(introduced=api_level)
++#ifdef __clang__
++# define __INTRODUCED_IN_32(api_level) __BIONIC_AVAILABILITY(introduced=api_level)
++#else
++# define __INTRODUCED_IN_32(api_level) __BIONIC_AVAILABILITY(introduced_in_32=api_level)
++#endif
+ #define __INTRODUCED_IN_64(api_level)
+ #else
+ #define __INTRODUCED_IN_32(api_level)
+-#define __INTRODUCED_IN_64(api_level) __BIONIC_AVAILABILITY(introduced=api_level)
++#ifdef __clang__
++# define __INTRODUCED_IN_64(api_level) __BIONIC_AVAILABILITY(introduced=api_level)
++#else
++# define __INTRODUCED_IN_64(api_level) __BIONIC_AVAILABILITY(introduced_in_64=api_level)
++#endif
+ #endif
+diff --git a/sysroot/usr/include/bits/fortify/fcntl.h b/sysroot/usr/include/bits/fortify/fcntl.h
+index 05c62eb..459ccd5 100644
+--- a/sysroot/usr/include/bits/fortify/fcntl.h
++++ b/sysroot/usr/include/bits/fortify/fcntl.h
+@@ -45,6 +45,8 @@ int __openat_real(int, const char* _Nonnull, int, ...) __RENAME(openat);
+ /* O_TMPFILE shares bits with O_DIRECTORY. */
+ #define __open_modes_useful(flags) (((flags) & O_CREAT) || ((flags) & O_TMPFILE) == O_TMPFILE)
+ 
++#if defined(__clang__)
++
+ __BIONIC_ERROR_FUNCTION_VISIBILITY
+ int open(const char* _Nonnull pathname, int flags, mode_t modes, ...) __overloadable
+         __errorattr(__open_too_many_args_error);
+@@ -139,6 +141,64 @@ int openat64(int dirfd, const char* _Nonnull const __pass_object_size pathname,
+     return openat(dirfd, pathname, flags, modes);
+ }
+ 
++#else /* defined(__clang__) */
++__errordecl(__creat_missing_mode, __open_too_few_args_error);
++__errordecl(__creat_too_many_args, __open_too_many_args_error);
++
++__BIONIC_FORTIFY_VARIADIC
++int open(const char* pathname, int flags, ...) {
++    if (__builtin_constant_p(flags)) {
++        if (__open_modes_useful(flags) && __builtin_va_arg_pack_len() == 0) {
++            __creat_missing_mode();  /* Compile time error. */
++        }
++    }
++
++    if (__builtin_va_arg_pack_len() > 1) {
++        __creat_too_many_args();  /* Compile time error. */
++    }
++
++#if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++    if ((__builtin_va_arg_pack_len() == 0) && !__builtin_constant_p(flags)) {
++        return __open_2(pathname, flags);
++    }
++#endif
++
++    return __open_real(pathname, flags, __builtin_va_arg_pack());
++}
++
++__BIONIC_FORTIFY_VARIADIC
++int openat(int dirfd, const char* pathname, int flags, ...) {
++    if (__builtin_constant_p(flags)) {
++        if (__open_modes_useful(flags) && __builtin_va_arg_pack_len() == 0) {
++            __creat_missing_mode();  /* Compile time error. */
++        }
++    }
++
++    if (__builtin_va_arg_pack_len() > 1) {
++        __creat_too_many_args();  /* Compile time error. */
++    }
++
++#if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++    if ((__builtin_va_arg_pack_len() == 0) && !__builtin_constant_p(flags)) {
++        return __openat_2(dirfd, pathname, flags);
++    }
++#endif
++
++    return __openat_real(dirfd, pathname, flags, __builtin_va_arg_pack());
++}
++
++__BIONIC_FORTIFY_VARIADIC
++int open64(const char* pathname, int flags, ...) {
++    return open(pathname, flags, __builtin_va_arg_pack());
++}
++
++__BIONIC_FORTIFY_VARIADIC
++int openat64(int dirfd, const char* pathname, int flags, ...) {
++    return openat(dirfd, pathname, flags, __builtin_va_arg_pack());
++}
++
++#endif /* defined(__clang__) */
++
+ #undef __open_too_many_args_error
+ #undef __open_too_few_args_error
+ #undef __open_useless_modes_warning
+diff --git a/sysroot/usr/include/bits/fortify/poll.h b/sysroot/usr/include/bits/fortify/poll.h
+index 1b4a5bf..b502896 100644
+--- a/sysroot/usr/include/bits/fortify/poll.h
++++ b/sysroot/usr/include/bits/fortify/poll.h
+@@ -47,6 +47,7 @@ int __ppoll64_chk(struct pollfd* _Nullable, nfds_t, const struct timespec* _Null
+   __bos_dynamic_check_impl_and((bos_val), >=, (sizeof(*fds) * (fd_count)), \
+                                (fd_count) <= __BIONIC_CAST(static_cast, nfds_t, -1) / sizeof(*fds))
+ 
++#if defined(__clang__)
+ __BIONIC_FORTIFY_INLINE
+ int poll(struct pollfd* _Nullable const fds __pass_object_size, nfds_t fd_count, int timeout)
+     __overloadable
+@@ -94,6 +95,67 @@ int ppoll64(struct pollfd* _Nullable const fds __pass_object_size, nfds_t fd_cou
+ }
+ #endif /* __ANDROID_API__ >= 28 */
+ 
+-#undef __bos_fd_count_trivially_safe
++#else /* !defined(__clang__) */
++int __poll_real(struct pollfd*, nfds_t, int) __RENAME(poll);
++__errordecl(__poll_too_small_error, "poll: pollfd array smaller than fd count");
++
++int __ppoll_real(struct pollfd*, nfds_t, const struct timespec*, const sigset_t*) __RENAME(ppoll)
++  __INTRODUCED_IN(21);
++__errordecl(__ppoll_too_small_error, "ppoll: pollfd array smaller than fd count");
++
++__BIONIC_FORTIFY_INLINE
++int poll(struct pollfd* fds, nfds_t fd_count, int timeout) {
++  if(__bos_unevaluated_lt(__bos(fds), sizeof(*fds) * fd_count))
++    __poll_too_small_error();
++
++#if __ANDROID_API__ >= 23 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++  size_t bos_fds = __bos(fds);
++
++  if (!__bos_fd_count_trivially_safe(bos_fds, fds, fd_count)) {
++    return __poll_chk(fds, fd_count, timeout, bos_fds);
++  }
++#endif
++  return __poll_real(fds, fd_count, timeout);
++}
++
++__BIONIC_FORTIFY_INLINE
++int ppoll(struct pollfd* fds, nfds_t fd_count, const struct timespec* timeout,
++          const sigset_t* mask) {
++  if(__bos_unevaluated_lt(__bos(fds), sizeof(*fds) * fd_count))
++    __ppoll_too_small_error();
++
++#if __ANDROID_API__ >= 23 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++  size_t bos_fds = __bos(fds);
++
++  if (!__bos_fd_count_trivially_safe(bos_fds, fds, fd_count)) {
++    return __ppoll_chk(fds, fd_count, timeout, mask, bos_fds);
++  }
++#endif
++  return __ppoll_real(fds, fd_count, timeout, mask);
++}
++
++#if __ANDROID_API__ >= 28
++int __ppoll64_real(struct pollfd* const fds __pass_object_size, nfds_t fd_count, const struct timespec* timeout, const sigset64_t* mask) __RENAME(ppoll64)
++  __INTRODUCED_IN(28);
++__errordecl(__ppoll64_too_small_error, "ppoll64: pollfd array smaller than fd count");
++
++__BIONIC_FORTIFY_INLINE
++int ppoll64(struct pollfd* const fds __pass_object_size, nfds_t fd_count, const struct timespec* timeout, const sigset64_t* mask) {
++  if(__bos_unevaluated_lt(__bos(fds), sizeof(*fds) * fd_count))
++    __ppoll64_too_small_error();
++
++#if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++  size_t bos_fds = __bos(fds);
++
++  if (!__bos_fd_count_trivially_safe(bos_fds, fds, fd_count)) {
++    return __ppoll64_chk(fds, fd_count, timeout, mask, bos_fds);
++  }
++#endif
++  return __ppoll64_real(fds, fd_count, timeout, mask);
++}
++#endif /* __ANDROID_API__ >= 28 */
+ 
++#endif /* defined(__clang__) */
++
++#undef __bos_fd_count_trivially_safe
+ #endif /* defined(__BIONIC_FORTIFY) */
+diff --git a/sysroot/usr/include/bits/fortify/socket.h b/sysroot/usr/include/bits/fortify/socket.h
+index bd626f9..808b1b3 100644
+--- a/sysroot/usr/include/bits/fortify/socket.h
++++ b/sysroot/usr/include/bits/fortify/socket.h
+@@ -39,6 +39,7 @@ ssize_t __recvfrom_chk(int, void* _Nullable, size_t, size_t, int, struct sockadd
+ 
+ #if defined(__BIONIC_FORTIFY)
+ 
++#if defined(__clang__)
+ __BIONIC_FORTIFY_INLINE
+ ssize_t recvfrom(int fd, void* _Nullable const buf __pass_object_size0, size_t len, int flags, struct sockaddr* _Nullable src_addr, socklen_t* _Nullable addr_len)
+     __overloadable
+@@ -85,4 +86,63 @@ ssize_t send(int socket, const void* _Nonnull const buf __pass_object_size0, siz
+   return sendto(socket, buf, len, flags, NULL, 0);
+ }
+ 
++#else /* defined(__clang__) */
++
++ssize_t __recvfrom_real(int, void* const, size_t, int, struct sockaddr*, socklen_t*) __RENAME(recvform);
++ssize_t __sendto_real(int, const void* const, size_t, int, const struct sockaddr*, socklen_t) __RENAME(sendto);
++
++__errordecl(__recvfrom_size_too_bigger_error, "'recvfrom' called with size bigger than buffer");
++__errordecl(__sendto_size_too_bigger_error, "'sendto' called with size bigger than buffer");
++__errordecl(__recv_size_too_bigger_error, "'recv' called with size bigger than buffer");
++__errordecl(__send_size_too_bigger_error, "'send' called with size bigger than buffer");
++
++__BIONIC_FORTIFY_INLINE
++ssize_t recvfrom(int fd, void* const buf __pass_object_size0, size_t len, int flags, struct sockaddr* src_addr, socklen_t* addr_len) {
++  if(__bos_unevaluated_lt(__bos0(buf), len))
++    __recvfrom_size_too_bigger_error();
++
++#if __ANDROID_API__ >= 24 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++  size_t bos = __bos0(buf);
++
++  if (!__bos_trivially_ge(bos, len)) {
++    return __recvfrom_chk(fd, buf, len, bos, flags, src_addr, addr_len);
++  }
++#endif
++
++  return __recvfrom_real(fd, buf, len, flags, src_addr, addr_len);
++}
++
++__BIONIC_FORTIFY_INLINE
++ssize_t sendto(int fd, const void* const buf __pass_object_size0, size_t len, int flags, const struct sockaddr* dest_addr, socklen_t addr_len) {
++  if(__bos_unevaluated_lt(__bos0(buf), len))
++    __sendto_size_too_bigger_error();
++
++#if __ANDROID_API__ >= 26 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++  size_t bos = __bos0(buf);
++
++  if (!__bos_trivially_ge(bos, len)) {
++    return __sendto_chk(fd, buf, len, bos, flags, dest_addr, addr_len);
++  }
++#endif
++
++  return __sendto_real(fd, buf, len, flags, dest_addr, addr_len);
++}
++
++__BIONIC_FORTIFY_INLINE
++ssize_t recv(int socket, void* const buf __pass_object_size0, size_t len, int flags) {
++  if(__bos_unevaluated_lt(__bos0(buf), len))
++    __recv_size_too_bigger_error();
++
++  return recvfrom(socket, buf, len, flags, NULL, 0);
++}
++
++__BIONIC_FORTIFY_INLINE
++ssize_t send(int socket, const void* const buf __pass_object_size0, size_t len, int flags) {
++  if(__bos_unevaluated_lt(__bos0(buf), len))
++    __send_size_too_bigger_error();
++
++  return sendto(socket, buf, len, flags, NULL, 0);
++}
++
++#endif /* defined(__clang__) */
+ #endif /* __BIONIC_FORTIFY */
+diff --git a/sysroot/usr/include/bits/fortify/stat.h b/sysroot/usr/include/bits/fortify/stat.h
+index 378072c..0f1c646 100644
+--- a/sysroot/usr/include/bits/fortify/stat.h
++++ b/sysroot/usr/include/bits/fortify/stat.h
+@@ -32,13 +32,16 @@ mode_t __umask_chk(mode_t);
+ mode_t __umask_real(mode_t mode) __RENAME(umask);
+ 
+ #if defined(__BIONIC_FORTIFY)
++#define __umask_invalid_mode_str "'umask' called with invalid mode"
++
++#if defined(__clang__)
+ 
+ /* Abuse enable_if to make this an overload of umask. */
+ __BIONIC_FORTIFY_INLINE
+ mode_t umask(mode_t mode)
+     __overloadable
+     __enable_if(1, "")
+-    __clang_error_if(mode & ~0777, "'umask' called with invalid mode") {
++    __clang_error_if(mode & ~0777, __umask_invalid_mode_str) {
+ #if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
+   return __umask_chk(mode);
+ #else
+@@ -46,4 +49,22 @@ mode_t umask(mode_t mode)
+ #endif
+ }
+ 
++#else /* defined(__clang__) */
++__errordecl(__umask_invalid_mode, __umask_invalid_mode_str);
++extern mode_t __umask_real(mode_t) __RENAME(umask);
++
++__BIONIC_FORTIFY_INLINE
++mode_t umask(mode_t mode) {
++  if (__builtin_constant_p(mode)) {
++    if ((mode & 0777) != mode) {
++      __umask_invalid_mode();
++    }
++    return __umask_real(mode);
++  }
++  return __umask_chk(mode);
++}
++
++#endif /* defined(__clang__) */
++#undef __umask_invalid_mode_str
++
+ #endif /* defined(__BIONIC_FORTIFY) */
+diff --git a/sysroot/usr/include/bits/fortify/stdio.h b/sysroot/usr/include/bits/fortify/stdio.h
+index f9faeba..32c45fb 100644
+--- a/sysroot/usr/include/bits/fortify/stdio.h
++++ b/sysroot/usr/include/bits/fortify/stdio.h
+@@ -42,9 +42,8 @@ size_t __fwrite_chk(const void* _Nonnull, size_t, size_t, FILE* _Nonnull, size_t
+ 
+ #if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
+ /* No diag -- clang diagnoses misuses of this on its own.  */
+-__BIONIC_FORTIFY_INLINE __printflike(3, 0)
++__BIONIC_FORTIFY_INLINE __printflike(3, 0) __diagnose_as_builtin(__builtin_vsnprintf, 1, 2, 3, 4)
+ int vsnprintf(char* const __BIONIC_COMPLICATED_NULLNESS __pass_object_size dest, size_t size, const char* _Nonnull format, va_list ap)
+-        __diagnose_as_builtin(__builtin_vsnprintf, 1, 2, 3, 4)
+         __overloadable {
+     return __builtin___vsnprintf_chk(dest, size, 0, __bos(dest), format, ap);
+ }
+@@ -55,6 +54,7 @@ int vsprintf(char* const __BIONIC_COMPLICATED_NULLNESS __pass_object_size dest,
+ }
+ #endif
+ 
++#if defined(__clang__)
+ __BIONIC_ERROR_FUNCTION_VISIBILITY
+ int sprintf(char* __BIONIC_COMPLICATED_NULLNESS dest, const char* _Nonnull format)
+     __overloadable
+@@ -73,9 +73,8 @@ int sprintf(char* const __BIONIC_COMPLICATED_NULLNESS __pass_object_size dest, c
+ }
+ 
+ /* No diag -- clang diagnoses misuses of this on its own.  */
+-__BIONIC_FORTIFY_VARIADIC __printflike(3, 4)
++__BIONIC_FORTIFY_VARIADIC __printflike(3, 4) __diagnose_as_builtin(__builtin_snprintf, 1, 2, 3)
+ int snprintf(char* const __BIONIC_COMPLICATED_NULLNESS __pass_object_size dest, size_t size, const char* _Nonnull format, ...)
+-        __diagnose_as_builtin(__builtin_snprintf, 1, 2, 3)
+         __overloadable {
+     va_list va;
+     va_start(va, format);
+@@ -140,4 +139,106 @@ char* _Nullable fgets(char* const _Nonnull __pass_object_size dest, int size, FI
+     return __call_bypassing_fortify(fgets)(dest, size, stream);
+ }
+ 
++#else /* defined(__clang__) */
++
++size_t __fread_real(void*, size_t, size_t, FILE*) __RENAME(fread);
++__errordecl(__fread_too_big_error, "fread called with size * count bigger than buffer");
++__errordecl(__fread_overflow, "fread called with overflowing size * count");
++
++char* __fgets_real(char*, int, FILE*) __RENAME(fgets);
++__errordecl(__fgets_too_big_error, "fgets called with size bigger than buffer");
++__errordecl(__fgets_too_small_error, "fgets called with size less than zero");
++
++size_t __fwrite_real(const void*, size_t, size_t, FILE*) __RENAME(fwrite);
++__errordecl(__fwrite_too_big_error, "fwrite called with size * count bigger than buffer");
++__errordecl(__fwrite_overflow, "fwrite called with overflowing size * count");
++
++
++__BIONIC_FORTIFY_VARIADIC __printflike(3, 4)
++int snprintf(char* dest, size_t size, const char* format, ...) {
++    return __builtin___snprintf_chk(dest, size, 0, __bos(dest), format, __builtin_va_arg_pack());
++}
++
++__BIONIC_FORTIFY_VARIADIC __printflike(2, 3)
++int sprintf(char* dest, const char* format, ...) {
++    return __builtin___sprintf_chk(dest, 0, __bos(dest), format, __builtin_va_arg_pack());
++}
++
++__BIONIC_FORTIFY_INLINE
++size_t fread(void* buf, size_t size, size_t count, FILE* stream) {
++    size_t bos = __bos0(buf);
++
++    if (__builtin_constant_p(size) && __builtin_constant_p(count)) {
++        size_t total;
++        if (__size_mul_overflow(size, count, &total)) {
++            __fread_overflow();
++        }
++
++        if (total > bos) {
++            __fread_too_big_error();
++        }
++
++        return __fread_real(buf, size, count, stream);
++    }
++
++#if __ANDROID_API__ >= 24 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++    return __fread_chk(buf, size, count, stream, bos);
++#endif
++
++    return __fread_real(buf, size, count, stream);
++}
++
++__BIONIC_FORTIFY_INLINE
++size_t fwrite(const void* buf, size_t size, size_t count, FILE* stream) {
++    size_t bos = __bos0(buf);
++
++    if (__builtin_constant_p(size) && __builtin_constant_p(count)) {
++        size_t total;
++        if (__size_mul_overflow(size, count, &total)) {
++            __fwrite_overflow();
++        }
++
++        if (total > bos) {
++            __fwrite_too_big_error();
++        }
++
++        return __fwrite_real(buf, size, count, stream);
++    }
++
++#if __ANDROID_API__ >= 24 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++    return __fwrite_chk(buf, size, count, stream, bos);
++#endif
++
++    return __fwrite_real(buf, size, count, stream);
++}
++
++__BIONIC_FORTIFY_INLINE
++char *fgets(char* dest, int size, FILE* stream) {
++    size_t bos = __bos(dest);
++
++    // Compiler can prove, at compile time, that the passed in size
++    // is always negative. Force a compiler error.
++    if (__builtin_constant_p(size) && (size < 0)) {
++        __fgets_too_small_error();
++    }
++
++    // Compiler can prove, at compile time, that the passed in size
++    // is always > the actual object size. Force a compiler error.
++    if (__bos_unevaluated_lt(__bos(dest), size)) {
++        __fgets_too_big_error();
++    }
++
++
++#if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++    // Compiler can prove, at compile time, that the passed in size
++    // is always <= the actual object size. Don't call __fgets_chk
++    if (!__bos_dynamic_check_impl_and(bos, >=, (size_t)size, size >= 0)) {
++        return __fgets_chk(dest, size, stream, bos);
++    }
++#endif
++
++    return __fgets_real(dest, size, stream);
++}
++
++#endif /* defined(__clang__) */
+ #endif /* defined(__BIONIC_FORTIFY) */
+diff --git a/sysroot/usr/include/bits/fortify/stdlib.h b/sysroot/usr/include/bits/fortify/stdlib.h
+index b84dae4..13926eb 100644
+--- a/sysroot/usr/include/bits/fortify/stdlib.h
++++ b/sysroot/usr/include/bits/fortify/stdlib.h
+@@ -31,17 +31,43 @@
+ #endif
+ 
+ #if defined(__BIONIC_FORTIFY)
++#define __realpath_path_never_correct \
++    "'realpath': NULL path is never correct; flipped arguments?"
++#define __realpath_buf_too_small_str \
++    "'realpath' output parameter must be NULL or a pointer to a buffer with >= PATH_MAX bytes"
+ 
+ /* PATH_MAX is unavailable without polluting the namespace, but it's always 4096 on Linux */
+ #define __PATH_MAX 4096
+ 
++#if defined(__clang__)
+ char* _Nullable realpath(const char* _Nonnull path, char* _Nullable resolved)
+-        __clang_error_if(!path, "'realpath': NULL path is never correct; flipped arguments?")
++        __clang_error_if(!path, __realpath_path_never_correct)
+         __clang_error_if(__bos_unevaluated_lt(__bos(resolved), __PATH_MAX),
+-                         "'realpath' output parameter must be NULL or a pointer to a buffer "
+-                         "with >= PATH_MAX bytes");
++                         __realpath_buf_too_small_str);
+ 
+ /* No need for a definition; the only issues we can catch are at compile-time. */
+ 
++#else /* defined(__clang__) */
++
++char* __realpath_real(const char*, char*) __RENAME(realpath);
++__errordecl(__realpath_path_null, __realpath_path_never_correct);
++__errordecl(__realpath_size_error, __realpath_buf_too_small_str);
++
++__BIONIC_FORTIFY_INLINE
++char* realpath(const char* path, char* resolved) {
++    if (!path)
++        __realpath_path_null();
++
++    if (__bos_unevaluated_lt(__bos(resolved), __PATH_MAX)) {
++        __realpath_size_error();
++    }
++
++    return __realpath_real(path, resolved);
++}
++
++#endif /* defined(__clang__) */
++
+ #undef __PATH_MAX
++#undef __realpath_buf_too_small_str
++#undef __realpath_path_never_correct
+ #endif /* defined(__BIONIC_FORTIFY) */
+diff --git a/sysroot/usr/include/bits/fortify/string.h b/sysroot/usr/include/bits/fortify/string.h
+index 6f0ee4a..0bb6ccb 100644
+--- a/sysroot/usr/include/bits/fortify/string.h
++++ b/sysroot/usr/include/bits/fortify/string.h
+@@ -46,27 +46,25 @@ void* _Nullable __memrchr_real(const void* _Nonnull, int, size_t) __RENAME(memrc
+ 
+ #if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
+ /* No diag -- clang diagnoses misuses of this on its own.  */
+-__BIONIC_FORTIFY_INLINE
++__BIONIC_FORTIFY_INLINE __diagnose_as_builtin(__builtin_memcpy, 1, 2, 3)
+ void* _Nonnull memcpy(void* _Nonnull const dst __pass_object_size0, const void* _Nonnull src, size_t copy_amount)
+-        __diagnose_as_builtin(__builtin_memcpy, 1, 2, 3)
+         __overloadable {
+     return __builtin___memcpy_chk(dst, src, copy_amount, __bos0(dst));
+ }
+ 
+ /* No diag -- clang diagnoses misuses of this on its own.  */
+-__BIONIC_FORTIFY_INLINE
++__BIONIC_FORTIFY_INLINE __diagnose_as_builtin(__builtin_memmove, 1, 2, 3)
+ void* _Nonnull memmove(void* _Nonnull const dst __pass_object_size0, const void* _Nonnull src, size_t len)
+-        __diagnose_as_builtin(__builtin_memmove, 1, 2, 3)
+         __overloadable {
+     return __builtin___memmove_chk(dst, src, len, __bos0(dst));
+ }
+ #endif
+ 
++#if defined(__clang__)
+ #if defined(__USE_GNU)
+ #if __ANDROID_API__ >= 30
+-__BIONIC_FORTIFY_INLINE
++__BIONIC_FORTIFY_INLINE __diagnose_as_builtin(__builtin_mempcpy, 1, 2, 3)
+ void* _Nonnull mempcpy(void* _Nonnull const dst __pass_object_size0, const void* _Nonnull src, size_t copy_amount)
+-        __diagnose_as_builtin(__builtin_mempcpy, 1, 2, 3)
+         __overloadable
+         __clang_error_if(__bos_unevaluated_lt(__bos0(dst), copy_amount),
+                          "'mempcpy' called with size bigger than buffer") {
+@@ -93,9 +91,8 @@ char* _Nonnull stpcpy(char* _Nonnull const dst __pass_object_size, const char* _
+ #endif
+ }
+ 
+-__BIONIC_FORTIFY_INLINE
++__BIONIC_FORTIFY_INLINE __diagnose_as_builtin(__builtin_strcpy, 1, 2)
+ char* _Nonnull strcpy(char* _Nonnull const dst __pass_object_size, const char* _Nonnull src)
+-        __diagnose_as_builtin(__builtin_strcpy, 1, 2)
+         __overloadable
+         __clang_error_if(__bos_unevaluated_le(__bos(dst), __builtin_strlen(src)),
+                          "'strcpy' called with string bigger than buffer") {
+@@ -118,22 +115,90 @@ char* _Nonnull strcat(char* _Nonnull const dst __pass_object_size, const char* _
+ #endif
+ }
+ 
++#else /* defined(__clang__) */
++
++__errordecl(__mempcpy_dest_size_error, "'mempcpy' called with size bigger than buffer");
++__errordecl(__stpcpy_dest_size_error, "'stpcpy' called with string bigger than buffer");
++__errordecl(__strcpy_dest_size_error, "'strcpy' called with string bigger than buffer");
++__errordecl(__strcat_dest_size_error, "'strcat' called with size bigger than buffer");
++
++#if defined(__USE_GNU)
++#if __ANDROID_API__ >= 30
++__BIONIC_FORTIFY_INLINE __diagnose_as_builtin(__builtin_mempcpy, 1, 2, 3)
++void* mempcpy(void* const dst __pass_object_size0, const void* src, size_t copy_amount) {
++    if(__bos_unevaluated_lt(__bos0(dst), copy_amount)) {
++        __mempcpy_dest_size_error();
++    }
++
+ #if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
+-/* No diag -- clang diagnoses misuses of this on its own.  */
++    size_t bos_dst = __bos0(dst);
++    if (!__bos_trivially_ge(bos_dst, copy_amount)) {
++        return __builtin___mempcpy_chk(dst, src, copy_amount, bos_dst);
++    }
++#endif
++    return __builtin_mempcpy(dst, src, copy_amount);
++}
++#endif /* __ANDROID_API__ >= 30 */
++#endif /* __USE_GNU */
++
+ __BIONIC_FORTIFY_INLINE
++char* stpcpy(char* const dst __pass_object_size, const char* src) {
++    if(__bos_unevaluated_le(__bos(dst), __builtin_strlen(src))) {
++        __stpcpy_dest_size_error();
++    }
++
++#if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++    return __builtin___stpcpy_chk(dst, src, __bos(dst));
++#else
++    return __builtin_stpcpy(dst, src);
++#endif
++}
++
++__BIONIC_FORTIFY_INLINE __diagnose_as_builtin(__builtin_strcpy, 1, 2)
++char* strcpy(char* const dst __pass_object_size, const char* src) {
++    if(__bos_unevaluated_le(__bos(dst), __builtin_strlen(src))) {
++        __strcpy_dest_size_error();
++    }
++
++#if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++    return __builtin___strcpy_chk(dst, src, __bos(dst));
++#else
++    return __builtin_strcpy(dst, src);
++#endif
++}
++
++__BIONIC_FORTIFY_INLINE
++char* strcat(char* const dst __pass_object_size, const char* src) {
++    if(__bos_unevaluated_le(__bos(dst), __builtin_strlen(src))) {
++        __strcat_dest_size_error();
++    }
++
++#if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++    return __builtin___strcat_chk(dst, src, __bos(dst));
++#else
++    return __builtin_strcat(dst, src);
++#endif
++}
++
++#endif /* defined(__clang__) */
++
++#if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++/* No diag -- clang diagnoses misuses of this on its own.  */
++__BIONIC_FORTIFY_INLINE __diagnose_as_builtin(__builtin_strncat, 1, 2, 3)
+ char* _Nonnull strncat(char* _Nonnull const dst __pass_object_size, const char* _Nonnull src, size_t n)
+-       __diagnose_as_builtin(__builtin_strncat, 1, 2, 3)
+        __overloadable {
+     return __builtin___strncat_chk(dst, src, n, __bos(dst));
+ }
+ #endif
+ 
+ /* No diag -- clang diagnoses misuses of this on its own.  */
+-__BIONIC_FORTIFY_INLINE
++__BIONIC_FORTIFY_INLINE __diagnose_as_builtin(__builtin_memset, 1, 2, 3)
+ void* _Nonnull memset(void* _Nonnull const s __pass_object_size0, int c, size_t n) __overloadable
+-        __diagnose_as_builtin(__builtin_memset, 1, 2, 3)
++#if defined(__clang__)
+         /* If you're a user who wants this warning to go away: use `(&memset)(foo, bar, baz)`. */
+-        __clang_warning_if(c && !n, "'memset' will set 0 bytes; maybe the arguments got flipped?") {
++        __clang_warning_if(c && !n, "'memset' will set 0 bytes; maybe the arguments got flipped?")
++#endif
++{
+ #if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
+     return __builtin___memset_chk(s, c, n, __bos0(s));
+ #else
+@@ -167,9 +232,8 @@ void* _Nullable __memrchr_fortify(const void* _Nonnull const __pass_object_size
+ 
+ #if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
+ /* No diag -- clang diagnoses misuses of this on its own.  */
+-__BIONIC_FORTIFY_INLINE
++__BIONIC_FORTIFY_INLINE __diagnose_as_builtin(__builtin_stpncpy, 1, 2, 3)
+ char* _Nonnull stpncpy(char* _Nonnull const dst __pass_object_size, const char* _Nonnull const src __pass_object_size, size_t n)
+-        __diagnose_as_builtin(__builtin_stpncpy, 1, 2, 3)
+         __overloadable {
+     size_t bos_dst = __bos(dst);
+     size_t bos_src = __bos(src);
+@@ -183,9 +247,8 @@ char* _Nonnull stpncpy(char* _Nonnull const dst __pass_object_size, const char*
+ }
+ 
+ /* No diag -- clang diagnoses misuses of this on its own.  */
+-__BIONIC_FORTIFY_INLINE
++__BIONIC_FORTIFY_INLINE __diagnose_as_builtin(__builtin_strncpy, 1, 2, 3)
+ char* _Nonnull strncpy(char* _Nonnull const dst __pass_object_size, const char* _Nonnull const src __pass_object_size, size_t n)
+-        __diagnose_as_builtin(__builtin_strncpy, 1, 2, 3)
+         __overloadable {
+     size_t bos_dst = __bos(dst);
+     size_t bos_src = __bos(src);
+@@ -199,6 +262,7 @@ char* _Nonnull strncpy(char* _Nonnull const dst __pass_object_size, const char*
+ }
+ #endif
+ 
++#if defined(__clang__)
+ __BIONIC_FORTIFY_INLINE
+ size_t strlcpy(char* _Nonnull const dst __pass_object_size, const char* _Nonnull src, size_t size)
+         __overloadable
+@@ -223,6 +287,41 @@ size_t strlcat(char* _Nonnull const dst __pass_object_size, const char* _Nonnull
+ #endif
+ }
+ 
++#else /* defined(__clang__) */
++
++size_t __strlcpy_real(char* const dst __pass_object_size, const char* src, size_t size) __RENAME(strlcpy);
++__errordecl(__strlcpy_dest_size_error, "'strlcpy' called with size bigger than buffer");
++
++size_t __strlcat_real(char* const dst __pass_object_size, const char* src, size_t size) __RENAME(strlcat);
++__errordecl(__strlcat_dest_size_error, "'strlcat' called with size bigger than buffer");
++
++__BIONIC_FORTIFY_INLINE
++size_t strlcpy(char* const dst __pass_object_size, const char* src, size_t size) {
++    if(__bos_unevaluated_lt(__bos(dst), size)) {
++        __strlcpy_dest_size_error();
++    }
++
++#if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++    return __strlcpy_chk(dst, src, size, __bos(dst));
++#else
++    return __strlcpy_real(dst, src, size);
++#endif
++}
++
++__BIONIC_FORTIFY_INLINE
++size_t strlcat(char* const dst __pass_object_size, const char* src, size_t size) {
++    if(__bos_unevaluated_lt(__bos(dst), size)) {
++        __strlcat_dest_size_error();
++    }
++
++#if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++    return __strlcat_chk(dst, src, size, __bos(dst));
++#else
++    return __strlcat_real(dst, src, size);
++#endif
++}
++#endif /* defined(__clang__) */
++
+ #if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
+ /*
+  * Clang, when parsing C, can fold strlen to a constant without LLVM's help.
+diff --git a/sysroot/usr/include/bits/fortify/strings.h b/sysroot/usr/include/bits/fortify/strings.h
+index a36f02c..06cb410 100644
+--- a/sysroot/usr/include/bits/fortify/strings.h
++++ b/sysroot/usr/include/bits/fortify/strings.h
+@@ -28,6 +28,7 @@
+ 
+ #if defined(__BIONIC_FORTIFY)
+ 
++#if defined(__clang__)
+ __BIONIC_FORTIFY_INLINE
+ void __bionic_bcopy(const void * _Nonnull src, void* _Nonnull const dst __pass_object_size0, size_t len)
+         __overloadable
+@@ -58,4 +59,40 @@ void __bionic_bzero(void* _Nonnull const b __pass_object_size0, size_t len)
+     __builtin_memset(b, 0, len);
+ }
+ 
++#else /* defined(__clang__) */
++
++__errordecl(__bionic_bcopy_size_too_bigger_error, "'bcopy' called with size bigger than buffer");
++__errordecl(__bionic_bzero_size_too_bigger_error, "'bzero' called with size bigger than buffer");
++
++__BIONIC_FORTIFY_INLINE
++void __bionic_bcopy(const void * src, void* const dst __pass_object_size0, size_t len) {
++    if(__bos_unevaluated_lt(__bos0(dst), len))
++        __bionic_bcopy_size_too_bigger_error();
++
++#if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++    size_t bos = __bos0(dst);
++    if (!__bos_trivially_ge(bos, len)) {
++        __builtin___memmove_chk(dst, src, len, bos);
++        return;
++    }
++#endif
++    __builtin_memmove(dst, src, len);
++}
++
++__BIONIC_FORTIFY_INLINE
++void __bionic_bzero(void* const b __pass_object_size0, size_t len) {
++    if(__bos_unevaluated_lt(__bos0(b), len))
++        __bionic_bzero_size_too_bigger_error();
++
++#if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++    size_t bos = __bos0(b);
++    if (!__bos_trivially_ge(bos, len)) {
++        __builtin___memset_chk(b, 0, len, bos);
++        return;
++    }
++#endif
++    __builtin_memset(b, 0, len);
++}
++
++#endif /* defined(__clang__) */
+ #endif /* defined(__BIONIC_FORTIFY) */
+diff --git a/sysroot/usr/include/bits/fortify/unistd.h b/sysroot/usr/include/bits/fortify/unistd.h
+index 9acb942..5e82c1c 100644
+--- a/sysroot/usr/include/bits/fortify/unistd.h
++++ b/sysroot/usr/include/bits/fortify/unistd.h
+@@ -86,6 +86,11 @@ ssize_t __readlinkat_chk(int dirfd, const char* _Nonnull, char* _Nonnull, size_t
+ #define __PWRITE_PREFIX(x) __pwrite_ ## x
+ #endif
+ 
++#define __bos_trivially_ge_no_overflow(bos_val, index)  \
++      ((__bos_dynamic_check_impl_and((bos_val), >=, (index), (bos_val) <= SSIZE_MAX) && \
++        __builtin_constant_p(index) && (index) <= SSIZE_MAX))
++
++#if defined(__clang__)
+ #define __error_if_overflows_ssizet(what, fn) \
+     __clang_error_if((what) > SSIZE_MAX, "in call to '" #fn "', '" #what "' must be <= SSIZE_MAX")
+ 
+@@ -93,9 +98,6 @@ ssize_t __readlinkat_chk(int dirfd, const char* _Nonnull, char* _Nonnull, size_t
+     __clang_error_if(__bos_unevaluated_lt((objsize), (what)), \
+                      "in call to '" #fn "', '" #what "' bytes overflows the given object")
+ 
+-#define __bos_trivially_ge_no_overflow(bos_val, index)  \
+-      ((__bos_dynamic_check_impl_and((bos_val), >=, (index), (bos_val) <= SSIZE_MAX) && \
+-        __builtin_constant_p(index) && (index) <= SSIZE_MAX))
+ 
+ __BIONIC_FORTIFY_INLINE
+ char* _Nullable getcwd(char* const _Nullable __pass_object_size buf, size_t size)
+@@ -235,10 +237,231 @@ ssize_t readlinkat(int dirfd, const char* _Nonnull path, char* const _Nonnull __
+     return __call_bypassing_fortify(readlinkat)(dirfd, path, buf, size);
+ }
+ 
+-#undef __bos_trivially_ge_no_overflow
+ #undef __enable_if_no_overflow_ssizet
+ #undef __error_if_overflows_objectsize
+ #undef __error_if_overflows_ssizet
++#else /* defined(__clang__) */
++
++char* __getcwd_real(char*, size_t) __RENAME(getcwd);
++ssize_t __read_real(int, void*, size_t) __RENAME(read);
++ssize_t __write_real(int, const void*, size_t) __RENAME(write);
++ssize_t __readlink_real(const char*, char*, size_t) __RENAME(readlink);
++ssize_t __readlinkat_real(int dirfd, const char*, char*, size_t) __RENAME(readlinkat);
++
++__errordecl(__getcwd_dest_size_error, "getcwd called with size bigger than destination");
++__errordecl(__pread_dest_size_error, "pread called with size bigger than destination");
++__errordecl(__pread_count_toobig_error, "pread called with count > SSIZE_MAX");
++__errordecl(__pread64_dest_size_error, "pread64 called with size bigger than destination");
++__errordecl(__pread64_count_toobig_error, "pread64 called with count > SSIZE_MAX");
++__errordecl(__pwrite_dest_size_error, "pwrite called with size bigger than destination");
++__errordecl(__pwrite_count_toobig_error, "pwrite called with count > SSIZE_MAX");
++__errordecl(__pwrite64_dest_size_error, "pwrite64 called with size bigger than destination");
++__errordecl(__pwrite64_count_toobig_error, "pwrite64 called with count > SSIZE_MAX");
++__errordecl(__read_dest_size_error, "read called with size bigger than destination");
++__errordecl(__read_count_toobig_error, "read called with count > SSIZE_MAX");
++__errordecl(__write_dest_size_error, "write called with size bigger than destination");
++__errordecl(__write_count_toobig_error, "write called with count > SSIZE_MAX");
++__errordecl(__readlink_dest_size_error, "readlink called with size bigger than destination");
++__errordecl(__readlink_size_toobig_error, "readlink called with size > SSIZE_MAX");
++__errordecl(__readlinkat_dest_size_error, "readlinkat called with size bigger than destination");
++__errordecl(__readlinkat_size_toobig_error, "readlinkat called with size > SSIZE_MAX");
++
++#define __overflows_ssizet(what) ((what) > SSIZE_MAX)
++#define __overflows_objectsize(what, objsize) \
++    (__bos_unevaluated_lt((objsize), (what)))
++
++__BIONIC_FORTIFY_INLINE
++char* getcwd(char* buf, size_t size) __overloadable {
++    if (__overflows_objectsize(size, __bos(buf))) {
++        __getcwd_dest_size_error();
++    }
++
++#if __ANDROID_API__ >= 24 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++    size_t bos = __bos(buf)
++    if (!__bos_trivially_ge(bos, size)) {
++        return __getcwd_chk(buf, size, bos);
++    }
++#endif
++
++    return __getcwd_real(buf, size);
++}
++
++#if !defined(__USE_FILE_OFFSET64)
++__BIONIC_FORTIFY_INLINE
++ssize_t pread(int fd, void* buf, size_t count, off_t offset) {
++    if (__overflows_ssizet(count)) {
++        __PREAD_PREFIX(count_toobig_error)();
++    }
++
++    if (__overflows_objectsize(count, __bos0(buf))) {
++        __PREAD_PREFIX(dest_size_error)();
++    }
++
++#if __ANDROID_API__ >= 23 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++    size_t bos = __bos0(buf);
++
++    if (!__bos_trivially_ge_no_overflow(bos, count)) {
++        return __PREAD_PREFIX(chk)(fd, buf, count, offset, bos);
++    }
++#endif
++
++    return __PREAD_PREFIX(real)(fd, buf, count, offset);
++}
++#endif /* !defined(__USE_FILE_OFFSET64) */
++
++__BIONIC_FORTIFY_INLINE
++ssize_t pread64(int fd, void* buf, size_t count, off64_t offset) {
++    if (__overflows_ssizet(count)) {
++        __pread64_count_toobig_error();
++    }
++
++    if (__overflows_objectsize(count, __bos0(buf))) {
++        __pread64_dest_size_error();
++    }
++
++#if __ANDROID_API__ >= 23 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++    size_t bos = __bos0(buf);
++
++    if (!__bos_trivially_ge_no_overflow(bos, count)) {
++        return __pread64_chk(fd, buf, count, offset, bos);
++    }
++#endif
++
++    return __pread64_real(fd, buf, count, offset);
++}
++
++#if !defined(__USE_FILE_OFFSET64)
++__BIONIC_FORTIFY_INLINE
++ssize_t pwrite(int fd, const void* buf, size_t count, off_t offset) {
++    if (__overflows_ssizet(count)) {
++        __PWRITE_PREFIX(count_toobig_error)();
++    }
++
++    if (__overflows_objectsize(count, __bos0(buf))) {
++        __PWRITE_PREFIX(dest_size_error)();
++    }
++
++#if __ANDROID_API__ >= 24 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++    size_t bos = __bos0(buf);
++
++    if (!__bos_trivially_ge_no_overflow(bos, count)) {
++        return __PWRITE_PREFIX(chk)(fd, buf, count, offset, bos);
++    }
++#endif
++
++    return __PWRITE_PREFIX(real)(fd, buf, count, offset);
++}
++#endif /* !defined(__USE_FILE_OFFSET64) */
++
++__BIONIC_FORTIFY_INLINE
++ssize_t pwrite64(int fd, const void* buf, size_t count, off64_t offset) {
++    if (__overflows_ssizet(count)) {
++        __pwrite64_count_toobig_error();
++    }
++
++    if (__overflows_objectsize(count, __bos0(buf))) {
++        __pwrite64_dest_size_error();
++    }
++
++#if __ANDROID_API__ >= 24 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++    size_t bos = __bos0(buf);
++
++    if (!__bos_trivially_ge_no_overflow(bos, count)) {
++        return __pwrite64_chk(fd, buf, count, offset, bos);
++    }
++#endif
++
++    return __pwrite64_real(fd, buf, count, offset);
++}
++
++__BIONIC_FORTIFY_INLINE
++ssize_t read(int fd, void* buf, size_t count) {
++    if (__overflows_ssizet(count)) {
++        __read_count_toobig_error();
++    }
++
++    if (__overflows_objectsize(count, __bos0(buf))) {
++        __read_dest_size_error();
++    }
++
++#if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++    size_t bos = __bos0(buf);
++
++    if (!__bos_trivially_ge_no_overflow(bos, count)) {
++        return __read_chk(fd, buf, count, bos);
++    }
++#endif
++
++    return __read_real(fd, buf, count);
++}
++
++__BIONIC_FORTIFY_INLINE
++ssize_t write(int fd, const void* buf, size_t count) {
++    if (__overflows_ssizet(count)) {
++        __write_count_toobig_error();
++    }
++
++    if (__overflows_objectsize(count, __bos0(buf))) {
++        __write_dest_size_error();
++    }
++
++#if __ANDROID_API__ >= 24 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++    size_t bos = __bos0(buf);
++
++    if (!__bos_trivially_ge_no_overflow(bos, count)) {
++        return __write_chk(fd, buf, count, bos);
++    }
++#endif
++
++    return __write_real(fd, buf, count);
++}
++
++__BIONIC_FORTIFY_INLINE
++ssize_t readlink(const char* path, char* buf, size_t size) {
++    if (__overflows_ssizet(size)) {
++        __readlink_size_toobig_error();
++    }
++    if (__overflows_objectsize(size, __bos0(buf))) {
++        __readlink_dest_size_error();
++    }
++
++#if __ANDROID_API__ >= 23 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++    size_t bos = __bos(buf);
++
++    if (!__bos_trivially_ge_no_overflow(bos, size)) {
++        return __readlink_chk(path, buf, size, bos);
++    }
++#endif
++
++    return __readlink_real(path, buf, size);
++}
++
++__BIONIC_FORTIFY_INLINE
++ssize_t readlinkat(int dirfd, const char* path, char* buf, size_t size) {
++    if (__overflows_ssizet(size)) {
++        __readlinkat_size_toobig_error();
++    }
++
++    if (__overflows_objectsize(size, __bos0(buf))) {
++        __readlinkat_dest_size_error();
++    }
++
++#if __ANDROID_API__ >= 23 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
++    size_t bos = __bos(buf);
++
++    if (!__bos_trivially_ge_no_overflow(bos, size)) {
++        return __readlinkat_chk(path, buf, size, bos);
++    }
++#endif
++
++    return __readlinkat_real(dirfd, path, buf, size);
++}
++
++#undef __overflows_ssizet
++#undef __overflows_objectsize
++#endif /* defined(__clang__) */
++
++#undef __bos_trivially_ge_no_overflow
+ #undef __PREAD_PREFIX
+ #undef __PWRITE_PREFIX
+ #endif /* defined(__BIONIC_FORTIFY) */
+diff --git a/sysroot/usr/include/bits/ioctl.h b/sysroot/usr/include/bits/ioctl.h
+index ae75880..296fc6f 100644
+--- a/sysroot/usr/include/bits/ioctl.h
++++ b/sysroot/usr/include/bits/ioctl.h
+@@ -55,7 +55,7 @@ int ioctl(int __fd, int __op, ...);
+  * - defining BIONIC_IOCTL_NO_SIGNEDNESS_OVERLOAD, which will make the
+  *   overloading go away.
+  */
+-#if !defined(BIONIC_IOCTL_NO_SIGNEDNESS_OVERLOAD)
++#if defined(__clang__) && !defined(BIONIC_IOCTL_NO_SIGNEDNESS_OVERLOAD)
+ /* enable_if(1) just exists to break overloading ties. */
+ int ioctl(int __fd, unsigned __op, ...) __overloadable __enable_if(1, "") __RENAME(ioctl);
+ #endif
+diff --git a/sysroot/usr/include/bits/struct_file.h b/sysroot/usr/include/bits/struct_file.h
+index 8cb8d28..d52a502 100644
+--- a/sysroot/usr/include/bits/struct_file.h
++++ b/sysroot/usr/include/bits/struct_file.h
+@@ -30,15 +30,80 @@
+ 
+ #include <sys/cdefs.h>
+ 
+-__BEGIN_DECLS
+-
+-/** The opaque structure implementing `FILE`. Do not make any assumptions about its content. */
+-struct __sFILE {
++ __BEGIN_DECLS
++#if defined(__LP64__)
++struct __sbuf {
++	unsigned char* _base;
++	size_t _size;
++};
++#else
++struct __sbuf {
++	unsigned char *_base;
++	int     _size;
++};
++#endif
+ #if defined(__LP64__)
+-  char __private[152];
++typedef int64_t _struct_file_off_t;
+ #else
+-  char __private[84];
++typedef __kernel_off_t _struct_file_off_t;
+ #endif
+-} __attribute__((__aligned__(sizeof(void*))));
+ 
+-__END_DECLS
++
++ /** The opaque structure implementing `FILE`. Do not make any assumptions about its content. */
++ struct __sFILE {
++	unsigned char *_p;      /* current position in (some) buffer */
++	int     _r;             /* read space left for getc() */
++	int     _w;             /* write space left for putc() */
++ #if defined(__LP64__)
++	int     _flags;         /* flags, below; this FILE is free if 0 */
++	int     _file;          /* fileno, if Unix descriptor, else -1 */
++ #else
++	short   _flags;         /* flags, below; this FILE is free if 0 */
++	short   _file;          /* fileno, if Unix descriptor, else -1 */
++ #endif
++	struct  __sbuf _bf;     /* the buffer (at least 1 byte, if !NULL) */
++    int     _lbfsize;       /* 0 or -_bf._size, for inline putc */
++
++    /* operations */
++    void    *_cookie;       /* cookie passed to io functions */
++	int     (*_close)(void *);
++	int     (*_read)(void *, char *, int);
++	_struct_file_off_t      (*_seek)(void *, _struct_file_off_t, int);
++	int     (*_write)(void *, const char *, int);
++
++	/* extension data, to avoid further ABI breakage */
++	struct  __sbuf _ext;
++	/* data for long sequences of ungetc() */
++	unsigned char *_up;     /* saved _p when _p is doing ungetc data */
++	int     _ur;            /* saved _r when _r is counting ungetc data */
++
++	/* tricks to meet minimum requirements even when malloc() fails */
++	unsigned char _ubuf[3]; /* guarantee an ungetc() buffer */
++	unsigned char _nbuf[1]; /* guarantee a getc() buffer */
++
++	/* separate buffer for fgetln() when line crosses buffer boundary */
++	struct  __sbuf _lb;     /* buffer for fgetln() */
++
++	/* Unix stdio files get aligned to block boundaries on fseek() */
++	int     _blksize;       /* stat.st_blksize (may be != _bf._size) */
++	_struct_file_off_t      _offset;        /* current lseek offset */
++};
++#define __SLBF  0x0001          /* line buffered */
++#define __SNBF  0x0002          /* unbuffered */
++#define __SRD   0x0004          /* OK to read */
++#define __SWR   0x0008          /* OK to write */
++	/* RD and WR are never simultaneously asserted */
++#define __SRW   0x0010          /* open for reading & writing */
++#define __SEOF  0x0020          /* found EOF */
++#define __SERR  0x0040          /* found error */
++#define __SMBF  0x0080          /* _buf is from malloc */
++#define __SAPP  0x0100          /* fdopen()ed in append mode */
++#define __SSTR  0x0200          /* this is an sprintf/snprintf string */
++#define __SOPT  0x0400          /* do fseek() optimization */
++#define __SNPT  0x0800          /* do not do fseek() optimization */
++#define __SOFF  0x1000          /* set iff _offset is in fact correct */
++#define __SMOD  0x2000          /* true => fgetln modified _p text */
++#define __SALC  0x4000          /* allocate string space dynamically */
++#define __SIGN  0x8000          /* ignore this file in _fwalk */
++
++ __END_DECLS
+diff --git a/sysroot/usr/include/complex.h b/sysroot/usr/include/complex.h
+index 1115862..7415d74 100644
+--- a/sysroot/usr/include/complex.h
++++ b/sysroot/usr/include/complex.h
+@@ -44,9 +44,15 @@ _Static_assert(__generic(_Complex_I, float _Complex, 1, 0),
+ #define	I		_Complex_I
+ 
+ #if __STDC_VERSION__ >= 201112L
++#ifdef __clang__
+ #define	CMPLX(x, y)	((double complex){ x, y })
+ #define	CMPLXF(x, y)	((float complex){ x, y })
+ #define	CMPLXL(x, y)	((long double complex){ x, y })
++#else
++#define	CMPLX(x, y)	__builtin_complex((double)(x), (double)(y))
++#define	CMPLXF(x, y)	__builtin_complex((float)(x), (float)(y))
++#define	CMPLXL(x, y)	__builtin_complex((long double)(x), (long double)(y))
++#endif
+ #endif
+ 
+ __BEGIN_DECLS
+diff --git a/sysroot/usr/include/ctype.h b/sysroot/usr/include/ctype.h
+index dc3f673..bc27d44 100644
+--- a/sysroot/usr/include/ctype.h
++++ b/sysroot/usr/include/ctype.h
+@@ -93,92 +93,37 @@ __BIONIC_CTYPE_INLINE int _toupper(int __ch) {
+   return __ch ^ 0x20;
+ }
+ 
+-/** Internal implementation detail. Do not use. */
+-__attribute__((__no_sanitize__("unsigned-integer-overflow")))
+-__BIONIC_CTYPE_INLINE int __bionic_ctype_in_range(unsigned __lo, int __ch, unsigned __hi) {
+-  return (__BIONIC_CAST(static_cast, unsigned, __ch) - __lo) < (__hi - __lo + 1);
+-}
+-
+-/** Returns true if `ch` is in `[A-Za-z]`. */
+-__BIONIC_CTYPE_INLINE int isalpha(int __ch) {
+-  return __bionic_ctype_in_range('a', _tolower(__ch), 'z');
+-}
+-
+-/** Returns true if `ch` is a space or tab. */
+-__BIONIC_CTYPE_INLINE int isblank(int __ch) {
+-  return __ch == ' ' || __ch == '\t';
+-}
+-
+-/** Returns true if `ch` is a control character (any character before space, plus DEL). */
+-__BIONIC_CTYPE_INLINE int iscntrl(int __ch) {
+-  return (__BIONIC_CAST(static_cast, unsigned, __ch) < ' ') || __ch == 0x7f;
+-}
+-
+-/** Returns true if `ch` is in `[0-9]`. */
+-__BIONIC_CTYPE_INLINE int isdigit(int __ch) {
+-  return __bionic_ctype_in_range('0', __ch, '9');
+-}
+-
+-/** Returns true if `ch` is `[A-Za-z0-9]` or punctuation. */
+-__BIONIC_CTYPE_INLINE int isgraph(int __ch) {
+-  return __bionic_ctype_in_range('!', __ch, '~');
+-}
+-
+-/** Returns true if `ch` is in `[a-z]`. */
+-__BIONIC_CTYPE_INLINE int islower(int __ch) {
+-  return __bionic_ctype_in_range('a', __ch, 'z');
+-}
+-
+-/** Returns true if `ch` is `[A-Za-z0-9]` or punctuation or space. */
+-__BIONIC_CTYPE_INLINE int isprint(int __ch) {
+-  return __bionic_ctype_in_range(' ', __ch, '~');
+-}
+-
+-/** Returns true if `ch` is in `[ \f\n\r\t\v]`. */
+-__BIONIC_CTYPE_INLINE int isspace(int __ch) {
+-  return __ch == ' ' || __bionic_ctype_in_range('\t', __ch, '\r');
+-}
+-
+-/** Returns true if `ch` is in `[A-Z]`. */
+-__BIONIC_CTYPE_INLINE int isupper(int __ch) {
+-  return __bionic_ctype_in_range('A', __ch, 'Z');
+-}
+-
+-/** Returns true if `ch` is in `[0-9A-Fa-f]`. */
+-__BIONIC_CTYPE_INLINE int isxdigit(int __ch) {
+-  return isdigit(__ch) || __bionic_ctype_in_range('a', _tolower(__ch), 'f') ;
+-}
+-
+-/** Returns true if `ch` is in `[A-Za-z0-9]`. */
+-__BIONIC_CTYPE_INLINE int isalnum(int __ch) {
+-  return isalpha(__ch) || isdigit(__ch);
+-}
+-
+-/** Returns true if `ch` is punctuation. */
+-__BIONIC_CTYPE_INLINE int ispunct(int __ch) {
+-  return isgraph(__ch) && !isalnum(__ch);
+-}
+-
+-/** Returns the corresponding lower-case character if `ch` is upper-case, or `ch` otherwise. */
+-__BIONIC_CTYPE_INLINE int tolower(int __ch) {
+-  return (__bionic_ctype_in_range('A', __ch, 'Z')) ? _tolower(__ch) : __ch;
+-}
+-
+-/** Returns the corresponding upper-case character if `ch` is lower-case, or `ch` otherwise. */
+-__BIONIC_CTYPE_INLINE int toupper(int __ch) {
+-  return (__bionic_ctype_in_range('a', __ch, 'z')) ? _toupper(__ch) : __ch;
+-}
+-
+-/** Returns true if `ch` is less than 0x80. */
+-__BIONIC_CTYPE_INLINE int isascii(int __ch) {
+-  return __BIONIC_CAST(static_cast, unsigned, __ch) < 0x80;
+-}
+-
+-/** Returns `ch & 0x7f`. */
+-__BIONIC_CTYPE_INLINE int toascii(int __ch) {
+-  return __ch & 0x7f;
+-}
+-
++int isalnum(int __ch);
++int isalpha(int __ch);
++int isblank(int __ch);
++int iscntrl(int __ch);
++int isdigit(int __ch);
++int isgraph(int __ch);
++int islower(int __ch);
++int isprint(int __ch);
++int ispunct(int __ch);
++int isspace(int __ch);
++int isupper(int __ch);
++int isxdigit(int __ch);
++int tolower(int __ch);
++int toupper(int __ch);
++
++#if __ANDROID_API__ >= __ANDROID_API_L__
++int isalnum_l(int __ch, locale_t __l) __INTRODUCED_IN(21);
++int isalpha_l(int __ch, locale_t __l) __INTRODUCED_IN(21);
++int isblank_l(int __ch, locale_t __l) __INTRODUCED_IN(21);
++int iscntrl_l(int __ch, locale_t __l) __INTRODUCED_IN(21);
++int isdigit_l(int __ch, locale_t __l) __INTRODUCED_IN(21);
++int isgraph_l(int __ch, locale_t __l) __INTRODUCED_IN(21);
++int islower_l(int __ch, locale_t __l) __INTRODUCED_IN(21);
++int isprint_l(int __ch, locale_t __l) __INTRODUCED_IN(21);
++int ispunct_l(int __ch, locale_t __l) __INTRODUCED_IN(21);
++int isspace_l(int __ch, locale_t __l) __INTRODUCED_IN(21);
++int isupper_l(int __ch, locale_t __l) __INTRODUCED_IN(21);
++int isxdigit_l(int __ch, locale_t __l) __INTRODUCED_IN(21);
++int tolower_l(int __ch, locale_t __l) __INTRODUCED_IN(21);
++int toupper_l(int __ch, locale_t __l) __INTRODUCED_IN(21);
++#else
+ /** Like isalnum() but with an ignored `locale_t`. */
+ __BIONIC_CTYPE_INLINE int isalnum_l(int __ch, locale_t __l) {
+   return isalnum(__ch);
+@@ -248,5 +193,9 @@ __BIONIC_CTYPE_INLINE int tolower_l(int __ch, locale_t __l) {
+ __BIONIC_CTYPE_INLINE int toupper_l(int __ch, locale_t __l) {
+   return toupper(__ch);
+ }
++#endif
++
++int isascii(int __ch);
++int toascii(int __ch);
+ 
+ __END_DECLS
+diff --git a/sysroot/usr/include/math.h b/sysroot/usr/include/math.h
+index 59161bf..0764845 100644
+--- a/sysroot/usr/include/math.h
++++ b/sysroot/usr/include/math.h
+@@ -305,6 +305,22 @@ long double fmal(long double __x, long double __y, long double __z);
+ #define islessgreater(x, y) __builtin_islessgreater((x), (y))
+ #define isunordered(x, y) __builtin_isunordered((x), (y))
+ 
++/*
++ * https://code.google.com/p/android/issues/detail?id=271629
++ * To be fully compliant with C++, we need to not define these (C doesn't
++ * specify them either). Exposing these means that isinf and isnan will have a
++ * return type of int in C++ rather than bool like they're supposed to be.
++ *
++ * GNU libstdc++ 4.9 isn't able to handle a standard compliant C library. Its
++ * <cmath> will `#undef isnan` from math.h and only adds the function overloads
++ * to the std namespace, making it impossible to use both <cmath> (which gets
++ * included by a lot of other standard headers) and ::isnan.
++ */
++
++int (isinf)(double __x) __attribute_const__ __INTRODUCED_IN(21);
++
++int (isnan)(double __x) __attribute_const__;
++
+ /* POSIX extensions. */
+ 
+ extern int signgam;
+diff --git a/sysroot/usr/include/pthread.h b/sysroot/usr/include/pthread.h
+index cdf1b8c..3aa6c7a 100644
+--- a/sysroot/usr/include/pthread.h
++++ b/sysroot/usr/include/pthread.h
+@@ -174,6 +174,18 @@ void* _Nullable pthread_getspecific(pthread_key_t __key);
+ 
+ pid_t pthread_gettid_np(pthread_t __pthread);
+ 
++#if defined(__USE_GNU)
++static __inline __always_inline
++int pthread_getaffinity_np(pthread_t __pthread, size_t __set_size, cpu_set_t* __set) {
++  return sched_getaffinity(pthread_gettid_np(__pthread), __set_size, __set);
++}
++
++static __inline __always_inline
++int pthread_setaffinity_np(pthread_t __pthread, size_t __set_size, cpu_set_t* __set) {
++  return sched_setaffinity(pthread_gettid_np(__pthread), __set_size, __set);
++}
++#endif
++
+ int pthread_join(pthread_t __pthread, void* _Nullable * _Nullable __return_value_ptr);
+ 
+ /**
+diff --git a/sysroot/usr/include/stdc-predef.h b/sysroot/usr/include/stdc-predef.h
+new file mode 100644
+index 0000000..c9d58a0
+--- /dev/null
++++ b/sysroot/usr/include/stdc-predef.h
+@@ -0,0 +1,15 @@
++#ifndef _STDC_PREDEF_H
++#define _STDC_PREDEF_H  1
++
++#ifndef __clang__
++#ifdef __ANDROID__ && !defined(__ANDROID_API__)
++# define __ANDROID_API__ __ANDROID_MIN_SDK_VERSION__
++# define __ANDROID_MIN_SDK_VERSION__ 21
++#endif
++
++#define _Nonnull
++#define _Nullable
++#define _Null_unspecified
++#endif
++
++#endif // _STDC_PREDEF_H
+diff --git a/sysroot/usr/include/string.h b/sysroot/usr/include/string.h
+index a0a7cc4..8a6e8cd 100644
+--- a/sysroot/usr/include/string.h
++++ b/sysroot/usr/include/string.h
+@@ -239,7 +239,7 @@ char* _Nonnull basename(const char* _Nonnull __path) __RENAME(__gnu_basename) __
+ #endif
+ 
+ /* Const-correct overloads. Placed after FORTIFY so we call those functions, if possible. */
+-#if defined(__cplusplus)
++#if defined(__cplusplus) && defined(__clang__)
+ /* libcxx tries to provide these. Suppress that, since libcxx's impl doesn't respect FORTIFY. */
+ #define __CORRECT_ISO_CPP_STRING_H_PROTO
+ /* Used to make these preferable over regular <string.h> signatures for overload resolution. */
+diff --git a/sysroot/usr/include/strings.h b/sysroot/usr/include/strings.h
+index 7543edc..ec5b71f 100644
+--- a/sysroot/usr/include/strings.h
++++ b/sysroot/usr/include/strings.h
+@@ -62,15 +62,19 @@ __BEGIN_DECLS
+ 
+ /** Deprecated. Use memmove() instead. */
+ #define bcopy(b1, b2, len) __bionic_bcopy((b1), (b2), (len))
++#ifndef __BIONIC_INCLUDE_FORTIFY_HEADERS
+ static __inline __always_inline void __bionic_bcopy(const void* _Nonnull b1, void* _Nonnull b2, size_t len) {
+   __builtin_memmove(b2, b1, len);
+ }
++#endif
+ 
+ /** Deprecated. Use memset() instead. */
+ #define bzero(b, len) __bionic_bzero((b), (len))
++#ifndef __BIONIC_INCLUDE_FORTIFY_HEADERS
+ static __inline __always_inline void __bionic_bzero(void* _Nonnull b, size_t len) {
+   __builtin_memset(b, 0, len);
+ }
++#endif
+ 
+ /**
+  * [ffs(3)](https://man7.org/linux/man-pages/man3/ffs.3.html) finds the
+diff --git a/sysroot/usr/include/sys/cdefs.h b/sysroot/usr/include/sys/cdefs.h
+index 9bd35bb..e79549c 100644
+--- a/sysroot/usr/include/sys/cdefs.h
++++ b/sysroot/usr/include/sys/cdefs.h
+@@ -143,12 +143,25 @@
+ #define __nodiscard __attribute__((__warn_unused_result__))
+ #define __wur __nodiscard
+ 
+-#define __errorattr(msg) __attribute__((__unavailable__(msg)))
+-#define __warnattr(msg) __attribute__((__deprecated__(msg)))
+-#define __warnattr_real(msg) __attribute__((__deprecated__(msg)))
+-#define __enable_if(cond, msg) __attribute__((__enable_if__(cond, msg)))
+-#define __clang_error_if(cond, msg) __attribute__((__diagnose_if__(cond, msg, "error")))
+-#define __clang_warning_if(cond, msg) __attribute__((__diagnose_if__(cond, msg, "warning")))
++#ifdef __clang__
++#  define __errorattr(msg) __attribute__((__unavailable__(msg)))
++#  define __warnattr(msg) __attribute__((__deprecated__(msg)))
++#  define __warnattr_real(msg) __attribute__((__deprecated__(msg)))
++#  define __enable_if(cond, msg) __attribute__((__enable_if__(cond, msg)))
++#  define __clang_error_if(cond, msg) __attribute__((__diagnose_if__(cond, msg, "error")))
++#  define __clang_warning_if(cond, msg) __attribute__((__diagnose_if__(cond, msg, "warning")))
++#else
++#  define __errorattr(msg) __attribute__((__error__(msg)))
++#  define __warnattr(msg) __attribute__((__warning__(msg)))
++#  define __warnattr_real __warnattr
++/* enable_if doesn't exist on other compilers; give an error if it's used. */
++/* diagnose_if doesn't exist either, but it's often tagged on non-clang-specific functions */
++#  define __clang_error_if(cond, msg)
++#  define __clang_warning_if(cond, msg)
++
++/* errordecls really don't work as well in clang as they do in GCC. */
++#  define __errordecl(name, msg) extern void name(void) __errorattr(msg)
++#endif
+ 
+ #if defined(ANDROID_STRICT)
+ /*
+@@ -193,7 +206,7 @@
+  * _FILE_OFFSET_BITS 64 support.
+  * See https://android.googlesource.com/platform/bionic/+/main/docs/32-bit-abi.md
+  */
+-#if !defined(__LP64__) && defined(_FILE_OFFSET_BITS) && _FILE_OFFSET_BITS == 64
++#if __ANDROID_API__ >= 24 && !defined(__LP64__) && defined(_FILE_OFFSET_BITS) && _FILE_OFFSET_BITS == 64
+ #  define __USE_FILE_OFFSET64 1
+ /*
+  * Note that __RENAME_IF_FILE_OFFSET64 is only valid if the off_t and off64_t
+@@ -252,19 +265,20 @@
+ 
+ #if defined(__BIONIC_FORTIFY)
+ #  define __bos0(s) __bosn((s), 0)
+-#  define __pass_object_size_n(n) __attribute__((__pass_object_size__(n)))
++#  if defined(__clang__)
++#    define __pass_object_size_n(n) __attribute__((__pass_object_size__(n)))
+ /*
+  * FORTIFY'ed functions all have either enable_if or pass_object_size, which
+  * makes taking their address impossible. Saying (&read)(foo, bar, baz); will
+  * therefore call the unFORTIFYed version of read.
+  */
+-#  define __call_bypassing_fortify(fn) (&fn)
++#    define __call_bypassing_fortify(fn) (&fn)
+ /*
+  * Because clang-FORTIFY uses overloads, we can't mark functions as `extern inline` without making
+  * them available externally. FORTIFY'ed functions try to be as close to possible as 'invisible';
+  * having stack protectors detracts from that (b/182948263).
+  */
+-#  define __BIONIC_FORTIFY_INLINE static __inline __attribute__((__no_stack_protector__)) \
++#    define __BIONIC_FORTIFY_INLINE static __inline __attribute__((__no_stack_protector__)) \
+       __always_inline
+ /*
+  * We should use __BIONIC_FORTIFY_VARIADIC instead of __BIONIC_FORTIFY_INLINE
+@@ -272,9 +286,22 @@
+  * The __always_inline attribute is useless, misleading, and could trigger
+  * clang compiler bug to incorrectly inline variadic functions.
+  */
+-#  define __BIONIC_FORTIFY_VARIADIC static __inline
++#    define __BIONIC_FORTIFY_VARIADIC static __inline
+ /* Error functions don't have bodies, so they can just be static. */
+-#  define __BIONIC_ERROR_FUNCTION_VISIBILITY static __unused
++#    define __BIONIC_ERROR_FUNCTION_VISIBILITY static __unused
++#  else
++/*
++ * Where they can, GCC and clang-style FORTIFY share implementations.
++ * So, make these nops in GCC.
++ */
++#    define __pass_object_size_n(n)
++#    define __call_bypassing_fortify(fn) (fn)
++/* __BIONIC_FORTIFY_NONSTATIC_INLINE is pointless in GCC's FORTIFY */
++#    define __BIONIC_FORTIFY_INLINE extern __inline__ __always_inline __attribute__((gnu_inline)) __attribute__((__artificial__))
++/* __always_inline is probably okay and ignored by gcc in __BIONIC_FORTIFY_VARIADIC */
++#    define __BIONIC_FORTIFY_VARIADIC __BIONIC_FORTIFY_INLINE
++#    define __BIONIC_ERROR_FUNCTION_VISIBILITY static __unused
++#  endif
+ #else
+ /* Further increase sharing for some inline functions */
+ #  define __pass_object_size_n(n)
+@@ -304,7 +331,11 @@
+ #  define __BIONIC_INCLUDE_FORTIFY_HEADERS 1
+ #endif
+ 
+-#define __overloadable __attribute__((__overloadable__))
++#if defined(__clang__)
++#  define __overloadable __attribute__((overloadable))
++#else
++#  define __overloadable
++#endif
+ 
+ #define __diagnose_as_builtin(...) __attribute__((__diagnose_as_builtin__(__VA_ARGS__)))
+ 
+@@ -324,6 +355,22 @@
+ /* Used to rename functions so that the compiler emits a call to 'x' rather than the function this was applied to. */
+ #define __RENAME(x) __asm__(#x)
+ 
++#if __has_builtin(__builtin_umul_overflow) || __GNUC__ >= 5
++#if defined(__LP64__)
++#define __size_mul_overflow(a, b, result) __builtin_umull_overflow(a, b, result)
++#else
++#define __size_mul_overflow(a, b, result) __builtin_umul_overflow(a, b, result)
++#endif
++#else
++extern __inline__ __always_inline __attribute__((gnu_inline))
++int __size_mul_overflow(__SIZE_TYPE__ a, __SIZE_TYPE__ b, __SIZE_TYPE__ *result) {
++    *result = a * b;
++    static const __SIZE_TYPE__ mul_no_overflow = 1UL << (sizeof(__SIZE_TYPE__) * 4);
++    return (a >= mul_no_overflow || b >= mul_no_overflow) && a > 0 && (__SIZE_TYPE__)-1 / a < b;
++}
++#endif
++
++#if defined(__clang__)
+ /*
+  * Used when we need to check for overflow when multiplying x and y. This
+  * should only be used where __builtin_umull_overflow can not work, because it makes
+@@ -332,7 +379,9 @@
+  * __builtin_umull_overflow.
+  */
+ #define __unsafe_check_mul_overflow(x, y) ((__SIZE_TYPE__)-1 / (x) < (y))
++#endif
+ 
++#include <stdc-predef.h>
+ #include <android/versioning.h>
+ #include <android/api-level.h>
+ #if __has_include(<android/ndk-version.h>)
+diff --git a/sysroot/usr/include/time.h b/sysroot/usr/include/time.h
+index 777e648..3e94842 100644
+--- a/sysroot/usr/include/time.h
++++ b/sysroot/usr/include/time.h
+@@ -253,7 +253,7 @@ char* _Nullable strptime(const char* _Nonnull __s, const char* _Nonnull __fmt, s
+ /**
+  * Equivalent to strptime() on Android where only C/POSIX locales are available.
+  */
+-char* _Nullable strptime_l(const char* _Nonnull __s, const char* _Nonnull __fmt, struct tm* _Nonnull __tm, locale_t _Nonnull __l) __strftimelike(2) __RENAME(strptime);
++char* _Nullable strptime_l(const char* _Nonnull __s, const char* _Nonnull __fmt, struct tm* _Nonnull __tm, locale_t _Nonnull __l) __RENAME(strptime) __strftimelike(2);
+ 
+ /**
+  * [strftime(3)](https://man7.org/linux/man-pages/man3/strftime.3.html) formats
+-- 
+2.43.0
+

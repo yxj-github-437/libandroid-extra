@@ -25,8 +25,13 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#ifndef _UTMP_H_
-#define _UTMP_H_
+
+#pragma once
+
+/**
+ * @file utmp.h
+ * @brief No-op implementation of non-POSIX login records. See <utmpx.h> for the POSIX equivalents.
+ */
 
 #include <sys/cdefs.h>
 #include <sys/types.h>
@@ -57,38 +62,33 @@
 #define DEAD_PROCESS  8
 #define ACCOUNTING    9
 
-struct lastlog
-{
-    time_t ll_time;
-    char ll_line[UT_LINESIZE];
-    char ll_host[UT_HOSTSIZE];
+struct lastlog {
+  time_t ll_time;
+  char ll_line[UT_LINESIZE];
+  char ll_host[UT_HOSTSIZE];
 };
 
-struct exit_status
-{
-    short int e_termination;
-    short int e_exit;
+struct exit_status {
+  short e_termination;
+  short e_exit;
 };
 
+struct utmp {
+  short ut_type;
+  pid_t ut_pid;
+  char ut_line[UT_LINESIZE];
+  char ut_id[4];
+  char ut_user[UT_NAMESIZE];
+  char ut_host[UT_HOSTSIZE];
 
-struct utmp
-{
-    short int ut_type;
-    pid_t ut_pid;
-    char ut_line[UT_LINESIZE];
-    char ut_id[4];
-    char ut_user[UT_NAMESIZE];
-    char ut_host[UT_HOSTSIZE];
+  struct exit_status ut_exit;
 
-    struct exit_status ut_exit;
+  long ut_session;
+  struct timeval ut_tv;
 
-    long int ut_session;
-    struct timeval ut_tv;
-
-    int32_t ut_addr_v6[4];
-    char unsed[20];
+  int32_t ut_addr_v6[4];
+  char unused[20];
 };
-
 
 #define ut_name ut_user
 #define ut_time ut_tv.tv_sec
@@ -96,17 +96,45 @@ struct utmp
 
 __BEGIN_DECLS
 
-int utmpname(const char* __path);
+/**
+ * Returns -1 and sets errno to ENOTSUP.
+ */
+int utmpname(const char* _Nonnull __path);
+
+/**
+ * Does nothing.
+ */
 void setutent(void);
-struct utmp* getutent(void);
+
+/**
+ * Does nothing and returns null.
+ */
+struct utmp* _Nullable getutent(void);
+
+/**
+ * Does nothing and returns null.
+ */
+struct utmp* _Nullable pututline(const struct utmp* _Nonnull __entry);
+
+/**
+ * Does nothing.
+ */
 void endutent(void);
 
+/**
+ * [login_tty(3)](https://www.man7.org/linux/man-pages/man3/login_tty.3.html)
+ * prepares for login on the given file descriptor.
+ *
+ * See also forkpty() which combines openpty(), fork(), and login_tty().
+ *
+ * Returns 0 on success and returns -1 and sets `errno` on failure.
+ *
+ * Available since API level 23.
+ */
 
-// #if __ANDROID_API__ >= 23
+#if __BIONIC_AVAILABILITY_GUARD(23) || __ANDROID_EXTRA
 int login_tty(int __fd) __INTRODUCED_IN(23);
-// #endif /* __ANDROID_API__ >= 23 */
+#endif /* __BIONIC_AVAILABILITY_GUARD(23) */
 
 
 __END_DECLS
-
-#endif /* _UTMP_H_ */

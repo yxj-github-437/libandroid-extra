@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI__RFKILL_H
 #define _UAPI__RFKILL_H
 #include <linux/types.h>
@@ -40,14 +28,29 @@ enum rfkill_operation {
   RFKILL_OP_CHANGE,
   RFKILL_OP_CHANGE_ALL,
 };
+enum rfkill_hard_block_reasons {
+  RFKILL_HARD_BLOCK_SIGNAL = 1 << 0,
+  RFKILL_HARD_BLOCK_NOT_OWNER = 1 << 1,
+};
 struct rfkill_event {
   __u32 idx;
   __u8 type;
   __u8 op;
-  __u8 soft, hard;
+  __u8 soft;
+  __u8 hard;
 } __attribute__((packed));
-#define RFKILL_EVENT_SIZE_V1 8
+struct rfkill_event_ext {
+  __u32 idx;
+  __u8 type;
+  __u8 op;
+  __u8 soft;
+  __u8 hard;
+  __u8 hard_block_reasons;
+} __attribute__((packed));
+#define RFKILL_EVENT_SIZE_V1 sizeof(struct rfkill_event)
 #define RFKILL_IOC_MAGIC 'R'
 #define RFKILL_IOC_NOINPUT 1
 #define RFKILL_IOCTL_NOINPUT _IO(RFKILL_IOC_MAGIC, RFKILL_IOC_NOINPUT)
+#define RFKILL_IOC_MAX_SIZE 2
+#define RFKILL_IOCTL_MAX_SIZE _IOW(RFKILL_IOC_MAGIC, RFKILL_IOC_MAX_SIZE, __u32)
 #endif

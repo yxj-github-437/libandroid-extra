@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _NFNETLINK_LOG_H
 #define _NFNETLINK_LOG_H
 #include <linux/types.h>
@@ -39,6 +27,13 @@ struct nfulnl_msg_packet_timestamp {
   __aligned_be64 sec;
   __aligned_be64 usec;
 };
+enum nfulnl_vlan_attr {
+  NFULA_VLAN_UNSPEC,
+  NFULA_VLAN_PROTO,
+  NFULA_VLAN_TCI,
+  __NFULA_VLAN_MAX,
+};
+#define NFULA_VLAN_MAX (__NFULA_VLAN_MAX + 1)
 enum nfulnl_attr_type {
   NFULA_UNSPEC,
   NFULA_PACKET_HDR,
@@ -60,6 +55,8 @@ enum nfulnl_attr_type {
   NFULA_HWLEN,
   NFULA_CT,
   NFULA_CT_INFO,
+  NFULA_VLAN,
+  NFULA_L2HDR,
   __NFULA_MAX
 };
 #define NFULA_MAX (__NFULA_MAX - 1)

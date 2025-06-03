@@ -29,9 +29,10 @@
 #ifndef _SYS_TYPES_H_
 #define _SYS_TYPES_H_
 
+#include <sys/cdefs.h>
+
 #include <stddef.h>
 #include <stdint.h>
-#include <sys/cdefs.h>
 
 #include <linux/types.h>
 #include <linux/posix_types.h>
@@ -96,7 +97,7 @@ typedef __kernel_time_t __time_t;
 typedef __time_t time_t;
 
 /* This historical accident means that we had a 32-bit off_t on 32-bit architectures. */
-/* See https://android.googlesource.com/platform/bionic/+/master/docs/32-bit-abi.md */
+/* See https://android.googlesource.com/platform/bionic/+/main/docs/32-bit-abi.md */
 #if defined(__USE_FILE_OFFSET64) || defined(__LP64__)
 typedef int64_t off_t;
 typedef off_t loff_t;

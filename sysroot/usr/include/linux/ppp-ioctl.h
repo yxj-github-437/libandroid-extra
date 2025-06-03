@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _PPP_IOCTL_H
 #define _PPP_IOCTL_H
 #include <linux/types.h>
@@ -56,7 +44,7 @@ struct npioctl {
   enum NPmode mode;
 };
 struct ppp_option_data {
-  __u8 __user * ptr;
+  __u8  * ptr;
   __u32 length;
   int transmit;
 };
@@ -94,6 +82,8 @@ struct pppol2tp_ioc_stats {
 #define PPPIOCGDEBUG _IOR('t', 65, int)
 #define PPPIOCSDEBUG _IOW('t', 64, int)
 #define PPPIOCGIDLE _IOR('t', 63, struct ppp_idle)
+#define PPPIOCGIDLE32 _IOR('t', 63, struct ppp_idle32)
+#define PPPIOCGIDLE64 _IOR('t', 63, struct ppp_idle64)
 #define PPPIOCNEWUNIT _IOWR('t', 62, int)
 #define PPPIOCATTACH _IOW('t', 61, int)
 #define PPPIOCDETACH _IOW('t', 60, int)
@@ -103,6 +93,8 @@ struct pppol2tp_ioc_stats {
 #define PPPIOCATTCHAN _IOW('t', 56, int)
 #define PPPIOCGCHAN _IOR('t', 55, int)
 #define PPPIOCGL2TPSTATS _IOR('t', 54, struct pppol2tp_ioc_stats)
+#define PPPIOCBRIDGECHAN _IOW('t', 53, int)
+#define PPPIOCUNBRIDGECHAN _IO('t', 52)
 #define SIOCGPPPSTATS (SIOCDEVPRIVATE + 0)
 #define SIOCGPPPVER (SIOCDEVPRIVATE + 1)
 #define SIOCGPPPCSTATS (SIOCDEVPRIVATE + 2)

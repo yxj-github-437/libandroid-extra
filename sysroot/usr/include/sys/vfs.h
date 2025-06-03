@@ -29,8 +29,9 @@
 #ifndef _SYS_VFS_H_
 #define _SYS_VFS_H_
 
-#include <stdint.h>
 #include <sys/cdefs.h>
+
+#include <stdint.h>
 #include <sys/types.h>
 
 __BEGIN_DECLS
@@ -39,7 +40,9 @@ __BEGIN_DECLS
 typedef struct { int __val[2]; } __fsid_t;
 typedef __fsid_t fsid_t;
 
-#if defined(__aarch64__) || defined(__x86_64__)
+#if defined(__LP64__)
+/* We can't just use the kernel struct statfs directly here because
+ * it's reused for both struct statfs *and* struct statfs64. */
 #define __STATFS64_BODY \
   uint64_t f_type; \
   uint64_t f_bsize; \
@@ -53,39 +56,6 @@ typedef __fsid_t fsid_t;
   uint64_t f_frsize; \
   uint64_t f_flags; \
   uint64_t f_spare[4]; \
-
-#elif defined(__mips__) && defined(__LP64__)
-/* 64-bit MIPS. */
-#define __STATFS64_BODY \
-  uint64_t f_type; \
-  uint64_t f_bsize; \
-  uint64_t f_frsize; /* Fragment size - unsupported. */ \
-  uint64_t f_blocks; \
-  uint64_t f_bfree; \
-  uint64_t f_files; \
-  uint64_t f_ffree; \
-  uint64_t f_bavail; \
-  fsid_t f_fsid; \
-  uint64_t f_namelen; \
-  uint64_t f_flags; \
-  uint64_t f_spare[5]; \
-
-#elif defined(__mips__)
-/* 32-bit MIPS (corresponds to the kernel's statfs64 type). */
-#define __STATFS64_BODY \
-  uint32_t f_type; \
-  uint32_t f_bsize; \
-  uint32_t f_frsize; \
-  uint32_t __pad; \
-  uint64_t f_blocks; \
-  uint64_t f_bfree; \
-  uint64_t f_files; \
-  uint64_t f_ffree; \
-  uint64_t f_bavail; \
-  fsid_t f_fsid; \
-  uint32_t f_namelen; \
-  uint32_t f_flags; \
-  uint32_t f_spare[5]; \
 
 #else
 /* 32-bit ARM or x86 (corresponds to the kernel's statfs64 type). */
@@ -137,18 +107,10 @@ struct statfs64 { __STATFS64_BODY };
 #define XENIX_SUPER_MAGIC     0x012FF7B4
 #define XFS_SUPER_MAGIC       0x58465342
 
-int statfs(const char* __path, struct statfs* __buf);
-
-#if __ANDROID_API__ >= 21
-int statfs64(const char* __path, struct statfs64* __buf) __INTRODUCED_IN(21);
-#endif /* __ANDROID_API__ >= 21 */
-
-int fstatfs(int __fd, struct statfs* __buf);
-
-#if __ANDROID_API__ >= 21
-int fstatfs64(int __fd, struct statfs64* __buf) __INTRODUCED_IN(21);
-#endif /* __ANDROID_API__ >= 21 */
-
+int statfs(const char* _Nonnull __path, struct statfs* _Nonnull __buf);
+int statfs64(const char* _Nonnull __path, struct statfs64* _Nonnull __buf);
+int fstatfs(int __fd, struct statfs* _Nonnull __buf);
+int fstatfs64(int __fd, struct statfs64* _Nonnull __buf);
 
 __END_DECLS
 

@@ -1,42 +1,21 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_LINUX_TIME_H
 #define _UAPI_LINUX_TIME_H
+#include <bits/timespec.h>
 #include <linux/types.h>
+#include <linux/time_types.h>
 #ifndef _STRUCT_TIMESPEC
 #define _STRUCT_TIMESPEC
-struct timespec {
-  __kernel_time_t tv_sec;
-  long tv_nsec;
-};
 #endif
 struct timeval {
-  __kernel_time_t tv_sec;
+  __kernel_old_time_t tv_sec;
   __kernel_suseconds_t tv_usec;
 };
-struct timezone {
-  int tz_minuteswest;
-  int tz_dsttime;
-};
-#define ITIMER_REAL 0
-#define ITIMER_VIRTUAL 1
-#define ITIMER_PROF 2
 struct itimerspec {
   struct timespec it_interval;
   struct timespec it_value;
@@ -45,6 +24,13 @@ struct itimerval {
   struct timeval it_interval;
   struct timeval it_value;
 };
+struct timezone {
+  int tz_minuteswest;
+  int tz_dsttime;
+};
+#define ITIMER_REAL 0
+#define ITIMER_VIRTUAL 1
+#define ITIMER_PROF 2
 #define CLOCK_REALTIME 0
 #define CLOCK_MONOTONIC 1
 #define CLOCK_PROCESS_CPUTIME_ID 2

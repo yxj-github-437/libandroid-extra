@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef __UBI_USER_H__
 #define __UBI_USER_H__
 #include <linux/types.h>
@@ -27,6 +15,8 @@
 #define UBI_IOCRMVOL _IOW(UBI_IOC_MAGIC, 1, __s32)
 #define UBI_IOCRSVOL _IOW(UBI_IOC_MAGIC, 2, struct ubi_rsvol_req)
 #define UBI_IOCRNVOL _IOW(UBI_IOC_MAGIC, 3, struct ubi_rnvol_req)
+#define UBI_IOCRPEB _IOW(UBI_IOC_MAGIC, 4, __s32)
+#define UBI_IOCSPEB _IOW(UBI_IOC_MAGIC, 5, __s32)
 #define UBI_CTRL_IOC_MAGIC 'o'
 #define UBI_IOCATT _IOW(UBI_CTRL_IOC_MAGIC, 64, struct ubi_attach_req)
 #define UBI_IOCDET _IOW(UBI_CTRL_IOC_MAGIC, 65, __s32)
@@ -54,22 +44,28 @@ struct ubi_attach_req {
   __s32 mtd_num;
   __s32 vid_hdr_offset;
   __s16 max_beb_per1024;
-  __s8 padding[10];
+  __s8 disable_fm;
+  __s8 need_resv_pool;
+  __s8 padding[8];
 };
+enum {
+  UBI_VOL_SKIP_CRC_CHECK_FLG = 0x1,
+};
+#define UBI_VOL_VALID_FLGS (UBI_VOL_SKIP_CRC_CHECK_FLG)
 struct ubi_mkvol_req {
   __s32 vol_id;
   __s32 alignment;
   __s64 bytes;
   __s8 vol_type;
-  __s8 padding1;
+  __u8 flags;
   __s16 name_len;
   __s8 padding2[4];
   char name[UBI_MAX_VOLUME_NAME + 1];
-} __packed;
+} __attribute__((__packed__));
 struct ubi_rsvol_req {
   __s64 bytes;
   __s32 vol_id;
-} __packed;
+} __attribute__((__packed__));
 struct ubi_rnvol_req {
   __s32 count;
   __s8 padding1[12];
@@ -79,24 +75,24 @@ struct ubi_rnvol_req {
     __s8 padding2[2];
     char name[UBI_MAX_VOLUME_NAME + 1];
   } ents[UBI_MAX_RNVOL];
-} __packed;
+} __attribute__((__packed__));
 struct ubi_leb_change_req {
   __s32 lnum;
   __s32 bytes;
   __s8 dtype;
   __s8 padding[7];
-} __packed;
+} __attribute__((__packed__));
 struct ubi_map_req {
   __s32 lnum;
   __s8 dtype;
   __s8 padding[3];
-} __packed;
+} __attribute__((__packed__));
 struct ubi_set_vol_prop_req {
   __u8 property;
   __u8 padding[7];
   __u64 value;
-} __packed;
+} __attribute__((__packed__));
 struct ubi_blkcreate_req {
   __s8 padding[128];
-} __packed;
+} __attribute__((__packed__));
 #endif

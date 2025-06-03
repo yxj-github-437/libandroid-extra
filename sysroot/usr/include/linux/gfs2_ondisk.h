@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef __GFS2_ONDISK_DOT_H__
 #define __GFS2_ONDISK_DOT_H__
 #include <linux/types.h>
@@ -45,7 +33,7 @@
 #define GFS2_FORMAT_RI 1100
 #define GFS2_FORMAT_DE 1200
 #define GFS2_FORMAT_QU 1500
-#define GFS2_FORMAT_FS 1801
+#define GFS2_FORMAT_FS 1802
 #define GFS2_FORMAT_MULTI 1900
 struct gfs2_inum {
   __be64 no_formal_ino;
@@ -117,6 +105,11 @@ struct gfs2_rindex {
 #define GFS2_RGF_DATAONLY 0x00000004
 #define GFS2_RGF_NOALLOC 0x00000008
 #define GFS2_RGF_TRIMMED 0x00000010
+struct gfs2_inode_lvb {
+  __be32 ri_magic;
+  __be32 __pad;
+  __be64 ri_generation_deleted;
+};
 struct gfs2_rgrp_lvb {
   __be32 rl_magic;
   __be32 rl_flags;
@@ -131,9 +124,16 @@ struct gfs2_rgrp {
   __be32 rg_flags;
   __be32 rg_free;
   __be32 rg_dinodes;
-  __be32 __pad;
+  union {
+    __be32 __pad;
+    __be32 rg_skip;
+  };
   __be64 rg_igeneration;
-  __u8 rg_reserved[80];
+  __be64 rg_data0;
+  __be32 rg_data;
+  __be32 rg_bitbytes;
+  __be32 rg_crc;
+  __u8 rg_reserved[60];
 };
 struct gfs2_quota {
   __be64 qu_limit;
@@ -248,7 +248,8 @@ struct gfs2_leaf {
 #define GFS2_EATYPE_USR 1
 #define GFS2_EATYPE_SYS 2
 #define GFS2_EATYPE_SECURITY 3
-#define GFS2_EATYPE_LAST 3
+#define GFS2_EATYPE_TRUSTED 4
+#define GFS2_EATYPE_LAST 4
 #define GFS2_EATYPE_VALID(x) ((x) <= GFS2_EATYPE_LAST)
 #define GFS2_EAFLAG_LAST 0x01
 struct gfs2_ea_header {
@@ -261,6 +262,32 @@ struct gfs2_ea_header {
   __u32 __pad;
 };
 #define GFS2_LOG_HEAD_UNMOUNT 0x00000001
+#define GFS2_LOG_HEAD_FLUSH_NORMAL 0x00000002
+#define GFS2_LOG_HEAD_FLUSH_SYNC 0x00000004
+#define GFS2_LOG_HEAD_FLUSH_SHUTDOWN 0x00000008
+#define GFS2_LOG_HEAD_FLUSH_FREEZE 0x00000010
+#define GFS2_LOG_HEAD_RECOVERY 0x00000020
+#define GFS2_LOG_HEAD_USERSPACE 0x80000000
+#define GFS2_LFC_SHUTDOWN 0x00000100
+#define GFS2_LFC_JDATA_WPAGES 0x00000200
+#define GFS2_LFC_SET_FLAGS 0x00000400
+#define GFS2_LFC_AIL_EMPTY_GL 0x00000800
+#define GFS2_LFC_AIL_FLUSH 0x00001000
+#define GFS2_LFC_RGRP_GO_SYNC 0x00002000
+#define GFS2_LFC_INODE_GO_SYNC 0x00004000
+#define GFS2_LFC_INODE_GO_INVAL 0x00008000
+#define GFS2_LFC_FREEZE_GO_SYNC 0x00010000
+#define GFS2_LFC_KILL_SB 0x00020000
+#define GFS2_LFC_DO_SYNC 0x00040000
+#define GFS2_LFC_INPLACE_RESERVE 0x00080000
+#define GFS2_LFC_WRITE_INODE 0x00100000
+#define GFS2_LFC_MAKE_FS_RO 0x00200000
+#define GFS2_LFC_SYNC_FS 0x00400000
+#define GFS2_LFC_EVICT_INODE 0x00800000
+#define GFS2_LFC_TRANS_END 0x01000000
+#define GFS2_LFC_LOGD_JFLUSH_REQD 0x02000000
+#define GFS2_LFC_LOGD_AIL_FLUSH_REQD 0x04000000
+#define LH_V1_SIZE (offsetofend(struct gfs2_log_header, lh_hash))
 struct gfs2_log_header {
   struct gfs2_meta_header lh_header;
   __be64 lh_sequence;
@@ -268,6 +295,16 @@ struct gfs2_log_header {
   __be32 lh_tail;
   __be32 lh_blkno;
   __be32 lh_hash;
+  __be32 lh_crc;
+  __be32 lh_nsec;
+  __be64 lh_sec;
+  __be64 lh_addr;
+  __be64 lh_jinode;
+  __be64 lh_statfs_addr;
+  __be64 lh_quota_addr;
+  __be64 lh_local_total;
+  __be64 lh_local_free;
+  __be64 lh_local_dinodes;
 };
 #define GFS2_LOG_DESC_METADATA 300
 #define GFS2_LOG_DESC_REVOKE 301

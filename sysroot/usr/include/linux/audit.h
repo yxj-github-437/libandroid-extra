@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_LINUX_AUDIT_H_
 #define _UAPI_LINUX_AUDIT_H_
 #include <linux/types.h>
@@ -79,6 +67,14 @@
 #define AUDIT_REPLACE 1329
 #define AUDIT_KERN_MODULE 1330
 #define AUDIT_FANOTIFY 1331
+#define AUDIT_TIME_INJOFFSET 1332
+#define AUDIT_TIME_ADJNTPVAL 1333
+#define AUDIT_BPF 1334
+#define AUDIT_EVENT_LISTENER 1335
+#define AUDIT_URINGOP 1336
+#define AUDIT_OPENAT2 1337
+#define AUDIT_DM_CTRL 1338
+#define AUDIT_DM_EVENT 1339
 #define AUDIT_AVC 1400
 #define AUDIT_SELINUX_ERR 1401
 #define AUDIT_AVC_PATH 1402
@@ -99,26 +95,34 @@
 #define AUDIT_MAC_UNLBL_STCDEL 1417
 #define AUDIT_MAC_CALIPSO_ADD 1418
 #define AUDIT_MAC_CALIPSO_DEL 1419
+#define AUDIT_IPE_ACCESS 1420
+#define AUDIT_IPE_CONFIG_CHANGE 1421
+#define AUDIT_IPE_POLICY_LOAD 1422
 #define AUDIT_FIRST_KERN_ANOM_MSG 1700
 #define AUDIT_LAST_KERN_ANOM_MSG 1799
 #define AUDIT_ANOM_PROMISCUOUS 1700
 #define AUDIT_ANOM_ABEND 1701
 #define AUDIT_ANOM_LINK 1702
+#define AUDIT_ANOM_CREAT 1703
 #define AUDIT_INTEGRITY_DATA 1800
 #define AUDIT_INTEGRITY_METADATA 1801
 #define AUDIT_INTEGRITY_STATUS 1802
 #define AUDIT_INTEGRITY_HASH 1803
 #define AUDIT_INTEGRITY_PCR 1804
 #define AUDIT_INTEGRITY_RULE 1805
+#define AUDIT_INTEGRITY_EVM_XATTR 1806
+#define AUDIT_INTEGRITY_POLICY_RULE 1807
 #define AUDIT_KERNEL 2000
 #define AUDIT_FILTER_USER 0x00
 #define AUDIT_FILTER_TASK 0x01
 #define AUDIT_FILTER_ENTRY 0x02
 #define AUDIT_FILTER_WATCH 0x03
 #define AUDIT_FILTER_EXIT 0x04
-#define AUDIT_FILTER_TYPE 0x05
+#define AUDIT_FILTER_EXCLUDE 0x05
+#define AUDIT_FILTER_TYPE AUDIT_FILTER_EXCLUDE
 #define AUDIT_FILTER_FS 0x06
-#define AUDIT_NR_FILTERS 7
+#define AUDIT_FILTER_URING_EXIT 0x07
+#define AUDIT_NR_FILTERS 8
 #define AUDIT_FILTER_PREPEND 0x10
 #define AUDIT_NEVER 0
 #define AUDIT_POSSIBLE 1
@@ -127,7 +131,7 @@
 #define AUDIT_MAX_KEY_LEN 256
 #define AUDIT_BITMASK_SIZE 64
 #define AUDIT_WORD(nr) ((__u32) ((nr) / 32))
-#define AUDIT_BIT(nr) (1 << ((nr) - AUDIT_WORD(nr) * 32))
+#define AUDIT_BIT(nr) (1U << ((nr) - AUDIT_WORD(nr) * 32))
 #define AUDIT_SYSCALL_CLASSES 16
 #define AUDIT_CLASS_DIR_WRITE 0
 #define AUDIT_CLASS_DIR_WRITE_32 1
@@ -206,6 +210,7 @@
 #define AUDIT_OBJ_GID 110
 #define AUDIT_FIELD_COMPARE 111
 #define AUDIT_EXE 112
+#define AUDIT_SADDR_FAM 113
 #define AUDIT_ARG0 200
 #define AUDIT_ARG1 (AUDIT_ARG0 + 1)
 #define AUDIT_ARG2 (AUDIT_ARG0 + 2)
@@ -239,6 +244,7 @@ enum {
 #define AUDIT_STATUS_BACKLOG_LIMIT 0x0010
 #define AUDIT_STATUS_BACKLOG_WAIT_TIME 0x0020
 #define AUDIT_STATUS_LOST 0x0040
+#define AUDIT_STATUS_BACKLOG_WAIT_TIME_ACTUAL 0x0080
 #define AUDIT_FEATURE_BITMAP_BACKLOG_LIMIT 0x00000001
 #define AUDIT_FEATURE_BITMAP_BACKLOG_WAIT_TIME 0x00000002
 #define AUDIT_FEATURE_BITMAP_EXECUTABLE_PATH 0x00000004
@@ -259,10 +265,19 @@ enum {
 #define __AUDIT_ARCH_LE 0x40000000
 #define AUDIT_ARCH_AARCH64 (EM_AARCH64 | __AUDIT_ARCH_64BIT | __AUDIT_ARCH_LE)
 #define AUDIT_ARCH_ALPHA (EM_ALPHA | __AUDIT_ARCH_64BIT | __AUDIT_ARCH_LE)
+#define AUDIT_ARCH_ARCOMPACT (EM_ARCOMPACT | __AUDIT_ARCH_LE)
+#define AUDIT_ARCH_ARCOMPACTBE (EM_ARCOMPACT)
+#define AUDIT_ARCH_ARCV2 (EM_ARCV2 | __AUDIT_ARCH_LE)
+#define AUDIT_ARCH_ARCV2BE (EM_ARCV2)
 #define AUDIT_ARCH_ARM (EM_ARM | __AUDIT_ARCH_LE)
 #define AUDIT_ARCH_ARMEB (EM_ARM)
+#define AUDIT_ARCH_C6X (EM_TI_C6000 | __AUDIT_ARCH_LE)
+#define AUDIT_ARCH_C6XBE (EM_TI_C6000)
 #define AUDIT_ARCH_CRIS (EM_CRIS | __AUDIT_ARCH_LE)
+#define AUDIT_ARCH_CSKY (EM_CSKY | __AUDIT_ARCH_LE)
 #define AUDIT_ARCH_FRV (EM_FRV)
+#define AUDIT_ARCH_H8300 (EM_H8_300)
+#define AUDIT_ARCH_HEXAGON (EM_HEXAGON)
 #define AUDIT_ARCH_I386 (EM_386 | __AUDIT_ARCH_LE)
 #define AUDIT_ARCH_IA64 (EM_IA_64 | __AUDIT_ARCH_64BIT | __AUDIT_ARCH_LE)
 #define AUDIT_ARCH_M32R (EM_M32R)
@@ -274,12 +289,17 @@ enum {
 #define AUDIT_ARCH_MIPS64N32 (EM_MIPS | __AUDIT_ARCH_64BIT | __AUDIT_ARCH_CONVENTION_MIPS64_N32)
 #define AUDIT_ARCH_MIPSEL64 (EM_MIPS | __AUDIT_ARCH_64BIT | __AUDIT_ARCH_LE)
 #define AUDIT_ARCH_MIPSEL64N32 (EM_MIPS | __AUDIT_ARCH_64BIT | __AUDIT_ARCH_LE | __AUDIT_ARCH_CONVENTION_MIPS64_N32)
+#define AUDIT_ARCH_NDS32 (EM_NDS32 | __AUDIT_ARCH_LE)
+#define AUDIT_ARCH_NDS32BE (EM_NDS32)
+#define AUDIT_ARCH_NIOS2 (EM_ALTERA_NIOS2 | __AUDIT_ARCH_LE)
 #define AUDIT_ARCH_OPENRISC (EM_OPENRISC)
 #define AUDIT_ARCH_PARISC (EM_PARISC)
 #define AUDIT_ARCH_PARISC64 (EM_PARISC | __AUDIT_ARCH_64BIT)
 #define AUDIT_ARCH_PPC (EM_PPC)
 #define AUDIT_ARCH_PPC64 (EM_PPC64 | __AUDIT_ARCH_64BIT)
 #define AUDIT_ARCH_PPC64LE (EM_PPC64 | __AUDIT_ARCH_64BIT | __AUDIT_ARCH_LE)
+#define AUDIT_ARCH_RISCV32 (EM_RISCV | __AUDIT_ARCH_LE)
+#define AUDIT_ARCH_RISCV64 (EM_RISCV | __AUDIT_ARCH_64BIT | __AUDIT_ARCH_LE)
 #define AUDIT_ARCH_S390 (EM_S390)
 #define AUDIT_ARCH_S390X (EM_S390 | __AUDIT_ARCH_64BIT)
 #define AUDIT_ARCH_SH (EM_SH)
@@ -291,7 +311,11 @@ enum {
 #define AUDIT_ARCH_TILEGX (EM_TILEGX | __AUDIT_ARCH_64BIT | __AUDIT_ARCH_LE)
 #define AUDIT_ARCH_TILEGX32 (EM_TILEGX | __AUDIT_ARCH_LE)
 #define AUDIT_ARCH_TILEPRO (EM_TILEPRO | __AUDIT_ARCH_LE)
+#define AUDIT_ARCH_UNICORE (EM_UNICORE | __AUDIT_ARCH_LE)
 #define AUDIT_ARCH_X86_64 (EM_X86_64 | __AUDIT_ARCH_64BIT | __AUDIT_ARCH_LE)
+#define AUDIT_ARCH_XTENSA (EM_XTENSA)
+#define AUDIT_ARCH_LOONGARCH32 (EM_LOONGARCH | __AUDIT_ARCH_LE)
+#define AUDIT_ARCH_LOONGARCH64 (EM_LOONGARCH | __AUDIT_ARCH_64BIT | __AUDIT_ARCH_LE)
 #define AUDIT_PERM_EXEC 1
 #define AUDIT_PERM_WRITE 2
 #define AUDIT_PERM_READ 4
@@ -317,6 +341,7 @@ struct audit_status {
     __u32 feature_bitmap;
   };
   __u32 backlog_wait_time;
+  __u32 backlog_wait_time_actual;
 };
 struct audit_features {
 #define AUDIT_FEATURE_VERSION 1
@@ -335,6 +360,7 @@ struct audit_tty_status {
   __u32 log_passwd;
 };
 #define AUDIT_UID_UNSET (unsigned int) - 1
+#define AUDIT_SID_UNSET ((unsigned int) - 1)
 struct audit_rule_data {
   __u32 flags;
   __u32 action;
@@ -344,6 +370,6 @@ struct audit_rule_data {
   __u32 values[AUDIT_MAX_FIELDS];
   __u32 fieldflags[AUDIT_MAX_FIELDS];
   __u32 buflen;
-  char buf[0];
+  char buf[];
 };
 #endif

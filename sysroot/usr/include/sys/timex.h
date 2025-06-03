@@ -26,8 +26,12 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _SYS_TIMEX_H_
-#define _SYS_TIMEX_H_
+#pragma once
+
+/**
+ * @file sys/timex.h
+ * @brief Kernel clock tuning.
+ */
 
 #include <sys/cdefs.h>
 #include <sys/types.h>
@@ -35,13 +39,26 @@
 
 __BEGIN_DECLS
 
+/**
+ * [adjtimex(2)](https://man7.org/linux/man-pages/man2/adjtimex.2.html) adjusts the kernel clock.
+ *
+ * Returns the clock state on success, and returns -1 and sets `errno` on failure.
+ *
+ * Available since API level 24.
+ */
 
-#if __ANDROID_API__ >= 24
-int adjtimex(struct timex* __buf) __INTRODUCED_IN(24);
-int clock_adjtime(clockid_t __clock, struct timex* __tx) __INTRODUCED_IN(24);
-#endif /* __ANDROID_API__ >= 24 */
+#if __BIONIC_AVAILABILITY_GUARD(24)
+int adjtimex(struct timex* _Nonnull __buf) __INTRODUCED_IN(24);
+
+/**
+ * clock_adjtime adjusts a specific kernel clock.
+ *
+ * Returns 0 on success, and returns -1 and sets `errno` on failure.
+ *
+ * Available since API level 24.
+ */
+int clock_adjtime(clockid_t __clock, struct timex* _Nonnull __tx) __INTRODUCED_IN(24);
+#endif /* __BIONIC_AVAILABILITY_GUARD(24) */
 
 
 __END_DECLS
-
-#endif

@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_LINUX_RXRPC_H
 #define _UAPI_LINUX_RXRPC_H
 #include <linux/types.h>
@@ -46,11 +34,11 @@ enum rxrpc_cmsg_type {
   RXRPC_BUSY = 6,
   RXRPC_LOCAL_ERROR = 7,
   RXRPC_NEW_CALL = 8,
-  RXRPC_ACCEPT = 9,
   RXRPC_EXCLUSIVE_CALL = 10,
   RXRPC_UPGRADE_SERVICE = 11,
   RXRPC_TX_LENGTH = 12,
   RXRPC_SET_CALL_TIMEOUT = 13,
+  RXRPC_CHARGE_ACCEPT = 14,
   RXRPC__SUPPORTED
 };
 #define RXRPC_SECURITY_PLAIN 0

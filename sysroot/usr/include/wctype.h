@@ -29,45 +29,38 @@
 #ifndef _WCTYPE_H_
 #define _WCTYPE_H_
 
-#include <bits/wctype.h>
 #include <sys/cdefs.h>
+
+#include <bits/wctype.h>
 #include <xlocale.h>
 
 __BEGIN_DECLS
 
-#if __ANDROID_API__ >= __ANDROID_API_L__
-int iswalnum_l(wint_t __wc, locale_t __l) __INTRODUCED_IN(21);
-int iswalpha_l(wint_t __wc, locale_t __l) __INTRODUCED_IN(21);
-int iswblank_l(wint_t __wc, locale_t __l) __INTRODUCED_IN(21);
-int iswcntrl_l(wint_t __wc, locale_t __l) __INTRODUCED_IN(21);
-int iswdigit_l(wint_t __wc, locale_t __l) __INTRODUCED_IN(21);
-int iswgraph_l(wint_t __wc, locale_t __l) __INTRODUCED_IN(21);
-int iswlower_l(wint_t __wc, locale_t __l) __INTRODUCED_IN(21);
-int iswprint_l(wint_t __wc, locale_t __l) __INTRODUCED_IN(21);
-int iswpunct_l(wint_t __wc, locale_t __l) __INTRODUCED_IN(21);
-int iswspace_l(wint_t __wc, locale_t __l) __INTRODUCED_IN(21);
-int iswupper_l(wint_t __wc, locale_t __l) __INTRODUCED_IN(21);
-int iswxdigit_l(wint_t __wc, locale_t __l) __INTRODUCED_IN(21);
+int iswalnum_l(wint_t __wc, locale_t _Nonnull __l);
+int iswalpha_l(wint_t __wc, locale_t _Nonnull __l);
+int iswblank_l(wint_t __wc, locale_t _Nonnull __l);
+int iswcntrl_l(wint_t __wc, locale_t _Nonnull __l);
+int iswdigit_l(wint_t __wc, locale_t _Nonnull __l);
+int iswgraph_l(wint_t __wc, locale_t _Nonnull __l);
+int iswlower_l(wint_t __wc, locale_t _Nonnull __l);
+int iswprint_l(wint_t __wc, locale_t _Nonnull __l);
+int iswpunct_l(wint_t __wc, locale_t _Nonnull __l);
+int iswspace_l(wint_t __wc, locale_t _Nonnull __l);
+int iswupper_l(wint_t __wc, locale_t _Nonnull __l);
+int iswxdigit_l(wint_t __wc, locale_t _Nonnull __l);
 
-wint_t towlower_l(wint_t __wc, locale_t __l) __INTRODUCED_IN(21);
-wint_t towupper_l(wint_t __wc, locale_t __l) __INTRODUCED_IN(21);
-#else
-// Implemented as static inlines before 21.
-#endif
+wint_t towlower_l(wint_t __wc, locale_t _Nonnull __l);
+wint_t towupper_l(wint_t __wc, locale_t _Nonnull __l);
 
 
-#if __ANDROID_API__ >= 26
-wint_t towctrans_l(wint_t __wc, wctrans_t __transform, locale_t __l) __INTRODUCED_IN(26);
-wctrans_t wctrans_l(const char* __name, locale_t __l) __INTRODUCED_IN(26);
-#endif /* __ANDROID_API__ >= 26 */
+#if __BIONIC_AVAILABILITY_GUARD(26)
+wint_t towctrans_l(wint_t __wc, wctrans_t _Nonnull __transform, locale_t _Nonnull __l) __INTRODUCED_IN(26);
+wctrans_t _Nonnull wctrans_l(const char* _Nonnull __name, locale_t _Nonnull __l) __INTRODUCED_IN(26);
+#endif /* __BIONIC_AVAILABILITY_GUARD(26) */
 
 
-
-#if __ANDROID_API__ >= 21
-wctype_t wctype_l(const char* __name, locale_t __l) __INTRODUCED_IN(21);
-int iswctype_l(wint_t __wc, wctype_t __transform, locale_t __l) __INTRODUCED_IN(21);
-#endif /* __ANDROID_API__ >= 21 */
-
+wctype_t wctype_l(const char* _Nonnull __name, locale_t _Nonnull __l);
+int iswctype_l(wint_t __wc, wctype_t __transform, locale_t _Nonnull __l);
 
 __END_DECLS
 

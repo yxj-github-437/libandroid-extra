@@ -36,11 +36,11 @@ char* strchrnul(const char* s, int c)
     return (char*)s;
 }
 
-char* strerror_l(int error, locale_t l)
+char* __gnu_strerror_r(int error_number, char* buf, size_t buf_len)
 {
-    return strerror(error);
+    strerror_r(error_number, buf, buf_len);
+    return buf;
 }
-
 
 const char* __gnu_basename(const char* path)
 {

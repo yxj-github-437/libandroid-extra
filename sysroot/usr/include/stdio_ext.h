@@ -26,60 +26,159 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _STDIO_EXT_H
-#define _STDIO_EXT_H
+#pragma once
+
+/**
+ * @file stdio_ext.h
+ * @brief Extra standard I/O functionality. See also `<stdio.h>`.
+ */
 
 #include <sys/cdefs.h>
 #include <stdio.h>
 
-
 __BEGIN_DECLS
 
+/**
+ * [__fbufsize(3)](https://man7.org/linux/man-pages/man3/__fbufsize.3.html) returns the size of
+ * the stream's buffer.
+ *
+ * Available since API level 23.
+ */
 
-// #if __ANDROID_API__ >= 23
-size_t __fbufsize(FILE* __fp) __INTRODUCED_IN(23);
-int __freadable(FILE* __fp) __INTRODUCED_IN(23);
-// #endif /* __ANDROID_API__ >= 23 */
+#if __BIONIC_AVAILABILITY_GUARD(23) || __ANDROID_EXTRA
+size_t __fbufsize(FILE* _Nonnull __fp) __INTRODUCED_IN(23);
 
-
-// #if __ANDROID_API__ >= 28
-int __freading(FILE* __fp) __INTRODUCED_IN(28);
-// #endif /* __ANDROID_API__ >= 28 */
-
-
-// #if __ANDROID_API__ >= 23
-int __fwritable(FILE* __fp) __INTRODUCED_IN(23);
-// #endif /* __ANDROID_API__ >= 23 */
-
-
-// #if __ANDROID_API__ >= 28
-int __fwriting(FILE* __fp) __INTRODUCED_IN(28);
-// #endif /* __ANDROID_API__ >= 28 */
+/**
+ * [__freadable(3)](https://man7.org/linux/man-pages/man3/__freadable.3.html) returns non-zero if
+ * the stream allows reading, 0 otherwise.
+ *
+ * Available since API level 23.
+ */
+int __freadable(FILE* _Nonnull __fp) __INTRODUCED_IN(23);
+#endif /* __BIONIC_AVAILABILITY_GUARD(23) */
 
 
-// #if __ANDROID_API__ >= 23
-int __flbf(FILE* __fp) __INTRODUCED_IN(23);
-void __fpurge(FILE* __fp) __INTRODUCED_IN(23);
-size_t __fpending(FILE* __fp) __INTRODUCED_IN(23);
+/**
+ * [__freading(3)](https://man7.org/linux/man-pages/man3/__freading.3.html) returns non-zero if
+ * the stream's last operation was a read, 0 otherwise.
+ *
+ * Available since API level 28.
+ */
+
+#if __BIONIC_AVAILABILITY_GUARD(28) || __ANDROID_EXTRA
+int __freading(FILE* _Nonnull __fp) __INTRODUCED_IN(28);
+#endif /* __BIONIC_AVAILABILITY_GUARD(28) */
+
+
+/**
+ * [__fwritable(3)](https://man7.org/linux/man-pages/man3/__fwritable.3.html) returns non-zero if
+ * the stream allows writing, 0 otherwise.
+ *
+ * Available since API level 23.
+ */
+
+#if __BIONIC_AVAILABILITY_GUARD(23) ||  __ANDROID_EXTRA
+int __fwritable(FILE* _Nonnull __fp) __INTRODUCED_IN(23);
+#endif /* __BIONIC_AVAILABILITY_GUARD(23) */
+
+
+/**
+ * [__fwriting(3)](https://man7.org/linux/man-pages/man3/__fwriting.3.html) returns non-zero if
+ * the stream's last operation was a write, 0 otherwise.
+ *
+ * Available since API level 28.
+ */
+
+#if __BIONIC_AVAILABILITY_GUARD(28) || __ANDROID_EXTRA
+int __fwriting(FILE* _Nonnull __fp) __INTRODUCED_IN(28);
+#endif /* __BIONIC_AVAILABILITY_GUARD(28) */
+
+
+/**
+ * [__flbf(3)](https://man7.org/linux/man-pages/man3/__flbf.3.html) returns non-zero if
+ * the stream is line-buffered, 0 otherwise.
+ *
+ * Available since API level 23.
+ */
+
+#if __BIONIC_AVAILABILITY_GUARD(23) || __ANDROID_EXTRA
+int __flbf(FILE* _Nonnull __fp) __INTRODUCED_IN(23);
+#endif /* __BIONIC_AVAILABILITY_GUARD(23) */
+
+
+/**
+ * [__fpurge(3)](https://man7.org/linux/man-pages/man3/__fpurge.3.html) discards the contents of
+ * the stream's buffer.
+ */
+void __fpurge(FILE* _Nonnull __fp) __RENAME(fpurge);
+
+/**
+ * [__fpending(3)](https://man7.org/linux/man-pages/man3/__fpending.3.html) returns the number of
+ * bytes in the output buffer. See __freadahead() for the input buffer.
+ *
+ * Available since API level 23.
+ */
+
+#if __BIONIC_AVAILABILITY_GUARD(23) || __ANDROID_EXTRA
+size_t __fpending(FILE* _Nonnull __fp) __INTRODUCED_IN(23);
+#endif /* __BIONIC_AVAILABILITY_GUARD(23) */
+
+
+/**
+ * __freadahead(3) returns the number of bytes in the input buffer.
+ * See __fpending() for the output buffer.
+ *
+ * Available since API level 34.
+ */
+
+#if __BIONIC_AVAILABILITY_GUARD(34)
+size_t __freadahead(FILE* _Nonnull __fp) __INTRODUCED_IN(34);
+#endif /* __BIONIC_AVAILABILITY_GUARD(34) */
+
+
+/**
+ * [_flushlbf(3)](https://man7.org/linux/man-pages/man3/_flushlbf.3.html) flushes all
+ * line-buffered streams.
+ *
+ * Available since API level 23.
+ */
+
+#if __BIONIC_AVAILABILITY_GUARD(23) || __ANDROID_EXTRA
 void _flushlbf(void) __INTRODUCED_IN(23);
-// #endif /* __ANDROID_API__ >= 23 */
+#endif /* __BIONIC_AVAILABILITY_GUARD(23) */
 
 
+/**
+ * `__fseterr` sets the
+ * stream's error flag (as tested by ferror() and cleared by fclearerr()).
+ *
+ * Available since API level 28.
+ */
 
-// #if __ANDROID_API__ >= 28
-void __fseterr(FILE* __fp) __INTRODUCED_IN(28);
-// #endif /* __ANDROID_API__ >= 28 */
+#if __BIONIC_AVAILABILITY_GUARD(28) || __ANDROID_EXTRA
+void __fseterr(FILE* _Nonnull __fp) __INTRODUCED_IN(28);
+#endif /* __BIONIC_AVAILABILITY_GUARD(28) */
 
 
+/** __fsetlocking() constant to query locking type. */
 #define FSETLOCKING_QUERY 0
+/** __fsetlocking() constant to set locking to be maintained by stdio. */
 #define FSETLOCKING_INTERNAL 1
+/** __fsetlocking() constant to set locking to be maintained by the caller. */
 #define FSETLOCKING_BYCALLER 2
 
-// #if __ANDROID_API__ >= 23
-int __fsetlocking(FILE* __fp, int __type) __INTRODUCED_IN(23);
-// #endif /* __ANDROID_API__ >= 23 */
+/**
+ * [__fsetlocking(3)](https://man7.org/linux/man-pages/man3/__fsetlocking.3.html) sets the
+ * stream's locking mode to one of the `FSETLOCKING_` types.
+ *
+ * Returns the current locking style, `FSETLOCKING_INTERNAL` or `FSETLOCKING_BYCALLER`.
+ *
+ * Available since API level 23.
+ */
+
+#if __BIONIC_AVAILABILITY_GUARD(23) || __ANDROID_EXTRA
+int __fsetlocking(FILE* _Nonnull __fp, int __type) __INTRODUCED_IN(23);
+#endif /* __BIONIC_AVAILABILITY_GUARD(23) */
 
 
 __END_DECLS
-
-#endif /* _STDIO_EXT_H */

@@ -1,24 +1,12 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI__LINUX_NETLINK_H
 #define _UAPI__LINUX_NETLINK_H
-#include <linux/kernel.h>
+#include <linux/const.h>
 #include <linux/socket.h>
 #include <linux/types.h>
 #define NETLINK_ROUTE 0
@@ -73,6 +61,7 @@ struct nlmsghdr {
 #define NLM_F_CREATE 0x400
 #define NLM_F_APPEND 0x800
 #define NLM_F_NONREC 0x100
+#define NLM_F_BULK 0x200
 #define NLM_F_CAPPED 0x100
 #define NLM_F_ACK_TLVS 0x200
 #define NLMSG_ALIGNTO 4U
@@ -80,7 +69,7 @@ struct nlmsghdr {
 #define NLMSG_HDRLEN ((int) NLMSG_ALIGN(sizeof(struct nlmsghdr)))
 #define NLMSG_LENGTH(len) ((len) + NLMSG_HDRLEN)
 #define NLMSG_SPACE(len) NLMSG_ALIGN(NLMSG_LENGTH(len))
-#define NLMSG_DATA(nlh) ((void *) (((char *) nlh) + NLMSG_LENGTH(0)))
+#define NLMSG_DATA(nlh) ((void *) (((char *) nlh) + NLMSG_HDRLEN))
 #define NLMSG_NEXT(nlh,len) ((len) -= NLMSG_ALIGN((nlh)->nlmsg_len), (struct nlmsghdr *) (((char *) (nlh)) + NLMSG_ALIGN((nlh)->nlmsg_len)))
 #define NLMSG_OK(nlh,len) ((len) >= (int) sizeof(struct nlmsghdr) && (nlh)->nlmsg_len >= sizeof(struct nlmsghdr) && (nlh)->nlmsg_len <= (len))
 #define NLMSG_PAYLOAD(nlh,len) ((nlh)->nlmsg_len - NLMSG_SPACE((len)))
@@ -98,6 +87,9 @@ enum nlmsgerr_attrs {
   NLMSGERR_ATTR_MSG,
   NLMSGERR_ATTR_OFFS,
   NLMSGERR_ATTR_COOKIE,
+  NLMSGERR_ATTR_POLICY,
+  NLMSGERR_ATTR_MISS_TYPE,
+  NLMSGERR_ATTR_MISS_NEST,
   __NLMSGERR_ATTR_MAX,
   NLMSGERR_ATTR_MAX = __NLMSGERR_ATTR_MAX - 1
 };
@@ -112,6 +104,7 @@ enum nlmsgerr_attrs {
 #define NETLINK_LIST_MEMBERSHIPS 9
 #define NETLINK_CAP_ACK 10
 #define NETLINK_EXT_ACK 11
+#define NETLINK_GET_STRICT_CHK 12
 struct nl_pktinfo {
   __u32 group;
 };
@@ -157,5 +150,42 @@ struct nlattr {
 struct nla_bitfield32 {
   __u32 value;
   __u32 selector;
+};
+enum netlink_attribute_type {
+  NL_ATTR_TYPE_INVALID,
+  NL_ATTR_TYPE_FLAG,
+  NL_ATTR_TYPE_U8,
+  NL_ATTR_TYPE_U16,
+  NL_ATTR_TYPE_U32,
+  NL_ATTR_TYPE_U64,
+  NL_ATTR_TYPE_S8,
+  NL_ATTR_TYPE_S16,
+  NL_ATTR_TYPE_S32,
+  NL_ATTR_TYPE_S64,
+  NL_ATTR_TYPE_BINARY,
+  NL_ATTR_TYPE_STRING,
+  NL_ATTR_TYPE_NUL_STRING,
+  NL_ATTR_TYPE_NESTED,
+  NL_ATTR_TYPE_NESTED_ARRAY,
+  NL_ATTR_TYPE_BITFIELD32,
+  NL_ATTR_TYPE_SINT,
+  NL_ATTR_TYPE_UINT,
+};
+enum netlink_policy_type_attr {
+  NL_POLICY_TYPE_ATTR_UNSPEC,
+  NL_POLICY_TYPE_ATTR_TYPE,
+  NL_POLICY_TYPE_ATTR_MIN_VALUE_S,
+  NL_POLICY_TYPE_ATTR_MAX_VALUE_S,
+  NL_POLICY_TYPE_ATTR_MIN_VALUE_U,
+  NL_POLICY_TYPE_ATTR_MAX_VALUE_U,
+  NL_POLICY_TYPE_ATTR_MIN_LENGTH,
+  NL_POLICY_TYPE_ATTR_MAX_LENGTH,
+  NL_POLICY_TYPE_ATTR_POLICY_IDX,
+  NL_POLICY_TYPE_ATTR_POLICY_MAXTYPE,
+  NL_POLICY_TYPE_ATTR_BITFIELD32_MASK,
+  NL_POLICY_TYPE_ATTR_PAD,
+  NL_POLICY_TYPE_ATTR_MASK,
+  __NL_POLICY_TYPE_ATTR_MAX,
+  NL_POLICY_TYPE_ATTR_MAX = __NL_POLICY_TYPE_ATTR_MAX - 1
 };
 #endif

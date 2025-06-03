@@ -26,14 +26,21 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _BITS_IOCTL_H_
-#define _BITS_IOCTL_H_
+#pragma once
+
+/**
+ * @file bits/ioctl.h
+ * @brief The ioctl() function.
+ */
 
 #include <sys/cdefs.h>
 
 __BEGIN_DECLS
 
-int ioctl(int __fd, int __request, ...);
+/**
+ * [ioctl(2)](https://man7.org/linux/man-pages/man2/ioctl.2.html) operates on device files.
+ */
+int ioctl(int __fd, int __op, ...);
 
 /*
  * Work around unsigned -> signed conversion warnings: many common ioctl
@@ -47,16 +54,10 @@ int ioctl(int __fd, int __request, ...);
  *   type of the ioctl you prefer, ...), or
  * - defining BIONIC_IOCTL_NO_SIGNEDNESS_OVERLOAD, which will make the
  *   overloading go away.
- *
- * FIXME: __has_extension is more or less a clang version check. Remove it when
- * we don't need to support old clang code.
  */
-#if defined(__clang__) && __has_extension(overloadable_unmarked) && \
-  !defined(BIONIC_IOCTL_NO_SIGNEDNESS_OVERLOAD)
+#if defined(__clang__) && !defined(BIONIC_IOCTL_NO_SIGNEDNESS_OVERLOAD)
 /* enable_if(1) just exists to break overloading ties. */
-int ioctl(int __fd, unsigned __request, ...) __overloadable __enable_if(1, "") __RENAME(ioctl);
+int ioctl(int __fd, unsigned __op, ...) __overloadable __enable_if(1, "") __RENAME(ioctl);
 #endif
 
 __END_DECLS
-
-#endif

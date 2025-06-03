@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _LINUX_VIRTIO_MMIO_H
 #define _LINUX_VIRTIO_MMIO_H
 #define VIRTIO_MMIO_MAGIC_VALUE 0x000
@@ -47,6 +35,11 @@
 #define VIRTIO_MMIO_QUEUE_AVAIL_HIGH 0x094
 #define VIRTIO_MMIO_QUEUE_USED_LOW 0x0a0
 #define VIRTIO_MMIO_QUEUE_USED_HIGH 0x0a4
+#define VIRTIO_MMIO_SHM_SEL 0x0ac
+#define VIRTIO_MMIO_SHM_LEN_LOW 0x0b0
+#define VIRTIO_MMIO_SHM_LEN_HIGH 0x0b4
+#define VIRTIO_MMIO_SHM_BASE_LOW 0x0b8
+#define VIRTIO_MMIO_SHM_BASE_HIGH 0x0bc
 #define VIRTIO_MMIO_CONFIG_GENERATION 0x0fc
 #define VIRTIO_MMIO_CONFIG 0x100
 #define VIRTIO_MMIO_INT_VRING (1 << 0)

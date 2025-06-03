@@ -1,24 +1,12 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI__LINUX_MROUTE6_H
 #define _UAPI__LINUX_MROUTE6_H
-#include <linux/kernel.h>
+#include <linux/const.h>
 #include <linux/types.h>
 #include <linux/sockios.h>
 #include <linux/in6.h>
@@ -35,10 +23,15 @@
 #define MRT6_TABLE (MRT6_BASE + 9)
 #define MRT6_ADD_MFC_PROXY (MRT6_BASE + 10)
 #define MRT6_DEL_MFC_PROXY (MRT6_BASE + 11)
-#define MRT6_MAX (MRT6_BASE + 11)
+#define MRT6_FLUSH (MRT6_BASE + 12)
+#define MRT6_MAX (MRT6_BASE + 12)
 #define SIOCGETMIFCNT_IN6 SIOCPROTOPRIVATE
 #define SIOCGETSGCNT_IN6 (SIOCPROTOPRIVATE + 1)
 #define SIOCGETRPF (SIOCPROTOPRIVATE + 2)
+#define MRT6_FLUSH_MFC 1
+#define MRT6_FLUSH_MFC_STATIC 2
+#define MRT6_FLUSH_MIFS 4
+#define MRT6_FLUSH_MIFS_STATIC 8
 #define MAXMIFS 32
 typedef unsigned long mifbitmap_t;
 typedef unsigned short mifi_t;
@@ -88,6 +81,7 @@ struct mrt6msg {
 #define MRT6MSG_NOCACHE 1
 #define MRT6MSG_WRONGMIF 2
 #define MRT6MSG_WHOLEPKT 3
+#define MRT6MSG_WRMIFWHOLE 4
   __u8 im6_mbz;
   __u8 im6_msgtype;
   __u16 im6_mif;

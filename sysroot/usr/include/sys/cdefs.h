@@ -34,36 +34,13 @@
  *	@(#)cdefs.h	8.8 (Berkeley) 1/9/95
  */
 
-#ifndef	_SYS_CDEFS_H_
-#define	_SYS_CDEFS_H_
+#pragma once
 
-#include <android/api-level.h>
-#include <android/versioning.h>
-
-#define __BIONIC__ 1
-
-/*
- * Testing against Clang-specific extensions.
+/**
+ * `__BIONIC__` is always defined if you're building with bionic. See
+ * https://android.googlesource.com/platform/bionic/+/main/docs/defines.md.
  */
-#ifndef __has_extension
-#define __has_extension         __has_feature
-#endif
-#ifndef __has_feature
-#define __has_feature(x)        0
-#endif
-#ifndef __has_include
-#define __has_include(x)        0
-#endif
-#ifndef __has_builtin
-#define __has_builtin(x)        0
-#endif
-#ifndef __has_attribute
-#define __has_attribute(x)      0
-#endif
-
-#define __strong_alias(alias, sym) \
-    __asm__(".global " #alias "\n" \
-            #alias " = " #sym);
+#define __BIONIC__ 1
 
 #if defined(__cplusplus)
 #define __BEGIN_DECLS extern "C" {
@@ -72,6 +49,10 @@
 #define __BEGIN_DECLS
 #define __END_DECLS
 #endif
+
+#define __strong_alias(alias, sym) \
+    __asm__(".global " #alias "\n" \
+            #alias " = " #sym);
 
 #if defined(__cplusplus)
 #define __BIONIC_CAST(_k,_t,_v) (_k<_t>(_v))
@@ -82,6 +63,14 @@
 #define __BIONIC_ALIGN(__value, __alignment) (((__value) + (__alignment)-1) & ~((__alignment)-1))
 
 /*
+ * The nullness constraints of this parameter or return value are
+ * quite complex. This is used to highlight spots where developers
+ * are encouraged to read relevant manuals or code to understand
+ * the full picture of nullness for this pointer.
+ */
+#define __BIONIC_COMPLICATED_NULLNESS _Null_unspecified
+
+/*
  * The __CONCAT macro is used to concatenate parts of symbol names, e.g.
  * with "#define OLD(foo) __CONCAT(old,foo)", OLD(foo) produces oldfoo.
  * The __CONCAT macro is a bit tricky -- make sure you don't put spaces
@@ -89,24 +78,21 @@
  * strings produced by the __STRING macro, but this only works with ANSI C.
  */
 
-#define	___STRING(x)	__STRING(x)
+#define	__P(protos)	protos		/* full-blown ANSI C */
+
+#define	__CONCAT1(x,y)	x ## y
+#define	__CONCAT(x,y)	__CONCAT1(x,y)
 #define	___CONCAT(x,y)	__CONCAT(x,y)
 
-#if defined(__STDC__) || defined(__cplusplus)
-#define	__P(protos)	protos		/* full-blown ANSI C */
-#define	__CONCAT(x,y)	x ## y
 #define	__STRING(x)	#x
+#define	___STRING(x)	__STRING(x)
 
-#if defined(__cplusplus)
-#define	__inline	inline		/* convert to C++ keyword */
-#endif /* !__cplusplus */
-
-#else	/* !(__STDC__ || __cplusplus) */
-#define	__P(protos)	()		/* traditional C preprocessor */
-#define	__CONCAT(x,y)	x/**/y
-#define	__STRING(x)	"x"
-
-#endif	/* !(__STDC__ || __cplusplus) */
+// C++ has `inline` as a keyword, as does C99, but ANSI C (aka C89 aka C90)
+// does not. Everything accepts the `__inline__` extension though. We could
+// just use that directly in our own code, but there's historical precedent
+// for `__inline` meaning it's still used in upstream BSD code (and potentially
+// downstream in vendor or app code).
+#define	__inline __inline__
 
 #define __always_inline __attribute__((__always_inline__))
 #define __attribute_const__ __attribute__((__const__))
@@ -115,6 +101,7 @@
 #define __noreturn __attribute__((__noreturn__))
 #define __mallocfunc  __attribute__((__malloc__))
 #define __packed __attribute__((__packed__))
+#define __returns_twice __attribute__((__returns_twice__))
 #define __unused __attribute__((__unused__))
 #define __used __attribute__((__used__))
 
@@ -153,15 +140,16 @@
 #define	__predict_true(exp)	__builtin_expect((exp) != 0, 1)
 #define	__predict_false(exp)	__builtin_expect((exp) != 0, 0)
 
-#define __wur __attribute__((__warn_unused_result__))
+#define __nodiscard __attribute__((__warn_unused_result__))
+#define __wur __nodiscard
 
 #ifdef __clang__
-#  define __errorattr(msg) __attribute__((unavailable(msg)))
-#  define __warnattr(msg) __attribute__((deprecated(msg)))
-#  define __warnattr_real(msg) __attribute__((deprecated(msg)))
-#  define __enable_if(cond, msg) __attribute__((enable_if(cond, msg)))
-#  define __clang_error_if(cond, msg) __attribute__((diagnose_if(cond, msg, "error")))
-#  define __clang_warning_if(cond, msg) __attribute__((diagnose_if(cond, msg, "warning")))
+#  define __errorattr(msg) __attribute__((__unavailable__(msg)))
+#  define __warnattr(msg) __attribute__((__deprecated__(msg)))
+#  define __warnattr_real(msg) __attribute__((__deprecated__(msg)))
+#  define __enable_if(cond, msg) __attribute__((__enable_if__(cond, msg)))
+#  define __clang_error_if(cond, msg) __attribute__((__diagnose_if__(cond, msg, "error")))
+#  define __clang_warning_if(cond, msg) __attribute__((__diagnose_if__(cond, msg, "warning")))
 #else
 #  define __errorattr(msg) __attribute__((__error__(msg)))
 #  define __warnattr(msg) __attribute__((__warning__(msg)))
@@ -216,9 +204,9 @@
 
 /*
  * _FILE_OFFSET_BITS 64 support.
- * See https://android.googlesource.com/platform/bionic/+/master/docs/32-bit-abi.md
+ * See https://android.googlesource.com/platform/bionic/+/main/docs/32-bit-abi.md
  */
-#if 0 && !defined(__LP64__) && defined(_FILE_OFFSET_BITS) && _FILE_OFFSET_BITS == 64
+#if __ANDROID_API__ >= 24 && !defined(__LP64__) && defined(_FILE_OFFSET_BITS) && _FILE_OFFSET_BITS == 64
 #  define __USE_FILE_OFFSET64 1
 /*
  * Note that __RENAME_IF_FILE_OFFSET64 is only valid if the off_t and off64_t
@@ -228,32 +216,6 @@
 #  define __RENAME_IF_FILE_OFFSET64(func) __RENAME(func)
 #else
 #  define __RENAME_IF_FILE_OFFSET64(func)
-#endif
-
-/*
- * For LP32, `long double` == `double`. Historically many `long double` functions were incorrect
- * on x86, missing on most architectures, and even if they are present and correct, linking to
- * them just bloats your ELF file by adding extra relocations. The __BIONIC_LP32_USE_LONG_DOUBLE
- * macro lets us test the headers both ways (and adds an escape valve).
- *
- * Note that some functions have their __RENAME_LDBL commented out as a sign that although we could
- * use __RENAME_LDBL it would actually cause the function to be introduced later because the
- * `long double` variant appeared before the `double` variant.
- */
-#if defined(__LP64__) || defined(__BIONIC_LP32_USE_LONG_DOUBLE)
-#define __RENAME_LDBL(rewrite,rewrite_api_level,regular_api_level) __INTRODUCED_IN(regular_api_level)
-#else
-#define __RENAME_LDBL(rewrite,rewrite_api_level,regular_api_level) __RENAME(rewrite) __INTRODUCED_IN(rewrite_api_level)
-#endif
-
-/*
- * On all architectures, `struct stat` == `struct stat64`, but LP32 didn't gain the *64 functions
- * until API level 21.
- */
-#if defined(__LP64__) || defined(__BIONIC_LP32_USE_STAT64)
-#define __RENAME_STAT64(rewrite,rewrite_api_level,regular_api_level) __INTRODUCED_IN(regular_api_level)
-#else
-#define __RENAME_STAT64(rewrite,rewrite_api_level,regular_api_level) __RENAME(rewrite) __INTRODUCED_IN(rewrite_api_level)
 #endif
 
 /* glibc compatibility. */
@@ -274,18 +236,15 @@
 #define __BIONIC_FORTIFY_UNKNOWN_SIZE ((size_t) -1)
 
 #if defined(_FORTIFY_SOURCE) && _FORTIFY_SOURCE > 0
-#  if defined(__clang__)
-/*
- * FORTIFY's _chk functions effectively disable ASAN's stdlib interceptors.
- * Additionally, the static analyzer/clang-tidy try to pattern match some
- * standard library functions, and FORTIFY sometimes interferes with this. So,
- * we turn FORTIFY off in both cases.
- */
-#    if !__has_feature(address_sanitizer) && !defined(__clang_analyzer__)
-#      define __BIONIC_FORTIFY 1
-#    endif
-#  elif defined(__OPTIMIZE__) && __OPTIMIZE__ > 0
+/* FORTIFY can interfere with pattern-matching of clang-tidy/the static analyzer.  */
+#  if !defined(__clang_analyzer__)
 #    define __BIONIC_FORTIFY 1
+/* ASAN has interceptors that FORTIFY's _chk functions can break.  */
+#    if __has_feature(address_sanitizer)
+#      define __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED 0
+#    else
+#      define __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED 1
+#    endif
 #  endif
 #endif
 
@@ -307,7 +266,7 @@
 #if defined(__BIONIC_FORTIFY)
 #  define __bos0(s) __bosn((s), 0)
 #  if defined(__clang__)
-#    define __pass_object_size_n(n) __attribute__((pass_object_size(n)))
+#    define __pass_object_size_n(n) __attribute__((__pass_object_size__(n)))
 /*
  * FORTIFY'ed functions all have either enable_if or pass_object_size, which
  * makes taking their address impossible. Saying (&read)(foo, bar, baz); will
@@ -315,19 +274,21 @@
  */
 #    define __call_bypassing_fortify(fn) (&fn)
 /*
- * Because clang-FORTIFY uses overloads, we can't mark functions as `extern
- * inline` without making them available externally.
+ * Because clang-FORTIFY uses overloads, we can't mark functions as `extern inline` without making
+ * them available externally. FORTIFY'ed functions try to be as close to possible as 'invisible';
+ * having stack protectors detracts from that (b/182948263).
  */
-#    define __BIONIC_FORTIFY_INLINE static __inline__ __always_inline
+#    define __BIONIC_FORTIFY_INLINE static __inline __attribute__((__no_stack_protector__)) \
+      __always_inline
 /*
  * We should use __BIONIC_FORTIFY_VARIADIC instead of __BIONIC_FORTIFY_INLINE
  * for variadic functions because compilers cannot inline them.
  * The __always_inline attribute is useless, misleading, and could trigger
  * clang compiler bug to incorrectly inline variadic functions.
  */
-#    define __BIONIC_FORTIFY_VARIADIC static __inline__
+#    define __BIONIC_FORTIFY_VARIADIC static __inline
 /* Error functions don't have bodies, so they can just be static. */
-#    define __BIONIC_ERROR_FUNCTION_VISIBILITY static
+#    define __BIONIC_ERROR_FUNCTION_VISIBILITY static __unused
 #  else
 /*
  * Where they can, GCC and clang-style FORTIFY share implementations.
@@ -339,6 +300,7 @@
 #    define __BIONIC_FORTIFY_INLINE extern __inline__ __always_inline __attribute__((gnu_inline)) __attribute__((__artificial__))
 /* __always_inline is probably okay and ignored by gcc in __BIONIC_FORTIFY_VARIADIC */
 #    define __BIONIC_FORTIFY_VARIADIC __BIONIC_FORTIFY_INLINE
+#    define __BIONIC_ERROR_FUNCTION_VISIBILITY static __unused
 #  endif
 #else
 /* Further increase sharing for some inline functions */
@@ -346,6 +308,24 @@
 #endif
 #define __pass_object_size __pass_object_size_n(__bos_level)
 #define __pass_object_size0 __pass_object_size_n(0)
+
+/* Intended for use in unevaluated contexts, e.g. diagnose_if conditions. */
+#define __bos_unevaluated_lt(bos_val, val) \
+  ((bos_val) != __BIONIC_FORTIFY_UNKNOWN_SIZE && (bos_val) < (val))
+
+#define __bos_unevaluated_le(bos_val, val) \
+  ((bos_val) != __BIONIC_FORTIFY_UNKNOWN_SIZE && (bos_val) <= (val))
+
+/* Intended for use in evaluated contexts. */
+#define __bos_dynamic_check_impl_and(bos_val, op, index, cond) \
+  ((bos_val) == __BIONIC_FORTIFY_UNKNOWN_SIZE ||                 \
+   (__builtin_constant_p(index) && bos_val op index && (cond)))
+
+#define __bos_dynamic_check_impl(bos_val, op, index) \
+  __bos_dynamic_check_impl_and(bos_val, op, index, 1)
+
+#define __bos_trivially_ge(bos_val, index) __bos_dynamic_check_impl((bos_val), >=, (index))
+#define __bos_trivially_gt(bos_val, index) __bos_dynamic_check_impl((bos_val), >, (index))
 
 #if defined(__BIONIC_FORTIFY) || defined(__BIONIC_DECLARE_FORTIFY_HELPERS)
 #  define __BIONIC_INCLUDE_FORTIFY_HEADERS 1
@@ -357,17 +337,19 @@
 #  define __overloadable
 #endif
 
+#define __diagnose_as_builtin(...) __attribute__((__diagnose_as_builtin__(__VA_ARGS__)))
+
 /* Used to tag non-static symbols that are private and never exposed by the shared library. */
-#define __LIBC_HIDDEN__ __attribute__((visibility("hidden")))
+#define __LIBC_HIDDEN__ __attribute__((__visibility__("hidden")))
 
 /*
  * Used to tag symbols that should be hidden for 64-bit,
  * but visible to preserve binary compatibility for LP32.
  */
 #ifdef __LP64__
-#define __LIBC32_LEGACY_PUBLIC__ __attribute__((visibility("hidden")))
+#define __LIBC32_LEGACY_PUBLIC__ __attribute__((__visibility__("hidden")))
 #else
-#define __LIBC32_LEGACY_PUBLIC__ __attribute__((visibility("default")))
+#define __LIBC32_LEGACY_PUBLIC__ __attribute__((__visibility__("default")))
 #endif
 
 /* Used to rename functions so that the compiler emits a call to 'x' rather than the function this was applied to. */
@@ -391,12 +373,17 @@ int __size_mul_overflow(__SIZE_TYPE__ a, __SIZE_TYPE__ b, __SIZE_TYPE__ *result)
 #if defined(__clang__)
 /*
  * Used when we need to check for overflow when multiplying x and y. This
- * should only be used where __size_mul_overflow can not work, because it makes
- * assumptions that __size_mul_overflow doesn't (x and y are positive, ...),
+ * should only be used where __builtin_umull_overflow can not work, because it makes
+ * assumptions that __builtin_umull_overflow doesn't (x and y are positive, ...),
  * *and* doesn't make use of compiler intrinsics, so it's probably slower than
- * __size_mul_overflow.
+ * __builtin_umull_overflow.
  */
 #define __unsafe_check_mul_overflow(x, y) ((__SIZE_TYPE__)-1 / (x) < (y))
 #endif
 
-#endif /* !_SYS_CDEFS_H_ */
+#include <stdc-predef.h>
+#include <android/versioning.h>
+#include <android/api-level.h>
+#if __has_include(<android/ndk-version.h>)
+#include <android/ndk-version.h>
+#endif

@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_LINUX_BINDER_H
 #define _UAPI_LINUX_BINDER_H
 #include <linux/types.h>
@@ -31,9 +19,15 @@ enum {
   BINDER_TYPE_FDA = B_PACK_CHARS('f', 'd', 'a', B_TYPE_LARGE),
   BINDER_TYPE_PTR = B_PACK_CHARS('p', 't', '*', B_TYPE_LARGE),
 };
-enum {
+enum flat_binder_object_shifts {
+  FLAT_BINDER_FLAG_SCHED_POLICY_SHIFT = 9,
+};
+enum flat_binder_object_flags {
   FLAT_BINDER_FLAG_PRIORITY_MASK = 0xff,
   FLAT_BINDER_FLAG_ACCEPTS_FDS = 0x100,
+  FLAT_BINDER_FLAG_SCHED_POLICY_MASK = 3U << FLAT_BINDER_FLAG_SCHED_POLICY_SHIFT,
+  FLAT_BINDER_FLAG_INHERIT_RT = 0x800,
+  FLAT_BINDER_FLAG_TXN_SECURITY_CTX = 0x1000,
 };
 #ifdef BINDER_IPC_32BIT
 typedef __u32 binder_size_t;
@@ -103,19 +97,57 @@ struct binder_node_debug_info {
   __u32 has_strong_ref;
   __u32 has_weak_ref;
 };
-#define BINDER_WRITE_READ _IOWR('b', 1, struct binder_write_read)
-#define BINDER_SET_IDLE_TIMEOUT _IOW('b', 3, __s64)
-#define BINDER_SET_MAX_THREADS _IOW('b', 5, __u32)
-#define BINDER_SET_IDLE_PRIORITY _IOW('b', 6, __s32)
-#define BINDER_SET_CONTEXT_MGR _IOW('b', 7, __s32)
-#define BINDER_THREAD_EXIT _IOW('b', 8, __s32)
-#define BINDER_VERSION _IOWR('b', 9, struct binder_version)
-#define BINDER_GET_NODE_DEBUG_INFO _IOWR('b', 11, struct binder_node_debug_info)
+struct binder_node_info_for_ref {
+  __u32 handle;
+  __u32 strong_count;
+  __u32 weak_count;
+  __u32 reserved1;
+  __u32 reserved2;
+  __u32 reserved3;
+};
+struct binder_freeze_info {
+  __u32 pid;
+  __u32 enable;
+  __u32 timeout_ms;
+};
+struct binder_frozen_status_info {
+  __u32 pid;
+  __u32 sync_recv;
+  __u32 async_recv;
+};
+struct binder_frozen_state_info {
+  binder_uintptr_t cookie;
+  __u32 is_frozen;
+  __u32 reserved;
+};
+struct binder_extended_error {
+  __u32 id;
+  __u32 command;
+  __s32 param;
+};
+enum {
+  BINDER_WRITE_READ = _IOWR('b', 1, struct binder_write_read),
+  BINDER_SET_IDLE_TIMEOUT = _IOW('b', 3, __s64),
+  BINDER_SET_MAX_THREADS = _IOW('b', 5, __u32),
+  BINDER_SET_IDLE_PRIORITY = _IOW('b', 6, __s32),
+  BINDER_SET_CONTEXT_MGR = _IOW('b', 7, __s32),
+  BINDER_THREAD_EXIT = _IOW('b', 8, __s32),
+  BINDER_VERSION = _IOWR('b', 9, struct binder_version),
+  BINDER_GET_NODE_DEBUG_INFO = _IOWR('b', 11, struct binder_node_debug_info),
+  BINDER_GET_NODE_INFO_FOR_REF = _IOWR('b', 12, struct binder_node_info_for_ref),
+  BINDER_SET_CONTEXT_MGR_EXT = _IOW('b', 13, struct flat_binder_object),
+  BINDER_FREEZE = _IOW('b', 14, struct binder_freeze_info),
+  BINDER_GET_FROZEN_INFO = _IOWR('b', 15, struct binder_frozen_status_info),
+  BINDER_ENABLE_ONEWAY_SPAM_DETECTION = _IOW('b', 16, __u32),
+  BINDER_GET_EXTENDED_ERROR = _IOWR('b', 17, struct binder_extended_error),
+};
 enum transaction_flags {
   TF_ONE_WAY = 0x01,
   TF_ROOT_OBJECT = 0x04,
   TF_STATUS_CODE = 0x08,
   TF_ACCEPT_FDS = 0x10,
+  TF_CLEAR_BUF = 0x20,
+  TF_UPDATE_TXN = 0x40,
 };
 struct binder_transaction_data {
   union {
@@ -125,8 +157,8 @@ struct binder_transaction_data {
   binder_uintptr_t cookie;
   __u32 code;
   __u32 flags;
-  pid_t sender_pid;
-  uid_t sender_euid;
+  __kernel_pid_t sender_pid;
+  __kernel_uid32_t sender_euid;
   binder_size_t data_size;
   binder_size_t offsets_size;
   union {
@@ -136,6 +168,10 @@ struct binder_transaction_data {
     } ptr;
     __u8 buf[8];
   } data;
+};
+struct binder_transaction_data_secctx {
+  struct binder_transaction_data transaction_data;
+  binder_uintptr_t secctx;
 };
 struct binder_transaction_data_sg {
   struct binder_transaction_data transaction_data;
@@ -148,7 +184,7 @@ struct binder_ptr_cookie {
 struct binder_handle_cookie {
   __u32 handle;
   binder_uintptr_t cookie;
-} __packed;
+} __attribute__((__packed__));
 struct binder_pri_desc {
   __s32 priority;
   __u32 desc;
@@ -161,6 +197,7 @@ struct binder_pri_ptr_cookie {
 enum binder_driver_return_protocol {
   BR_ERROR = _IOR('r', 0, __s32),
   BR_OK = _IO('r', 1),
+  BR_TRANSACTION_SEC_CTX = _IOR('r', 2, struct binder_transaction_data_secctx),
   BR_TRANSACTION = _IOR('r', 2, struct binder_transaction_data),
   BR_REPLY = _IOR('r', 3, struct binder_transaction_data),
   BR_ACQUIRE_RESULT = _IOR('r', 4, __s32),
@@ -177,6 +214,11 @@ enum binder_driver_return_protocol {
   BR_DEAD_BINDER = _IOR('r', 15, binder_uintptr_t),
   BR_CLEAR_DEATH_NOTIFICATION_DONE = _IOR('r', 16, binder_uintptr_t),
   BR_FAILED_REPLY = _IO('r', 17),
+  BR_FROZEN_REPLY = _IO('r', 18),
+  BR_ONEWAY_SPAM_SUSPECT = _IO('r', 19),
+  BR_TRANSACTION_PENDING_FROZEN = _IO('r', 20),
+  BR_FROZEN_BINDER = _IOR('r', 21, struct binder_frozen_state_info),
+  BR_CLEAR_FREEZE_NOTIFICATION_DONE = _IOR('r', 22, binder_uintptr_t),
 };
 enum binder_driver_command_protocol {
   BC_TRANSACTION = _IOW('c', 0, struct binder_transaction_data),
@@ -198,5 +240,8 @@ enum binder_driver_command_protocol {
   BC_DEAD_BINDER_DONE = _IOW('c', 16, binder_uintptr_t),
   BC_TRANSACTION_SG = _IOW('c', 17, struct binder_transaction_data_sg),
   BC_REPLY_SG = _IOW('c', 18, struct binder_transaction_data_sg),
+  BC_REQUEST_FREEZE_NOTIFICATION = _IOW('c', 19, struct binder_handle_cookie),
+  BC_CLEAR_FREEZE_NOTIFICATION = _IOW('c', 20, struct binder_handle_cookie),
+  BC_FREEZE_NOTIFICATION_DONE = _IOW('c', 21, binder_uintptr_t),
 };
 #endif

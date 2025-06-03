@@ -26,8 +26,16 @@
 #ifndef ANDROID_LOOPER_H
 #define ANDROID_LOOPER_H
 
+#include <sys/cdefs.h>
+
 #ifdef __cplusplus
 extern "C" {
+#endif
+
+// This file may also be built on glibc or on Windows/MacOS libc's, so
+// deprecated definitions are provided.
+#if !defined(__REMOVED_IN)
+#define __REMOVED_IN(__api_level, msg) __attribute__((__deprecated__(msg)))
 #endif
 
 struct ALooper;
@@ -82,20 +90,23 @@ enum {
     ALOOPER_POLL_WAKE = -1,
 
     /**
-     * Result from ALooper_pollOnce() and ALooper_pollAll():
-     * One or more callbacks were executed.
+     * Result from ALooper_pollOnce():
+     * One or more callbacks were executed. The poll may also have been
+     * explicitly woken by ALooper_wake().
      */
     ALOOPER_POLL_CALLBACK = -2,
 
     /**
      * Result from ALooper_pollOnce() and ALooper_pollAll():
-     * The timeout expired.
+     * The timeout expired. The poll may also have been explicitly woken by
+     * ALooper_wake().
      */
     ALOOPER_POLL_TIMEOUT = -3,
 
     /**
      * Result from ALooper_pollOnce() and ALooper_pollAll():
-     * An error occurred.
+     * An error occurred. The poll may also have been explicitly woken by
+     * ALooper_wake().
      */
     ALOOPER_POLL_ERROR = -4,
 };
@@ -174,23 +185,30 @@ typedef int (*ALooper_callbackFunc)(int fd, int events, void* data);
  * If the timeout is zero, returns immediately without blocking.
  * If the timeout is negative, waits indefinitely until an event appears.
  *
- * Returns ALOOPER_POLL_WAKE if the poll was awoken using wake() before
+ * **All return values may also imply ALOOPER_POLL_WAKE.** If you call this in a
+ * loop, you must treat all return values as if they also indicated
+ * ALOOPER_POLL_WAKE.
+ *
+ * Returns ALOOPER_POLL_WAKE if the poll was awoken using ALooper_wake() before
  * the timeout expired and no callbacks were invoked and no other file
  * descriptors were ready.
  *
- * Returns ALOOPER_POLL_CALLBACK if one or more callbacks were invoked.
+ * Returns ALOOPER_POLL_CALLBACK if one or more callbacks were invoked. The poll
+ * may also have been explicitly woken by ALooper_wake.
  *
- * Returns ALOOPER_POLL_TIMEOUT if there was no data before the given
- * timeout expired.
+ * Returns ALOOPER_POLL_TIMEOUT if there was no data before the given timeout
+ * expired. The poll may also have been explicitly woken by ALooper_wake.
  *
- * Returns ALOOPER_POLL_ERROR if an error occurred.
+ * Returns ALOOPER_POLL_ERROR if the calling thread has no associated Looper or
+ * for unrecoverable internal errors. The poll may also have been explicitly
+ * woken by ALooper_wake.
  *
- * Returns a value >= 0 containing an identifier (the same identifier
- * `ident` passed to ALooper_addFd()) if its file descriptor has data
- * and it has no callback function (requiring the caller here to
- * handle it).  In this (and only this) case outFd, outEvents and
- * outData will contain the poll events and data associated with the
- * fd, otherwise they will be set to NULL.
+ * Returns a value >= 0 containing an identifier (the same identifier `ident`
+ * passed to ALooper_addFd()) if its file descriptor has data and it has no
+ * callback function (requiring the caller here to handle it).  In this (and
+ * only this) case outFd, outEvents and outData will contain the poll events and
+ * data associated with the fd, otherwise they will be set to NULL. The poll may
+ * also have been explicitly woken by ALooper_wake.
  *
  * This method does not return until it has finished invoking the appropriate callbacks
  * for all file descriptors that were signalled.
@@ -201,14 +219,30 @@ int ALooper_pollOnce(int timeoutMillis, int* outFd, int* outEvents, void** outDa
  * Like ALooper_pollOnce(), but performs all pending callbacks until all
  * data has been consumed or a file descriptor is available with no callback.
  * This function will never return ALOOPER_POLL_CALLBACK.
+ *
+ * This API will not reliably respond to ALooper_wake. As such, this API is
+ * hidden and callers should migrate to ALooper_pollOnce. Binary compatibility
+ * is preserved to support already-compiled apps.
+ *
+ * \bug ALooper_pollAll() will not wake in response to ALooper_wake() calls if it
+ * also handles another event at the same time.
+ *
+ * \deprecated Calls to ALooper_pollAll() should be replaced with
+ * ALooper_pollOnce(). If you call ALooper_pollOnce() in a loop, you *must* treat
+ * all return values as if they also indicate ALOOPER_POLL_WAKE.
  */
-int ALooper_pollAll(int timeoutMillis, int* outFd, int* outEvents, void** outData);
+int ALooper_pollAll(int timeoutMillis, int* outFd, int* outEvents, void** outData)
+        __REMOVED_IN(1,
+                     "ALooper_pollAll may ignore wakes. Use ALooper_pollOnce instead. See "
+                     "The API documentation for more information");
 
 /**
  * Wakes the poll asynchronously.
  *
  * This method can be called on any thread.
  * This method returns immediately.
+ *
+ * \bug ALooper_pollAll() will not reliably wake in response to ALooper_wake().
  */
 void ALooper_wake(ALooper* looper);
 

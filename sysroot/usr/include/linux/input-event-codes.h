@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_INPUT_EVENT_CODES_H
 #define _UAPI_INPUT_EVENT_CODES_H
 #define INPUT_PROP_POINTER 0x00
@@ -248,7 +236,8 @@
 #define KEY_PAUSECD 201
 #define KEY_PROG3 202
 #define KEY_PROG4 203
-#define KEY_DASHBOARD 204
+#define KEY_ALL_APPLICATIONS 204
+#define KEY_DASHBOARD KEY_ALL_APPLICATIONS
 #define KEY_SUSPEND 205
 #define KEY_CLOSE 206
 #define KEY_PLAY 207
@@ -389,10 +378,12 @@
 #define KEY_TITLE 0x171
 #define KEY_SUBTITLE 0x172
 #define KEY_ANGLE 0x173
-#define KEY_ZOOM 0x174
+#define KEY_FULL_SCREEN 0x174
+#define KEY_ZOOM KEY_FULL_SCREEN
 #define KEY_MODE 0x175
 #define KEY_KEYBOARD 0x176
-#define KEY_SCREEN 0x177
+#define KEY_ASPECT_RATIO 0x177
+#define KEY_SCREEN KEY_ASPECT_RATIO
 #define KEY_PC 0x178
 #define KEY_TV 0x179
 #define KEY_TV2 0x17a
@@ -461,6 +452,9 @@
 #define KEY_10CHANNELSUP 0x1b8
 #define KEY_10CHANNELSDOWN 0x1b9
 #define KEY_IMAGES 0x1ba
+#define KEY_NOTIFICATION_CENTER 0x1bc
+#define KEY_PICKUP_PHONE 0x1bd
+#define KEY_HANGUP_PHONE 0x1be
 #define KEY_DEL_EOL 0x1c0
 #define KEY_DEL_EOS 0x1c1
 #define KEY_INS_LINE 0x1c2
@@ -486,6 +480,7 @@
 #define KEY_FN_F 0x1e2
 #define KEY_FN_S 0x1e3
 #define KEY_FN_B 0x1e4
+#define KEY_FN_RIGHT_SHIFT 0x1e5
 #define KEY_BRL_DOT1 0x1f1
 #define KEY_BRL_DOT2 0x1f2
 #define KEY_BRL_DOT3 0x1f3
@@ -532,6 +527,8 @@
 #define BTN_DPAD_LEFT 0x222
 #define BTN_DPAD_RIGHT 0x223
 #define KEY_ALS_TOGGLE 0x230
+#define KEY_ROTATE_LOCK_TOGGLE 0x231
+#define KEY_REFRESH_RATE_TOGGLE 0x232
 #define KEY_BUTTONCONFIG 0x240
 #define KEY_TASKMANAGER 0x241
 #define KEY_JOURNAL 0x242
@@ -540,6 +537,14 @@
 #define KEY_SCREENSAVER 0x245
 #define KEY_VOICECOMMAND 0x246
 #define KEY_ASSISTANT 0x247
+#define KEY_KBD_LAYOUT_NEXT 0x248
+#define KEY_EMOJI_PICKER 0x249
+#define KEY_DICTATE 0x24a
+#define KEY_CAMERA_ACCESS_ENABLE 0x24b
+#define KEY_CAMERA_ACCESS_DISABLE 0x24c
+#define KEY_CAMERA_ACCESS_TOGGLE 0x24d
+#define KEY_ACCESSIBILITY 0x24e
+#define KEY_DO_NOT_DISTURB 0x24f
 #define KEY_BRIGHTNESS_MIN 0x250
 #define KEY_BRIGHTNESS_MAX 0x251
 #define KEY_KBDINPUTASSIST_PREV 0x260
@@ -567,6 +572,64 @@
 #define KEY_SLOWREVERSE 0x276
 #define KEY_DATA 0x277
 #define KEY_ONSCREEN_KEYBOARD 0x278
+#define KEY_PRIVACY_SCREEN_TOGGLE 0x279
+#define KEY_SELECTIVE_SCREENSHOT 0x27a
+#define KEY_NEXT_ELEMENT 0x27b
+#define KEY_PREVIOUS_ELEMENT 0x27c
+#define KEY_AUTOPILOT_ENGAGE_TOGGLE 0x27d
+#define KEY_MARK_WAYPOINT 0x27e
+#define KEY_SOS 0x27f
+#define KEY_NAV_CHART 0x280
+#define KEY_FISHING_CHART 0x281
+#define KEY_SINGLE_RANGE_RADAR 0x282
+#define KEY_DUAL_RANGE_RADAR 0x283
+#define KEY_RADAR_OVERLAY 0x284
+#define KEY_TRADITIONAL_SONAR 0x285
+#define KEY_CLEARVU_SONAR 0x286
+#define KEY_SIDEVU_SONAR 0x287
+#define KEY_NAV_INFO 0x288
+#define KEY_BRIGHTNESS_MENU 0x289
+#define KEY_MACRO1 0x290
+#define KEY_MACRO2 0x291
+#define KEY_MACRO3 0x292
+#define KEY_MACRO4 0x293
+#define KEY_MACRO5 0x294
+#define KEY_MACRO6 0x295
+#define KEY_MACRO7 0x296
+#define KEY_MACRO8 0x297
+#define KEY_MACRO9 0x298
+#define KEY_MACRO10 0x299
+#define KEY_MACRO11 0x29a
+#define KEY_MACRO12 0x29b
+#define KEY_MACRO13 0x29c
+#define KEY_MACRO14 0x29d
+#define KEY_MACRO15 0x29e
+#define KEY_MACRO16 0x29f
+#define KEY_MACRO17 0x2a0
+#define KEY_MACRO18 0x2a1
+#define KEY_MACRO19 0x2a2
+#define KEY_MACRO20 0x2a3
+#define KEY_MACRO21 0x2a4
+#define KEY_MACRO22 0x2a5
+#define KEY_MACRO23 0x2a6
+#define KEY_MACRO24 0x2a7
+#define KEY_MACRO25 0x2a8
+#define KEY_MACRO26 0x2a9
+#define KEY_MACRO27 0x2aa
+#define KEY_MACRO28 0x2ab
+#define KEY_MACRO29 0x2ac
+#define KEY_MACRO30 0x2ad
+#define KEY_MACRO_RECORD_START 0x2b0
+#define KEY_MACRO_RECORD_STOP 0x2b1
+#define KEY_MACRO_PRESET_CYCLE 0x2b2
+#define KEY_MACRO_PRESET1 0x2b3
+#define KEY_MACRO_PRESET2 0x2b4
+#define KEY_MACRO_PRESET3 0x2b5
+#define KEY_KBD_LCD_MENU1 0x2b8
+#define KEY_KBD_LCD_MENU2 0x2b9
+#define KEY_KBD_LCD_MENU3 0x2ba
+#define KEY_KBD_LCD_MENU4 0x2bb
+#define KEY_KBD_LCD_MENU5 0x2bc
 #define BTN_TRIGGER_HAPPY 0x2c0
 #define BTN_TRIGGER_HAPPY1 0x2c0
 #define BTN_TRIGGER_HAPPY2 0x2c1
@@ -621,6 +684,9 @@
 #define REL_DIAL 0x07
 #define REL_WHEEL 0x08
 #define REL_MISC 0x09
+#define REL_RESERVED 0x0a
+#define REL_WHEEL_HI_RES 0x0b
+#define REL_HWHEEL_HI_RES 0x0c
 #define REL_MAX 0x0f
 #define REL_CNT (REL_MAX + 1)
 #define ABS_X 0x00
@@ -648,7 +714,9 @@
 #define ABS_TILT_Y 0x1b
 #define ABS_TOOL_WIDTH 0x1c
 #define ABS_VOLUME 0x20
+#define ABS_PROFILE 0x21
 #define ABS_MISC 0x28
+#define ABS_RESERVED 0x2e
 #define ABS_MT_SLOT 0x2f
 #define ABS_MT_TOUCH_MAJOR 0x30
 #define ABS_MT_TOUCH_MINOR 0x31
@@ -683,7 +751,8 @@
 #define SW_LINEIN_INSERT 0x0d
 #define SW_MUTE_DEVICE 0x0e
 #define SW_PEN_INSERTED 0x0f
-#define SW_MAX 0x0f
+#define SW_MACHINE_COVER 0x10
+#define SW_MAX 0x10
 #define SW_CNT (SW_MAX + 1)
 #define MSC_SERIAL 0x00
 #define MSC_PULSELED 0x01

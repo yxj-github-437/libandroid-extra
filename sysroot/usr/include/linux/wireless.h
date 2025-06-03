@@ -1,26 +1,15 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_LINUX_WIRELESS_H
 #define _UAPI_LINUX_WIRELESS_H
 #include <linux/types.h>
 #include <linux/socket.h>
 #include <linux/if.h>
+#include <stddef.h>
 #define WIRELESS_EXT 22
 #define SIOCSIWCOMMIT 0x8B00
 #define SIOCGIWNAME 0x8B01
@@ -263,7 +252,7 @@ struct iw_param {
   __u16 flags;
 };
 struct iw_point {
-  void __user * pointer;
+  void  * pointer;
   __u16 length;
   __u16 flags;
 };
@@ -313,7 +302,7 @@ struct iw_encode_ext {
   struct sockaddr addr;
   __u16 alg;
   __u16 key_len;
-  __u8 key[0];
+  __u8 key[];
 };
 struct iw_mlme {
   __u16 cmd;
@@ -435,7 +424,7 @@ struct iw_event {
 #define IW_EV_PARAM_LEN (IW_EV_LCP_LEN + sizeof(struct iw_param))
 #define IW_EV_ADDR_LEN (IW_EV_LCP_LEN + sizeof(struct sockaddr))
 #define IW_EV_QUAL_LEN (IW_EV_LCP_LEN + sizeof(struct iw_quality))
-#define IW_EV_POINT_OFF (((char *) & (((struct iw_point *) NULL)->length)) - (char *) NULL)
+#define IW_EV_POINT_OFF offsetof(struct iw_point, length)
 #define IW_EV_POINT_LEN (IW_EV_LCP_LEN + sizeof(struct iw_point) - IW_EV_POINT_OFF)
 #define IW_EV_LCP_PK_LEN (4)
 #define IW_EV_CHAR_PK_LEN (IW_EV_LCP_PK_LEN + IFNAMSIZ)

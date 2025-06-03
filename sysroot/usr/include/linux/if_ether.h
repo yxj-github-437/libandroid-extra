@@ -1,26 +1,14 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_LINUX_IF_ETHER_H
 #define _UAPI_LINUX_IF_ETHER_H
 #include <linux/types.h>
-#include <linux/libc-compat.h>
 #define ETH_ALEN 6
+#define ETH_TLEN 2
 #define ETH_HLEN 14
 #define ETH_ZLEN 60
 #define ETH_DATA_LEN 1500
@@ -32,6 +20,7 @@
 #define ETH_P_PUP 0x0200
 #define ETH_P_PUPAT 0x0201
 #define ETH_P_TSN 0x22F0
+#define ETH_P_ERSPAN2 0x22EB
 #define ETH_P_IP 0x0800
 #define ETH_P_X25 0x0805
 #define ETH_P_ARP 0x0806
@@ -66,16 +55,23 @@
 #define ETH_P_LINK_CTL 0x886c
 #define ETH_P_ATMFATE 0x8884
 #define ETH_P_PAE 0x888E
+#define ETH_P_PROFINET 0x8892
+#define ETH_P_REALTEK 0x8899
 #define ETH_P_AOE 0x88A2
+#define ETH_P_ETHERCAT 0x88A4
 #define ETH_P_8021AD 0x88A8
 #define ETH_P_802_EX1 0x88B5
+#define ETH_P_PREAUTH 0x88C7
 #define ETH_P_TIPC 0x88CA
+#define ETH_P_LLDP 0x88CC
+#define ETH_P_MRP 0x88E3
 #define ETH_P_MACSEC 0x88E5
 #define ETH_P_8021AH 0x88E7
 #define ETH_P_MVRP 0x88F5
 #define ETH_P_1588 0x88F7
 #define ETH_P_NCSI 0x88F8
 #define ETH_P_PRP 0x88FB
+#define ETH_P_CFM 0x8902
 #define ETH_P_FCOE 0x8906
 #define ETH_P_IBOE 0x8915
 #define ETH_P_TDLS 0x890D
@@ -88,6 +84,8 @@
 #define ETH_P_QINQ2 0x9200
 #define ETH_P_QINQ3 0x9300
 #define ETH_P_EDSA 0xDADA
+#define ETH_P_DSA_8021Q 0xDADB
+#define ETH_P_DSA_A5PSW 0xE001
 #define ETH_P_IFE 0xED3E
 #define ETH_P_AF_IUCV 0xFBFB
 #define ETH_P_802_3_MIN 0x0600
@@ -102,6 +100,7 @@
 #define ETH_P_LOCALTALK 0x0009
 #define ETH_P_CAN 0x000C
 #define ETH_P_CANFD 0x000D
+#define ETH_P_CANXL 0x000E
 #define ETH_P_PPPTALK 0x0010
 #define ETH_P_TR_802_2 0x0011
 #define ETH_P_MOBITEX 0x0015
@@ -117,6 +116,10 @@
 #define ETH_P_CAIF 0x00F7
 #define ETH_P_XDSA 0x00F8
 #define ETH_P_MAP 0x00F9
+#define ETH_P_MCTP 0x00FA
+#ifndef __UAPI_DEF_ETHHDR
+#define __UAPI_DEF_ETHHDR 1
+#endif
 #if __UAPI_DEF_ETHHDR
 struct ethhdr {
   unsigned char h_dest[ETH_ALEN];

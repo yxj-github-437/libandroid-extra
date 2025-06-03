@@ -1,23 +1,12 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef __ASM_GENERIC_SOCKET_H
 #define __ASM_GENERIC_SOCKET_H
+#include <linux/posix_types.h>
 #include <asm/sockios.h>
 #define SOL_SOCKET 1
 #define SO_DEBUG 1
@@ -42,8 +31,8 @@
 #define SO_PEERCRED 17
 #define SO_RCVLOWAT 18
 #define SO_SNDLOWAT 19
-#define SO_RCVTIMEO 20
-#define SO_SNDTIMEO 21
+#define SO_RCVTIMEO_OLD 20
+#define SO_SNDTIMEO_OLD 21
 #endif
 #define SO_SECURITY_AUTHENTICATION 22
 #define SO_SECURITY_ENCRYPTION_TRANSPORT 23
@@ -53,16 +42,10 @@
 #define SO_DETACH_FILTER 27
 #define SO_GET_FILTER SO_ATTACH_FILTER
 #define SO_PEERNAME 28
-#define SO_TIMESTAMP 29
-#define SCM_TIMESTAMP SO_TIMESTAMP
 #define SO_ACCEPTCONN 30
 #define SO_PEERSEC 31
 #define SO_PASSSEC 34
-#define SO_TIMESTAMPNS 35
-#define SCM_TIMESTAMPNS SO_TIMESTAMPNS
 #define SO_MARK 36
-#define SO_TIMESTAMPING 37
-#define SCM_TIMESTAMPING SO_TIMESTAMPING
 #define SO_PROTOCOL 38
 #define SO_DOMAIN 39
 #define SO_RXQ_OVFL 40
@@ -88,4 +71,46 @@
 #define SCM_TIMESTAMPING_PKTINFO 58
 #define SO_PEERGROUPS 59
 #define SO_ZEROCOPY 60
+#define SO_TXTIME 61
+#define SCM_TXTIME SO_TXTIME
+#define SO_BINDTOIFINDEX 62
+#define SO_TIMESTAMP_OLD 29
+#define SO_TIMESTAMPNS_OLD 35
+#define SO_TIMESTAMPING_OLD 37
+#define SO_TIMESTAMP_NEW 63
+#define SO_TIMESTAMPNS_NEW 64
+#define SO_TIMESTAMPING_NEW 65
+#define SO_RCVTIMEO_NEW 66
+#define SO_SNDTIMEO_NEW 67
+#define SO_DETACH_REUSEPORT_BPF 68
+#define SO_PREFER_BUSY_POLL 69
+#define SO_BUSY_POLL_BUDGET 70
+#define SO_NETNS_COOKIE 71
+#define SO_BUF_LOCK 72
+#define SO_RESERVE_MEM 73
+#define SO_TXREHASH 74
+#define SO_RCVMARK 75
+#define SO_PASSPIDFD 76
+#define SO_PEERPIDFD 77
+#define SO_DEVMEM_LINEAR 78
+#define SCM_DEVMEM_LINEAR SO_DEVMEM_LINEAR
+#define SO_DEVMEM_DMABUF 79
+#define SCM_DEVMEM_DMABUF SO_DEVMEM_DMABUF
+#define SO_DEVMEM_DONTNEED 80
+#if __BITS_PER_LONG == 64 || defined(__x86_64__) && defined(__ILP32__)
+#define SO_TIMESTAMP SO_TIMESTAMP_OLD
+#define SO_TIMESTAMPNS SO_TIMESTAMPNS_OLD
+#define SO_TIMESTAMPING SO_TIMESTAMPING_OLD
+#define SO_RCVTIMEO SO_RCVTIMEO_OLD
+#define SO_SNDTIMEO SO_SNDTIMEO_OLD
+#else
+#define SO_TIMESTAMP (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMP_OLD : SO_TIMESTAMP_NEW)
+#define SO_TIMESTAMPNS (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMPNS_OLD : SO_TIMESTAMPNS_NEW)
+#define SO_TIMESTAMPING (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMPING_OLD : SO_TIMESTAMPING_NEW)
+#define SO_RCVTIMEO (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_RCVTIMEO_OLD : SO_RCVTIMEO_NEW)
+#define SO_SNDTIMEO (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_SNDTIMEO_OLD : SO_SNDTIMEO_NEW)
+#endif
+#define SCM_TIMESTAMP SO_TIMESTAMP
+#define SCM_TIMESTAMPNS SO_TIMESTAMPNS
+#define SCM_TIMESTAMPING SO_TIMESTAMPING
 #endif

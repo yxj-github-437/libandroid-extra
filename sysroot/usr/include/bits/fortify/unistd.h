@@ -30,55 +30,50 @@
 #endif
 
 
-#if __ANDROID_API__ >= 24
-char* __getcwd_chk(char*, size_t, size_t) __INTRODUCED_IN(24);
-#endif /* __ANDROID_API__ >= 24 */
+#if __BIONIC_AVAILABILITY_GUARD(24)
+char* _Nullable __getcwd_chk(char* _Nullable, size_t, size_t) __INTRODUCED_IN(24);
+#endif /* __BIONIC_AVAILABILITY_GUARD(24) */
 
 
 
-#if __ANDROID_API__ >= 23
-ssize_t __pread_chk(int, void*, size_t, off_t, size_t) __INTRODUCED_IN(23);
-#endif /* __ANDROID_API__ >= 23 */
+#if __BIONIC_AVAILABILITY_GUARD(23)
+ssize_t __pread_chk(int, void* _Nonnull, size_t, off_t, size_t) __INTRODUCED_IN(23);
+#endif /* __BIONIC_AVAILABILITY_GUARD(23) */
 
-ssize_t __pread_real(int, void*, size_t, off_t) __RENAME(pread);
-
-
-#if __ANDROID_API__ >= 23
-ssize_t __pread64_chk(int, void*, size_t, off64_t, size_t) __INTRODUCED_IN(23);
-#endif /* __ANDROID_API__ >= 23 */
-
-ssize_t __pread64_real(int, void*, size_t, off64_t) __RENAME(pread64) __INTRODUCED_IN(12);
+ssize_t __pread_real(int, void* _Nonnull, size_t, off_t) __RENAME(pread);
 
 
-#if __ANDROID_API__ >= 24
-ssize_t __pwrite_chk(int, const void*, size_t, off_t, size_t) __INTRODUCED_IN(24);
-#endif /* __ANDROID_API__ >= 24 */
+#if __BIONIC_AVAILABILITY_GUARD(23)
+ssize_t __pread64_chk(int, void* _Nonnull, size_t, off64_t, size_t) __INTRODUCED_IN(23);
+#endif /* __BIONIC_AVAILABILITY_GUARD(23) */
 
-ssize_t __pwrite_real(int, const void*, size_t, off_t) __RENAME(pwrite);
-
-
-#if __ANDROID_API__ >= 24
-ssize_t __pwrite64_chk(int, const void*, size_t, off64_t, size_t) __INTRODUCED_IN(24);
-#endif /* __ANDROID_API__ >= 24 */
-
-ssize_t __pwrite64_real(int, const void*, size_t, off64_t) __RENAME(pwrite64)
-  __INTRODUCED_IN(12);
+ssize_t __pread64_real(int, void* _Nonnull, size_t, off64_t) __RENAME(pread64);
 
 
-#if __ANDROID_API__ >= 21
-ssize_t __read_chk(int, void*, size_t, size_t) __INTRODUCED_IN(21);
-#endif /* __ANDROID_API__ >= 21 */
+#if __BIONIC_AVAILABILITY_GUARD(24)
+ssize_t __pwrite_chk(int, const void* _Nonnull, size_t, off_t, size_t) __INTRODUCED_IN(24);
+#endif /* __BIONIC_AVAILABILITY_GUARD(24) */
+
+ssize_t __pwrite_real(int, const void* _Nonnull, size_t, off_t) __RENAME(pwrite);
 
 
-#if __ANDROID_API__ >= 24
-ssize_t __write_chk(int, const void*, size_t, size_t) __INTRODUCED_IN(24);
-#endif /* __ANDROID_API__ >= 24 */
+#if __BIONIC_AVAILABILITY_GUARD(24)
+ssize_t __pwrite64_chk(int, const void* _Nonnull, size_t, off64_t, size_t) __INTRODUCED_IN(24);
+#endif /* __BIONIC_AVAILABILITY_GUARD(24) */
+
+ssize_t __pwrite64_real(int, const void* _Nonnull, size_t, off64_t) __RENAME(pwrite64);
+
+ssize_t __read_chk(int, void* __BIONIC_COMPLICATED_NULLNESS, size_t, size_t);
+
+#if __BIONIC_AVAILABILITY_GUARD(24)
+ssize_t __write_chk(int, const void* __BIONIC_COMPLICATED_NULLNESS, size_t, size_t) __INTRODUCED_IN(24);
+#endif /* __BIONIC_AVAILABILITY_GUARD(24) */
 
 
-#if __ANDROID_API__ >= 23
-ssize_t __readlink_chk(const char*, char*, size_t, size_t) __INTRODUCED_IN(23);
-ssize_t __readlinkat_chk(int dirfd, const char*, char*, size_t, size_t) __INTRODUCED_IN(23);
-#endif /* __ANDROID_API__ >= 23 */
+#if __BIONIC_AVAILABILITY_GUARD(23)
+ssize_t __readlink_chk(const char* _Nonnull, char* _Nonnull, size_t, size_t) __INTRODUCED_IN(23);
+ssize_t __readlinkat_chk(int dirfd, const char* _Nonnull, char* _Nonnull, size_t, size_t) __INTRODUCED_IN(23);
+#endif /* __BIONIC_AVAILABILITY_GUARD(23) */
 
 
 #if defined(__BIONIC_FORTIFY)
@@ -91,150 +86,156 @@ ssize_t __readlinkat_chk(int dirfd, const char*, char*, size_t, size_t) __INTROD
 #define __PWRITE_PREFIX(x) __pwrite_ ## x
 #endif
 
+#define __bos_trivially_ge_no_overflow(bos_val, index)  \
+      ((__bos_dynamic_check_impl_and((bos_val), >=, (index), (bos_val) <= SSIZE_MAX) && \
+        __builtin_constant_p(index) && (index) <= SSIZE_MAX))
+
 #if defined(__clang__)
 #define __error_if_overflows_ssizet(what, fn) \
     __clang_error_if((what) > SSIZE_MAX, "in call to '" #fn "', '" #what "' must be <= SSIZE_MAX")
 
 #define __error_if_overflows_objectsize(what, objsize, fn) \
-    __clang_error_if((objsize) != __BIONIC_FORTIFY_UNKNOWN_SIZE && (what) > (objsize), \
+    __clang_error_if(__bos_unevaluated_lt((objsize), (what)), \
                      "in call to '" #fn "', '" #what "' bytes overflows the given object")
 
-#if __ANDROID_API__ >= __ANDROID_API_N__
+
 __BIONIC_FORTIFY_INLINE
-char* getcwd(char* const __pass_object_size buf, size_t size)
+char* _Nullable getcwd(char* const _Nullable __pass_object_size buf, size_t size)
         __overloadable
         __error_if_overflows_objectsize(size, __bos(buf), getcwd) {
+#if __ANDROID_API__ >= 24 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
     size_t bos = __bos(buf);
 
-    if (bos == __BIONIC_FORTIFY_UNKNOWN_SIZE) {
-        return __call_bypassing_fortify(getcwd)(buf, size);
+    if (!__bos_trivially_ge(bos, size)) {
+        return __getcwd_chk(buf, size, bos);
     }
-
-    return __getcwd_chk(buf, size, bos);
+#endif
+    return __call_bypassing_fortify(getcwd)(buf, size);
 }
-#endif /* __ANDROID_API__ >= __ANDROID_API_N__ */
 
-#if __ANDROID_API__ >= __ANDROID_API_M__
+#if !defined(__USE_FILE_OFFSET64)
 __BIONIC_FORTIFY_INLINE
-ssize_t pread(int fd, void* const __pass_object_size0 buf, size_t count, off_t offset)
+ssize_t pread(int fd, void* const _Nonnull __pass_object_size0 buf, size_t count, off_t offset)
         __overloadable
         __error_if_overflows_ssizet(count, pread)
         __error_if_overflows_objectsize(count, __bos0(buf), pread) {
+#if __ANDROID_API__ >= 23 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
     size_t bos = __bos0(buf);
 
-    if (count == __BIONIC_FORTIFY_UNKNOWN_SIZE) {
-        return __PREAD_PREFIX(real)(fd, buf, count, offset);
+    if (!__bos_trivially_ge_no_overflow(bos, count)) {
+        return __PREAD_PREFIX(chk)(fd, buf, count, offset, bos);
     }
-
-    return __PREAD_PREFIX(chk)(fd, buf, count, offset, bos);
+#endif
+    return __PREAD_PREFIX(real)(fd, buf, count, offset);
 }
+#endif /* !defined(__USE_FILE_OFFSET64) */
 
 __BIONIC_FORTIFY_INLINE
-ssize_t pread64(int fd, void* const __pass_object_size0 buf, size_t count, off64_t offset)
+ssize_t pread64(int fd, void* const _Nonnull __pass_object_size0 buf, size_t count, off64_t offset)
         __overloadable
         __error_if_overflows_ssizet(count, pread64)
         __error_if_overflows_objectsize(count, __bos0(buf), pread64) {
+#if __ANDROID_API__ >= 23 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
     size_t bos = __bos0(buf);
 
-    if (bos == __BIONIC_FORTIFY_UNKNOWN_SIZE) {
-        return __pread64_real(fd, buf, count, offset);
+    if (!__bos_trivially_ge_no_overflow(bos, count)) {
+        return __pread64_chk(fd, buf, count, offset, bos);
     }
-
-    return __pread64_chk(fd, buf, count, offset, bos);
+#endif
+    return __pread64_real(fd, buf, count, offset);
 }
-#endif /* __ANDROID_API__ >= __ANDROID_API_M__ */
 
-#if __ANDROID_API__ >= __ANDROID_API_N__
+#if !defined(__USE_FILE_OFFSET64)
 __BIONIC_FORTIFY_INLINE
-ssize_t pwrite(int fd, const void* const __pass_object_size0 buf, size_t count, off_t offset)
+ssize_t pwrite(int fd, const void* const _Nonnull __pass_object_size0 buf, size_t count, off_t offset)
         __overloadable
         __error_if_overflows_ssizet(count, pwrite)
         __error_if_overflows_objectsize(count, __bos0(buf), pwrite) {
+#if __ANDROID_API__ >= 24 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
     size_t bos = __bos0(buf);
 
-    if (bos == __BIONIC_FORTIFY_UNKNOWN_SIZE) {
-        return __PWRITE_PREFIX(real)(fd, buf, count, offset);
+    if (!__bos_trivially_ge_no_overflow(bos, count)) {
+        return __PWRITE_PREFIX(chk)(fd, buf, count, offset, bos);
     }
-
-    return __PWRITE_PREFIX(chk)(fd, buf, count, offset, bos);
+#endif
+    return __PWRITE_PREFIX(real)(fd, buf, count, offset);
 }
+#endif /* !defined(__USE_FILE_OFFSET64) */
 
 __BIONIC_FORTIFY_INLINE
-ssize_t pwrite64(int fd, const void* const __pass_object_size0 buf, size_t count, off64_t offset)
+ssize_t pwrite64(int fd, const void* const _Nonnull __pass_object_size0 buf, size_t count, off64_t offset)
         __overloadable
         __error_if_overflows_ssizet(count, pwrite64)
         __error_if_overflows_objectsize(count, __bos0(buf), pwrite64) {
+#if __ANDROID_API__ >= 24 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
     size_t bos = __bos0(buf);
 
-    if (bos == __BIONIC_FORTIFY_UNKNOWN_SIZE) {
-        return __pwrite64_real(fd, buf, count, offset);
+    if (!__bos_trivially_ge_no_overflow(bos, count)) {
+        return __pwrite64_chk(fd, buf, count, offset, bos);
     }
-
-    return __pwrite64_chk(fd, buf, count, offset, bos);
+#endif
+    return __pwrite64_real(fd, buf, count, offset);
 }
-#endif /* __ANDROID_API__ >= __ANDROID_API_N__ */
 
-#if __ANDROID_API__ >= __ANDROID_API_L__
 __BIONIC_FORTIFY_INLINE
-ssize_t read(int fd, void* const __pass_object_size0 buf, size_t count)
+ssize_t read(int fd, void* const __BIONIC_COMPLICATED_NULLNESS __pass_object_size0 buf, size_t count)
         __overloadable
         __error_if_overflows_ssizet(count, read)
         __error_if_overflows_objectsize(count, __bos0(buf), read) {
+#if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
     size_t bos = __bos0(buf);
 
-    if (bos == __BIONIC_FORTIFY_UNKNOWN_SIZE) {
-        return __call_bypassing_fortify(read)(fd, buf, count);
+    if (!__bos_trivially_ge_no_overflow(bos, count)) {
+        return __read_chk(fd, buf, count, bos);
     }
-
-    return __read_chk(fd, buf, count, bos);
+#endif
+    return __call_bypassing_fortify(read)(fd, buf, count);
 }
-#endif /* __ANDROID_API__ >= __ANDROID_API_L__ */
 
-#if __ANDROID_API__ >= __ANDROID_API_N__
 __BIONIC_FORTIFY_INLINE
-ssize_t write(int fd, const void* const __pass_object_size0 buf, size_t count)
+ssize_t write(int fd, const void* const __BIONIC_COMPLICATED_NULLNESS __pass_object_size0 buf, size_t count)
         __overloadable
         __error_if_overflows_ssizet(count, write)
         __error_if_overflows_objectsize(count, __bos0(buf), write) {
+#if __ANDROID_API__ >= 24 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
     size_t bos = __bos0(buf);
 
-    if (bos == __BIONIC_FORTIFY_UNKNOWN_SIZE) {
-        return __call_bypassing_fortify(write)(fd, buf, count);
+    if (!__bos_trivially_ge_no_overflow(bos, count)) {
+        return __write_chk(fd, buf, count, bos);
     }
-
-    return __write_chk(fd, buf, count, bos);
+#endif
+    return __call_bypassing_fortify(write)(fd, buf, count);
 }
-#endif /* __ANDROID_API__ >= __ANDROID_API_N__ */
 
-#if __ANDROID_API__ >= __ANDROID_API_M__
 __BIONIC_FORTIFY_INLINE
-ssize_t readlink(const char* path, char* const __pass_object_size buf, size_t size)
+ssize_t readlink(const char* _Nonnull path, char* _Nonnull const __pass_object_size buf, size_t size)
         __overloadable
         __error_if_overflows_ssizet(size, readlink)
         __error_if_overflows_objectsize(size, __bos(buf), readlink) {
+#if __ANDROID_API__ >= 23 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
     size_t bos = __bos(buf);
 
-    if (bos == __BIONIC_FORTIFY_UNKNOWN_SIZE) {
-        return __call_bypassing_fortify(readlink)(path, buf, size);
+    if (!__bos_trivially_ge_no_overflow(bos, size)) {
+        return __readlink_chk(path, buf, size, bos);
     }
-
-    return __readlink_chk(path, buf, size, bos);
+#endif
+    return __call_bypassing_fortify(readlink)(path, buf, size);
 }
 
 __BIONIC_FORTIFY_INLINE
-ssize_t readlinkat(int dirfd, const char* path, char* const __pass_object_size buf, size_t size)
+ssize_t readlinkat(int dirfd, const char* _Nonnull path, char* const _Nonnull __pass_object_size buf, size_t size)
         __overloadable
         __error_if_overflows_ssizet(size, readlinkat)
         __error_if_overflows_objectsize(size, __bos(buf), readlinkat) {
+#if __ANDROID_API__ >= 23 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
     size_t bos = __bos(buf);
 
-    if (bos == __BIONIC_FORTIFY_UNKNOWN_SIZE) {
-        return __call_bypassing_fortify(readlinkat)(dirfd, path, buf, size);
+    if (!__bos_trivially_ge_no_overflow(bos, size)) {
+        return __readlinkat_chk(dirfd, path, buf, size, bos);
     }
-
-    return __readlinkat_chk(dirfd, path, buf, size, bos);
+#endif
+    return __call_bypassing_fortify(readlinkat)(dirfd, path, buf, size);
 }
-#endif /* __ANDROID_API__ >= __ANDROID_API_M__ */
 
 #undef __enable_if_no_overflow_ssizet
 #undef __error_if_overflows_objectsize
@@ -265,217 +266,202 @@ __errordecl(__readlink_size_toobig_error, "readlink called with size > SSIZE_MAX
 __errordecl(__readlinkat_dest_size_error, "readlinkat called with size bigger than destination");
 __errordecl(__readlinkat_size_toobig_error, "readlinkat called with size > SSIZE_MAX");
 
-#if __ANDROID_API__ >= __ANDROID_API_N__
+#define __overflows_ssizet(what) ((what) > SSIZE_MAX)
+#define __overflows_objectsize(what, objsize) \
+    (__bos_unevaluated_lt((objsize), (what)))
+
 __BIONIC_FORTIFY_INLINE
 char* getcwd(char* buf, size_t size) __overloadable {
-    size_t bos = __bos(buf);
-
-    if (bos == __BIONIC_FORTIFY_UNKNOWN_SIZE) {
-        return __getcwd_real(buf, size);
-    }
-
-    if (__builtin_constant_p(size) && (size > bos)) {
+    if (__overflows_objectsize(size, __bos(buf))) {
         __getcwd_dest_size_error();
     }
 
-    if (__builtin_constant_p(size) && (size <= bos)) {
-        return __getcwd_real(buf, size);
+#if __ANDROID_API__ >= 24 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
+    size_t bos = __bos(buf)
+    if (!__bos_trivially_ge(bos, size)) {
+        return __getcwd_chk(buf, size, bos);
     }
+#endif
 
-    return __getcwd_chk(buf, size, bos);
+    return __getcwd_real(buf, size);
 }
-#endif /* __ANDROID_API__ >= __ANDROID_API_N__ */
 
-#if __ANDROID_API__ >= __ANDROID_API_M__
+#if !defined(__USE_FILE_OFFSET64)
 __BIONIC_FORTIFY_INLINE
 ssize_t pread(int fd, void* buf, size_t count, off_t offset) {
-    size_t bos = __bos0(buf);
-
-    if (__builtin_constant_p(count) && (count > SSIZE_MAX)) {
+    if (__overflows_ssizet(count)) {
         __PREAD_PREFIX(count_toobig_error)();
     }
 
-    if (bos == __BIONIC_FORTIFY_UNKNOWN_SIZE) {
-        return __PREAD_PREFIX(real)(fd, buf, count, offset);
-    }
-
-    if (__builtin_constant_p(count) && (count > bos)) {
+    if (__overflows_objectsize(count, __bos0(buf))) {
         __PREAD_PREFIX(dest_size_error)();
     }
 
-    if (__builtin_constant_p(count) && (count <= bos)) {
-        return __PREAD_PREFIX(real)(fd, buf, count, offset);
-    }
+#if __ANDROID_API__ >= 23 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
+    size_t bos = __bos0(buf);
 
-    return __PREAD_PREFIX(chk)(fd, buf, count, offset, bos);
+    if (!__bos_trivially_ge_no_overflow(bos, count)) {
+        return __PREAD_PREFIX(chk)(fd, buf, count, offset, bos);
+    }
+#endif
+
+    return __PREAD_PREFIX(real)(fd, buf, count, offset);
 }
+#endif /* !defined(__USE_FILE_OFFSET64) */
 
 __BIONIC_FORTIFY_INLINE
 ssize_t pread64(int fd, void* buf, size_t count, off64_t offset) {
-    size_t bos = __bos0(buf);
-
-    if (__builtin_constant_p(count) && (count > SSIZE_MAX)) {
+    if (__overflows_ssizet(count)) {
         __pread64_count_toobig_error();
     }
 
-    if (bos == __BIONIC_FORTIFY_UNKNOWN_SIZE) {
-        return __pread64_real(fd, buf, count, offset);
-    }
-
-    if (__builtin_constant_p(count) && (count > bos)) {
+    if (__overflows_objectsize(count, __bos0(buf))) {
         __pread64_dest_size_error();
     }
 
-    if (__builtin_constant_p(count) && (count <= bos)) {
-        return __pread64_real(fd, buf, count, offset);
-    }
-
-    return __pread64_chk(fd, buf, count, offset, bos);
-}
-#endif /* __ANDROID_API__ >= __ANDROID_API_M__ */
-
-#if __ANDROID_API__ >= __ANDROID_API_N__
-__BIONIC_FORTIFY_INLINE
-ssize_t pwrite(int fd, const void* buf, size_t count, off_t offset) {
+#if __ANDROID_API__ >= 23 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
     size_t bos = __bos0(buf);
 
-    if (__builtin_constant_p(count) && (count > SSIZE_MAX)) {
+    if (!__bos_trivially_ge_no_overflow(bos, count)) {
+        return __pread64_chk(fd, buf, count, offset, bos);
+    }
+#endif
+
+    return __pread64_real(fd, buf, count, offset);
+}
+
+#if !defined(__USE_FILE_OFFSET64)
+__BIONIC_FORTIFY_INLINE
+ssize_t pwrite(int fd, const void* buf, size_t count, off_t offset) {
+    if (__overflows_ssizet(count)) {
         __PWRITE_PREFIX(count_toobig_error)();
     }
 
-    if (bos == __BIONIC_FORTIFY_UNKNOWN_SIZE) {
-        return __PWRITE_PREFIX(real)(fd, buf, count, offset);
-    }
-
-    if (__builtin_constant_p(count) && (count > bos)) {
+    if (__overflows_objectsize(count, __bos0(buf))) {
         __PWRITE_PREFIX(dest_size_error)();
     }
 
-    if (__builtin_constant_p(count) && (count <= bos)) {
-        return __PWRITE_PREFIX(real)(fd, buf, count, offset);
-    }
+#if __ANDROID_API__ >= 24 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
+    size_t bos = __bos0(buf);
 
-    return __PWRITE_PREFIX(chk)(fd, buf, count, offset, bos);
+    if (!__bos_trivially_ge_no_overflow(bos, count)) {
+        return __PWRITE_PREFIX(chk)(fd, buf, count, offset, bos);
+    }
+#endif
+
+    return __PWRITE_PREFIX(real)(fd, buf, count, offset);
 }
+#endif /* !defined(__USE_FILE_OFFSET64) */
 
 __BIONIC_FORTIFY_INLINE
 ssize_t pwrite64(int fd, const void* buf, size_t count, off64_t offset) {
-    size_t bos = __bos0(buf);
-
-    if (__builtin_constant_p(count) && (count > SSIZE_MAX)) {
+    if (__overflows_ssizet(count)) {
         __pwrite64_count_toobig_error();
     }
 
-    if (bos == __BIONIC_FORTIFY_UNKNOWN_SIZE) {
-        return __pwrite64_real(fd, buf, count, offset);
-    }
-
-    if (__builtin_constant_p(count) && (count > bos)) {
+    if (__overflows_objectsize(count, __bos0(buf))) {
         __pwrite64_dest_size_error();
     }
 
-    if (__builtin_constant_p(count) && (count <= bos)) {
-        return __pwrite64_real(fd, buf, count, offset);
-    }
-
-    return __pwrite64_chk(fd, buf, count, offset, bos);
-}
-#endif /* __ANDROID_API__ >= __ANDROID_API_N__ */
-
-#if __ANDROID_API__ >= __ANDROID_API_L__
-__BIONIC_FORTIFY_INLINE
-ssize_t read(int fd, void* buf, size_t count) {
+#if __ANDROID_API__ >= 24 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
     size_t bos = __bos0(buf);
 
-    if (__builtin_constant_p(count) && (count > SSIZE_MAX)) {
+    if (!__bos_trivially_ge_no_overflow(bos, count)) {
+        return __pwrite64_chk(fd, buf, count, offset, bos);
+    }
+#endif
+
+    return __pwrite64_real(fd, buf, count, offset);
+}
+
+__BIONIC_FORTIFY_INLINE
+ssize_t read(int fd, void* buf, size_t count) {
+    if (__overflows_ssizet(count)) {
         __read_count_toobig_error();
     }
 
-    if (bos == __BIONIC_FORTIFY_UNKNOWN_SIZE) {
-        return __read_real(fd, buf, count);
-    }
-
-    if (__builtin_constant_p(count) && (count > bos)) {
+    if (__overflows_objectsize(count, __bos0(buf))) {
         __read_dest_size_error();
     }
 
-    if (__builtin_constant_p(count) && (count <= bos)) {
-        return __read_real(fd, buf, count);
-    }
-
-    return __read_chk(fd, buf, count, bos);
-}
-#endif /* __ANDROID_API__ >= __ANDROID_API_L__ */
-
-#if __ANDROID_API__ >= __ANDROID_API_N__
-__BIONIC_FORTIFY_INLINE
-ssize_t write(int fd, const void* buf, size_t count) {
+#if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
     size_t bos = __bos0(buf);
 
-    if (bos == __BIONIC_FORTIFY_UNKNOWN_SIZE) {
-        return __write_real(fd, buf, count);
+    if (!__bos_trivially_ge_no_overflow(bos, count)) {
+        return __read_chk(fd, buf, count, bos);
+    }
+#endif
+
+    return __read_real(fd, buf, count);
+}
+
+__BIONIC_FORTIFY_INLINE
+ssize_t write(int fd, const void* buf, size_t count) {
+    if (__overflows_ssizet(count)) {
+        __write_count_toobig_error();
     }
 
-    if (__builtin_constant_p(count) && (count > bos)) {
+    if (__overflows_objectsize(count, __bos0(buf))) {
         __write_dest_size_error();
     }
 
-    if (__builtin_constant_p(count) && (count <= bos)) {
-        return __write_real(fd, buf, count);
+#if __ANDROID_API__ >= 24 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
+    size_t bos = __bos0(buf);
+
+    if (!__bos_trivially_ge_no_overflow(bos, count)) {
+        return __write_chk(fd, buf, count, bos);
     }
+#endif
 
-    return __write_chk(fd, buf, count, bos);
+    return __write_real(fd, buf, count);
 }
-#endif /* __ANDROID_API__ >= __ANDROID_API_N__ */
 
-#if __ANDROID_API__ >= __ANDROID_API_M__
 __BIONIC_FORTIFY_INLINE
 ssize_t readlink(const char* path, char* buf, size_t size) {
-    size_t bos = __bos(buf);
-
-    if (__builtin_constant_p(size) && (size > SSIZE_MAX)) {
+    if (__overflows_ssizet(size)) {
         __readlink_size_toobig_error();
     }
-
-    if (bos == __BIONIC_FORTIFY_UNKNOWN_SIZE) {
-        return __readlink_real(path, buf, size);
-    }
-
-    if (__builtin_constant_p(size) && (size > bos)) {
+    if (__overflows_objectsize(size, __bos0(buf))) {
         __readlink_dest_size_error();
     }
 
-    if (__builtin_constant_p(size) && (size <= bos)) {
-        return __readlink_real(path, buf, size);
-    }
+#if __ANDROID_API__ >= 23 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
+    size_t bos = __bos(buf);
 
-    return __readlink_chk(path, buf, size, bos);
+    if (!__bos_trivially_ge_no_overflow(bos, size)) {
+        return __readlink_chk(path, buf, size, bos);
+    }
+#endif
+
+    return __readlink_real(path, buf, size);
 }
 
 __BIONIC_FORTIFY_INLINE
 ssize_t readlinkat(int dirfd, const char* path, char* buf, size_t size) {
-    size_t bos = __bos(buf);
-
-    if (__builtin_constant_p(size) && (size > SSIZE_MAX)) {
+    if (__overflows_ssizet(size)) {
         __readlinkat_size_toobig_error();
     }
 
-    if (bos == __BIONIC_FORTIFY_UNKNOWN_SIZE) {
-        return __readlinkat_real(dirfd, path, buf, size);
-    }
-
-    if (__builtin_constant_p(size) && (size > bos)) {
+    if (__overflows_objectsize(size, __bos0(buf))) {
         __readlinkat_dest_size_error();
     }
 
-    if (__builtin_constant_p(size) && (size <= bos)) {
-        return __readlinkat_real(dirfd, path, buf, size);
-    }
+#if __ANDROID_API__ >= 23 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
+    size_t bos = __bos(buf);
 
-    return __readlinkat_chk(dirfd, path, buf, size, bos);
+    if (!__bos_trivially_ge_no_overflow(bos, size)) {
+        return __readlinkat_chk(path, buf, size, bos);
+    }
+#endif
+
+    return __readlinkat_real(dirfd, path, buf, size);
 }
-#endif /* __ANDROID_API__ >= __ANDROID_API_M__ */
+
+#undef __overflows_ssizet
+#undef __overflows_objectsize
 #endif /* defined(__clang__) */
+
+#undef __bos_trivially_ge_no_overflow
 #undef __PREAD_PREFIX
 #undef __PWRITE_PREFIX
 #endif /* defined(__BIONIC_FORTIFY) */

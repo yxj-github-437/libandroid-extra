@@ -1,6 +1,7 @@
 #include <search.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <inttypes.h>
 
 static char* data[] = {"alpha",  "bravo",  "charlie", "delta",  "echo",   "foxtrot", "golf",
                        "hotel",  "india",  "juliet",  "kilo",   "lima",   "mike",    "november",
@@ -32,7 +33,7 @@ int main(void)
            show that two are not in the table */
         e.key = data[i];
         ep = hsearch(e, FIND);
-        printf("%9.9s -> %9.9s:%d\n", e.key, ep ? ep->key : "NULL", ep ? (int)(ep->data) : 0);
+        printf("%9.9s -> %9.9s:%#" PRIxPTR "\n", e.key, ep ? ep->key : "NULL", ep ? (uintptr_t)(ep->data) : 0);
     }
     hdestroy();
     exit(EXIT_SUCCESS);

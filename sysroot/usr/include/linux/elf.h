@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_LINUX_ELF_H
 #define _UAPI_LINUX_ELF_H
 #include <linux/types.h>
@@ -45,8 +33,11 @@ typedef __s64 Elf64_Sxword;
 #define PT_HIOS 0x6fffffff
 #define PT_LOPROC 0x70000000
 #define PT_HIPROC 0x7fffffff
-#define PT_GNU_EH_FRAME 0x6474e550
+#define PT_GNU_EH_FRAME (PT_LOOS + 0x474e550)
 #define PT_GNU_STACK (PT_LOOS + 0x474e551)
+#define PT_GNU_RELRO (PT_LOOS + 0x474e552)
+#define PT_GNU_PROPERTY (PT_LOOS + 0x474e553)
+#define PT_AARCH64_MEMTAG_MTE (PT_LOPROC + 0x2)
 #define PN_XNUM 0xffff
 #define ET_NONE 0
 #define ET_REL 1
@@ -109,12 +100,12 @@ typedef __s64 Elf64_Sxword;
 #define STT_COMMON 5
 #define STT_TLS 6
 #define ELF_ST_BIND(x) ((x) >> 4)
-#define ELF_ST_TYPE(x) (((unsigned int) x) & 0xf)
+#define ELF_ST_TYPE(x) ((x) & 0xf)
 #define ELF32_ST_BIND(x) ELF_ST_BIND(x)
 #define ELF32_ST_TYPE(x) ELF_ST_TYPE(x)
 #define ELF64_ST_BIND(x) ELF_ST_BIND(x)
 #define ELF64_ST_TYPE(x) ELF_ST_TYPE(x)
-typedef struct dynamic {
+typedef struct {
   Elf32_Sword d_tag;
   union {
     Elf32_Sword d_val;
@@ -331,9 +322,14 @@ typedef struct elf64_shdr {
 #define NT_PPC_TM_CTAR 0x10d
 #define NT_PPC_TM_CPPR 0x10e
 #define NT_PPC_TM_CDSCR 0x10f
+#define NT_PPC_PKEY 0x110
+#define NT_PPC_DEXCR 0x111
+#define NT_PPC_HASHKEYR 0x112
 #define NT_386_TLS 0x200
 #define NT_386_IOPERM 0x201
 #define NT_X86_XSTATE 0x202
+#define NT_X86_SHSTK 0x204
+#define NT_X86_XSAVE_LAYOUT 0x205
 #define NT_S390_HIGH_GPRS 0x300
 #define NT_S390_TIMER 0x301
 #define NT_S390_TODCMP 0x302
@@ -348,16 +344,38 @@ typedef struct elf64_shdr {
 #define NT_S390_GS_CB 0x30b
 #define NT_S390_GS_BC 0x30c
 #define NT_S390_RI_CB 0x30d
+#define NT_S390_PV_CPU_DATA 0x30e
 #define NT_ARM_VFP 0x400
 #define NT_ARM_TLS 0x401
 #define NT_ARM_HW_BREAK 0x402
 #define NT_ARM_HW_WATCH 0x403
 #define NT_ARM_SYSTEM_CALL 0x404
 #define NT_ARM_SVE 0x405
-#define NT_METAG_CBUF 0x500
-#define NT_METAG_RPIPE 0x501
-#define NT_METAG_TLS 0x502
+#define NT_ARM_PAC_MASK 0x406
+#define NT_ARM_PACA_KEYS 0x407
+#define NT_ARM_PACG_KEYS 0x408
+#define NT_ARM_TAGGED_ADDR_CTRL 0x409
+#define NT_ARM_PAC_ENABLED_KEYS 0x40a
+#define NT_ARM_SSVE 0x40b
+#define NT_ARM_ZA 0x40c
+#define NT_ARM_ZT 0x40d
+#define NT_ARM_FPMR 0x40e
+#define NT_ARM_POE 0x40f
 #define NT_ARC_V2 0x600
+#define NT_VMCOREDD 0x700
+#define NT_MIPS_DSP 0x800
+#define NT_MIPS_FP_MODE 0x801
+#define NT_MIPS_MSA 0x802
+#define NT_RISCV_CSR 0x900
+#define NT_RISCV_VECTOR 0x901
+#define NT_LOONGARCH_CPUCFG 0xa00
+#define NT_LOONGARCH_CSR 0xa01
+#define NT_LOONGARCH_LSX 0xa02
+#define NT_LOONGARCH_LASX 0xa03
+#define NT_LOONGARCH_LBT 0xa04
+#define NT_LOONGARCH_HW_BREAK 0xa05
+#define NT_LOONGARCH_HW_WATCH 0xa06
+#define NT_GNU_PROPERTY_TYPE_0 5
 typedef struct elf32_note {
   Elf32_Word n_namesz;
   Elf32_Word n_descsz;
@@ -368,4 +386,6 @@ typedef struct elf64_note {
   Elf64_Word n_descsz;
   Elf64_Word n_type;
 } Elf64_Nhdr;
+#define GNU_PROPERTY_AARCH64_FEATURE_1_AND 0xc0000000
+#define GNU_PROPERTY_AARCH64_FEATURE_1_BTI (1U << 0)
 #endif

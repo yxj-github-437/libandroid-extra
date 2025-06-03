@@ -1,34 +1,70 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_I915_DRM_H_
 #define _UAPI_I915_DRM_H_
 #include "drm.h"
 #ifdef __cplusplus
+extern "C" {
 #endif
 #define I915_L3_PARITY_UEVENT "L3_PARITY_ERROR"
 #define I915_ERROR_UEVENT "ERROR"
 #define I915_RESET_UEVENT "RESET"
+struct i915_user_extension {
+  __u64 next_extension;
+  __u32 name;
+  __u32 flags;
+  __u32 rsvd[4];
+};
 enum i915_mocs_table_index {
   I915_MOCS_UNCACHED,
   I915_MOCS_PTE,
   I915_MOCS_CACHED,
 };
+enum drm_i915_gem_engine_class {
+  I915_ENGINE_CLASS_RENDER = 0,
+  I915_ENGINE_CLASS_COPY = 1,
+  I915_ENGINE_CLASS_VIDEO = 2,
+  I915_ENGINE_CLASS_VIDEO_ENHANCE = 3,
+  I915_ENGINE_CLASS_COMPUTE = 4,
+  I915_ENGINE_CLASS_INVALID = - 1
+};
+struct i915_engine_class_instance {
+  __u16 engine_class;
+#define I915_ENGINE_CLASS_INVALID_NONE - 1
+#define I915_ENGINE_CLASS_INVALID_VIRTUAL - 2
+  __u16 engine_instance;
+};
+enum drm_i915_pmu_engine_sample {
+  I915_SAMPLE_BUSY = 0,
+  I915_SAMPLE_WAIT = 1,
+  I915_SAMPLE_SEMA = 2
+};
+#define I915_PMU_SAMPLE_BITS (4)
+#define I915_PMU_SAMPLE_MASK (0xf)
+#define I915_PMU_SAMPLE_INSTANCE_BITS (8)
+#define I915_PMU_CLASS_SHIFT (I915_PMU_SAMPLE_BITS + I915_PMU_SAMPLE_INSTANCE_BITS)
+#define __I915_PMU_ENGINE(__linux_class,instance,sample) ((__linux_class) << I915_PMU_CLASS_SHIFT | (instance) << I915_PMU_SAMPLE_BITS | (sample))
+#define I915_PMU_ENGINE_BUSY(__linux_class,instance) __I915_PMU_ENGINE(__linux_class, instance, I915_SAMPLE_BUSY)
+#define I915_PMU_ENGINE_WAIT(__linux_class,instance) __I915_PMU_ENGINE(__linux_class, instance, I915_SAMPLE_WAIT)
+#define I915_PMU_ENGINE_SEMA(__linux_class,instance) __I915_PMU_ENGINE(__linux_class, instance, I915_SAMPLE_SEMA)
+#define __I915_PMU_GT_SHIFT (60)
+#define ___I915_PMU_OTHER(gt,x) (((__u64) __I915_PMU_ENGINE(0xff, 0xff, 0xf) + 1 + (x)) | ((__u64) (gt) << __I915_PMU_GT_SHIFT))
+#define __I915_PMU_OTHER(x) ___I915_PMU_OTHER(0, x)
+#define I915_PMU_ACTUAL_FREQUENCY __I915_PMU_OTHER(0)
+#define I915_PMU_REQUESTED_FREQUENCY __I915_PMU_OTHER(1)
+#define I915_PMU_INTERRUPTS __I915_PMU_OTHER(2)
+#define I915_PMU_RC6_RESIDENCY __I915_PMU_OTHER(3)
+#define I915_PMU_SOFTWARE_GT_AWAKE_TIME __I915_PMU_OTHER(4)
+#define I915_PMU_LAST I915_PMU_RC6_RESIDENCY
+#define __I915_PMU_ACTUAL_FREQUENCY(gt) ___I915_PMU_OTHER(gt, 0)
+#define __I915_PMU_REQUESTED_FREQUENCY(gt) ___I915_PMU_OTHER(gt, 1)
+#define __I915_PMU_INTERRUPTS(gt) ___I915_PMU_OTHER(gt, 2)
+#define __I915_PMU_RC6_RESIDENCY(gt) ___I915_PMU_OTHER(gt, 3)
+#define __I915_PMU_SOFTWARE_GT_AWAKE_TIME(gt) ___I915_PMU_OTHER(gt, 4)
 #define I915_NR_TEX_REGIONS 255
 #define I915_LOG_MIN_TEX_REGION_SIZE 14
 typedef struct _drm_i915_init {
@@ -174,6 +210,10 @@ typedef struct _drm_i915_sarea {
 #define DRM_I915_PERF_OPEN 0x36
 #define DRM_I915_PERF_ADD_CONFIG 0x37
 #define DRM_I915_PERF_REMOVE_CONFIG 0x38
+#define DRM_I915_QUERY 0x39
+#define DRM_I915_GEM_VM_CREATE 0x3a
+#define DRM_I915_GEM_VM_DESTROY 0x3b
+#define DRM_I915_GEM_CREATE_EXT 0x3c
 #define DRM_IOCTL_I915_INIT DRM_IOW(DRM_COMMAND_BASE + DRM_I915_INIT, drm_i915_init_t)
 #define DRM_IOCTL_I915_FLUSH DRM_IO(DRM_COMMAND_BASE + DRM_I915_FLUSH)
 #define DRM_IOCTL_I915_FLIP DRM_IO(DRM_COMMAND_BASE + DRM_I915_FLIP)
@@ -204,10 +244,12 @@ typedef struct _drm_i915_sarea {
 #define DRM_IOCTL_I915_GEM_ENTERVT DRM_IO(DRM_COMMAND_BASE + DRM_I915_GEM_ENTERVT)
 #define DRM_IOCTL_I915_GEM_LEAVEVT DRM_IO(DRM_COMMAND_BASE + DRM_I915_GEM_LEAVEVT)
 #define DRM_IOCTL_I915_GEM_CREATE DRM_IOWR(DRM_COMMAND_BASE + DRM_I915_GEM_CREATE, struct drm_i915_gem_create)
+#define DRM_IOCTL_I915_GEM_CREATE_EXT DRM_IOWR(DRM_COMMAND_BASE + DRM_I915_GEM_CREATE_EXT, struct drm_i915_gem_create_ext)
 #define DRM_IOCTL_I915_GEM_PREAD DRM_IOW(DRM_COMMAND_BASE + DRM_I915_GEM_PREAD, struct drm_i915_gem_pread)
 #define DRM_IOCTL_I915_GEM_PWRITE DRM_IOW(DRM_COMMAND_BASE + DRM_I915_GEM_PWRITE, struct drm_i915_gem_pwrite)
 #define DRM_IOCTL_I915_GEM_MMAP DRM_IOWR(DRM_COMMAND_BASE + DRM_I915_GEM_MMAP, struct drm_i915_gem_mmap)
 #define DRM_IOCTL_I915_GEM_MMAP_GTT DRM_IOWR(DRM_COMMAND_BASE + DRM_I915_GEM_MMAP_GTT, struct drm_i915_gem_mmap_gtt)
+#define DRM_IOCTL_I915_GEM_MMAP_OFFSET DRM_IOWR(DRM_COMMAND_BASE + DRM_I915_GEM_MMAP_GTT, struct drm_i915_gem_mmap_offset)
 #define DRM_IOCTL_I915_GEM_SET_DOMAIN DRM_IOW(DRM_COMMAND_BASE + DRM_I915_GEM_SET_DOMAIN, struct drm_i915_gem_set_domain)
 #define DRM_IOCTL_I915_GEM_SW_FINISH DRM_IOW(DRM_COMMAND_BASE + DRM_I915_GEM_SW_FINISH, struct drm_i915_gem_sw_finish)
 #define DRM_IOCTL_I915_GEM_SET_TILING DRM_IOWR(DRM_COMMAND_BASE + DRM_I915_GEM_SET_TILING, struct drm_i915_gem_set_tiling)
@@ -221,6 +263,7 @@ typedef struct _drm_i915_sarea {
 #define DRM_IOCTL_I915_GET_SPRITE_COLORKEY DRM_IOWR(DRM_COMMAND_BASE + DRM_I915_GET_SPRITE_COLORKEY, struct drm_intel_sprite_colorkey)
 #define DRM_IOCTL_I915_GEM_WAIT DRM_IOWR(DRM_COMMAND_BASE + DRM_I915_GEM_WAIT, struct drm_i915_gem_wait)
 #define DRM_IOCTL_I915_GEM_CONTEXT_CREATE DRM_IOWR(DRM_COMMAND_BASE + DRM_I915_GEM_CONTEXT_CREATE, struct drm_i915_gem_context_create)
+#define DRM_IOCTL_I915_GEM_CONTEXT_CREATE_EXT DRM_IOWR(DRM_COMMAND_BASE + DRM_I915_GEM_CONTEXT_CREATE, struct drm_i915_gem_context_create_ext)
 #define DRM_IOCTL_I915_GEM_CONTEXT_DESTROY DRM_IOW(DRM_COMMAND_BASE + DRM_I915_GEM_CONTEXT_DESTROY, struct drm_i915_gem_context_destroy)
 #define DRM_IOCTL_I915_REG_READ DRM_IOWR(DRM_COMMAND_BASE + DRM_I915_REG_READ, struct drm_i915_reg_read)
 #define DRM_IOCTL_I915_GET_RESET_STATS DRM_IOWR(DRM_COMMAND_BASE + DRM_I915_GET_RESET_STATS, struct drm_i915_reset_stats)
@@ -230,28 +273,34 @@ typedef struct _drm_i915_sarea {
 #define DRM_IOCTL_I915_PERF_OPEN DRM_IOW(DRM_COMMAND_BASE + DRM_I915_PERF_OPEN, struct drm_i915_perf_open_param)
 #define DRM_IOCTL_I915_PERF_ADD_CONFIG DRM_IOW(DRM_COMMAND_BASE + DRM_I915_PERF_ADD_CONFIG, struct drm_i915_perf_oa_config)
 #define DRM_IOCTL_I915_PERF_REMOVE_CONFIG DRM_IOW(DRM_COMMAND_BASE + DRM_I915_PERF_REMOVE_CONFIG, __u64)
+#define DRM_IOCTL_I915_QUERY DRM_IOWR(DRM_COMMAND_BASE + DRM_I915_QUERY, struct drm_i915_query)
+#define DRM_IOCTL_I915_GEM_VM_CREATE DRM_IOWR(DRM_COMMAND_BASE + DRM_I915_GEM_VM_CREATE, struct drm_i915_gem_vm_control)
+#define DRM_IOCTL_I915_GEM_VM_DESTROY DRM_IOW(DRM_COMMAND_BASE + DRM_I915_GEM_VM_DESTROY, struct drm_i915_gem_vm_control)
 typedef struct drm_i915_batchbuffer {
   int start;
   int used;
   int DR1;
   int DR4;
   int num_cliprects;
-  struct drm_clip_rect __user * cliprects;
+  struct drm_clip_rect  * cliprects;
 } drm_i915_batchbuffer_t;
 typedef struct _drm_i915_cmdbuffer {
-  char __user * buf;
+  char  * buf;
   int sz;
   int DR1;
   int DR4;
   int num_cliprects;
-  struct drm_clip_rect __user * cliprects;
+  struct drm_clip_rect  * cliprects;
 } drm_i915_cmdbuffer_t;
 typedef struct drm_i915_irq_emit {
-  int __user * irq_seq;
+  int  * irq_seq;
 } drm_i915_irq_emit_t;
 typedef struct drm_i915_irq_wait {
   int irq_seq;
 } drm_i915_irq_wait_t;
+#define I915_GEM_PPGTT_NONE 0
+#define I915_GEM_PPGTT_ALIASING 1
+#define I915_GEM_PPGTT_FULL 2
 #define I915_PARAM_IRQ_ACTIVE 1
 #define I915_PARAM_ALLOW_BATCHBUFFER 2
 #define I915_PARAM_LAST_DISPATCH 3
@@ -296,6 +345,9 @@ typedef struct drm_i915_irq_wait {
 #define I915_SCHEDULER_CAP_ENABLED (1ul << 0)
 #define I915_SCHEDULER_CAP_PRIORITY (1ul << 1)
 #define I915_SCHEDULER_CAP_PREEMPTION (1ul << 2)
+#define I915_SCHEDULER_CAP_SEMAPHORES (1ul << 3)
+#define I915_SCHEDULER_CAP_ENGINE_BUSY_STATS (1ul << 4)
+#define I915_SCHEDULER_CAP_STATIC_PRIORITY_MAP (1ul << 5)
 #define I915_PARAM_HUC_STATUS 42
 #define I915_PARAM_HAS_EXEC_ASYNC 43
 #define I915_PARAM_HAS_EXEC_FENCE 44
@@ -304,10 +356,21 @@ typedef struct drm_i915_irq_wait {
 #define I915_PARAM_SUBSLICE_MASK 47
 #define I915_PARAM_HAS_EXEC_BATCH_FIRST 48
 #define I915_PARAM_HAS_EXEC_FENCE_ARRAY 49
-typedef struct drm_i915_getparam {
+#define I915_PARAM_HAS_CONTEXT_ISOLATION 50
+#define I915_PARAM_CS_TIMESTAMP_FREQUENCY 51
+#define I915_PARAM_MMAP_GTT_COHERENT 52
+#define I915_PARAM_HAS_EXEC_SUBMIT_FENCE 53
+#define I915_PARAM_PERF_REVISION 54
+#define I915_PARAM_HAS_EXEC_TIMELINE_FENCES 55
+#define I915_PARAM_HAS_USERPTR_PROBE 56
+#define I915_PARAM_OA_TIMESTAMP_FREQUENCY 57
+#define I915_PARAM_PXP_STATUS 58
+#define I915_PARAM_HAS_CONTEXT_FREQ_HINT 59
+struct drm_i915_getparam {
   __s32 param;
-  int __user * value;
-} drm_i915_getparam_t;
+  int  * value;
+};
+typedef struct drm_i915_getparam drm_i915_getparam_t;
 #define I915_SETPARAM_USE_MI_BATCHBUFFER_START 1
 #define I915_SETPARAM_TEX_LRU_LOG_GRANULARITY 2
 #define I915_SETPARAM_ALLOW_BATCHBUFFER 3
@@ -321,7 +384,7 @@ typedef struct drm_i915_mem_alloc {
   int region;
   int alignment;
   int size;
-  int __user * region_offset;
+  int  * region_offset;
 } drm_i915_mem_alloc_t;
 typedef struct drm_i915_mem_free {
   int region;
@@ -384,6 +447,18 @@ struct drm_i915_gem_mmap_gtt {
   __u32 handle;
   __u32 pad;
   __u64 offset;
+};
+struct drm_i915_gem_mmap_offset {
+  __u32 handle;
+  __u32 pad;
+  __u64 offset;
+  __u64 flags;
+#define I915_MMAP_OFFSET_GTT 0
+#define I915_MMAP_OFFSET_WC 1
+#define I915_MMAP_OFFSET_WB 2
+#define I915_MMAP_OFFSET_UC 3
+#define I915_MMAP_OFFSET_FIXED 4
+  __u64 extensions;
 };
 struct drm_i915_gem_set_domain {
   __u32 handle;
@@ -450,10 +525,17 @@ struct drm_i915_gem_exec_object2 {
 };
 struct drm_i915_gem_exec_fence {
   __u32 handle;
+  __u32 flags;
 #define I915_EXEC_FENCE_WAIT (1 << 0)
 #define I915_EXEC_FENCE_SIGNAL (1 << 1)
 #define __I915_EXEC_FENCE_UNKNOWN_FLAGS (- (I915_EXEC_FENCE_SIGNAL << 1))
-  __u32 flags;
+};
+struct drm_i915_gem_execbuffer_ext_timeline_fences {
+#define DRM_I915_GEM_EXECBUFFER_EXT_TIMELINE_FENCES 0
+  struct i915_user_extension base;
+  __u64 fence_count;
+  __u64 handles_ptr;
+  __u64 values_ptr;
 };
 struct drm_i915_gem_execbuffer2 {
   __u64 buffers_ptr;
@@ -464,7 +546,8 @@ struct drm_i915_gem_execbuffer2 {
   __u32 DR4;
   __u32 num_cliprects;
   __u64 cliprects_ptr;
-#define I915_EXEC_RING_MASK (7 << 0)
+  __u64 flags;
+#define I915_EXEC_RING_MASK (0x3f)
 #define I915_EXEC_DEFAULT (0 << 0)
 #define I915_EXEC_RENDER (1 << 0)
 #define I915_EXEC_BSD (2 << 0)
@@ -474,10 +557,6 @@ struct drm_i915_gem_execbuffer2 {
 #define I915_EXEC_CONSTANTS_REL_GENERAL (0 << 6)
 #define I915_EXEC_CONSTANTS_ABSOLUTE (1 << 6)
 #define I915_EXEC_CONSTANTS_REL_SURFACE (2 << 6)
-  __u64 flags;
-  __u64 rsvd1;
-  __u64 rsvd2;
-};
 #define I915_EXEC_GEN7_SOL_RESET (1 << 8)
 #define I915_EXEC_SECURE (1 << 9)
 #define I915_EXEC_IS_PINNED (1 << 10)
@@ -493,7 +572,12 @@ struct drm_i915_gem_execbuffer2 {
 #define I915_EXEC_FENCE_OUT (1 << 17)
 #define I915_EXEC_BATCH_FIRST (1 << 18)
 #define I915_EXEC_FENCE_ARRAY (1 << 19)
-#define __I915_EXEC_UNKNOWN_FLAGS (- (I915_EXEC_FENCE_ARRAY << 1))
+#define I915_EXEC_FENCE_SUBMIT (1 << 20)
+#define I915_EXEC_USE_EXTENSIONS (1 << 21)
+#define __I915_EXEC_UNKNOWN_FLAGS (- (I915_EXEC_USE_EXTENSIONS << 1))
+  __u64 rsvd1;
+  __u64 rsvd2;
+};
 #define I915_EXEC_CONTEXT_ID_MASK (0xffffffff)
 #define i915_execbuffer2_set_context_id(eb2,context) (eb2).rsvd1 = context & I915_EXEC_CONTEXT_ID_MASK
 #define i915_execbuffer2_get_context_id(eb2) ((eb2).rsvd1 & I915_EXEC_CONTEXT_ID_MASK)
@@ -511,11 +595,11 @@ struct drm_i915_gem_busy {
   __u32 handle;
   __u32 busy;
 };
+struct drm_i915_gem_caching {
+  __u32 handle;
 #define I915_CACHING_NONE 0
 #define I915_CACHING_CACHED 1
 #define I915_CACHING_DISPLAY 2
-struct drm_i915_gem_caching {
-  __u32 handle;
   __u32 caching;
 };
 #define I915_TILING_NONE 0
@@ -630,9 +714,112 @@ struct drm_i915_gem_context_create {
   __u32 ctx_id;
   __u32 pad;
 };
+struct drm_i915_gem_context_create_ext {
+  __u32 ctx_id;
+  __u32 flags;
+#define I915_CONTEXT_CREATE_FLAGS_USE_EXTENSIONS (1u << 0)
+#define I915_CONTEXT_CREATE_FLAGS_SINGLE_TIMELINE (1u << 1)
+#define I915_CONTEXT_CREATE_FLAGS_UNKNOWN (- (I915_CONTEXT_CREATE_FLAGS_SINGLE_TIMELINE << 1))
+  __u64 extensions;
+#define I915_CONTEXT_CREATE_EXT_SETPARAM 0
+#define I915_CONTEXT_CREATE_EXT_CLONE 1
+};
+struct drm_i915_gem_context_param {
+  __u32 ctx_id;
+  __u32 size;
+  __u64 param;
+#define I915_CONTEXT_PARAM_BAN_PERIOD 0x1
+#define I915_CONTEXT_PARAM_NO_ZEROMAP 0x2
+#define I915_CONTEXT_PARAM_GTT_SIZE 0x3
+#define I915_CONTEXT_PARAM_NO_ERROR_CAPTURE 0x4
+#define I915_CONTEXT_PARAM_BANNABLE 0x5
+#define I915_CONTEXT_PARAM_PRIORITY 0x6
+#define I915_CONTEXT_MAX_USER_PRIORITY 1023
+#define I915_CONTEXT_DEFAULT_PRIORITY 0
+#define I915_CONTEXT_MIN_USER_PRIORITY - 1023
+#define I915_CONTEXT_PARAM_SSEU 0x7
+#define I915_CONTEXT_PARAM_RECOVERABLE 0x8
+#define I915_CONTEXT_PARAM_VM 0x9
+#define I915_CONTEXT_PARAM_ENGINES 0xa
+#define I915_CONTEXT_PARAM_PERSISTENCE 0xb
+#define I915_CONTEXT_PARAM_RINGSIZE 0xc
+#define I915_CONTEXT_PARAM_PROTECTED_CONTENT 0xd
+#define I915_CONTEXT_PARAM_LOW_LATENCY 0xe
+#define I915_CONTEXT_PARAM_CONTEXT_IMAGE 0xf
+  __u64 value;
+};
+struct drm_i915_gem_context_param_sseu {
+  struct i915_engine_class_instance engine;
+  __u32 flags;
+#define I915_CONTEXT_SSEU_FLAG_ENGINE_INDEX (1u << 0)
+  __u64 slice_mask;
+  __u64 subslice_mask;
+  __u16 min_eus_per_subslice;
+  __u16 max_eus_per_subslice;
+  __u32 rsvd;
+};
+struct i915_context_engines_load_balance {
+  struct i915_user_extension base;
+  __u16 engine_index;
+  __u16 num_siblings;
+  __u32 flags;
+  __u64 mbz64;
+  struct i915_engine_class_instance engines[];
+} __attribute__((packed));
+#define I915_DEFINE_CONTEXT_ENGINES_LOAD_BALANCE(name__,N__) struct { struct i915_user_extension base; __u16 engine_index; __u16 num_siblings; __u32 flags; __u64 mbz64; struct i915_engine_class_instance engines[N__]; \
+} __attribute__((packed)) name__
+struct i915_context_engines_bond {
+  struct i915_user_extension base;
+  struct i915_engine_class_instance master;
+  __u16 virtual_index;
+  __u16 num_bonds;
+  __u64 flags;
+  __u64 mbz64[4];
+  struct i915_engine_class_instance engines[];
+} __attribute__((packed));
+#define I915_DEFINE_CONTEXT_ENGINES_BOND(name__,N__) struct { struct i915_user_extension base; struct i915_engine_class_instance master; __u16 virtual_index; __u16 num_bonds; __u64 flags; __u64 mbz64[4]; struct i915_engine_class_instance engines[N__]; \
+} __attribute__((packed)) name__
+struct i915_context_engines_parallel_submit {
+  struct i915_user_extension base;
+  __u16 engine_index;
+  __u16 width;
+  __u16 num_siblings;
+  __u16 mbz16;
+  __u64 flags;
+  __u64 mbz64[3];
+  struct i915_engine_class_instance engines[];
+} __attribute__((__packed__));
+#define I915_DEFINE_CONTEXT_ENGINES_PARALLEL_SUBMIT(name__,N__) struct { struct i915_user_extension base; __u16 engine_index; __u16 width; __u16 num_siblings; __u16 mbz16; __u64 flags; __u64 mbz64[3]; struct i915_engine_class_instance engines[N__]; \
+} __attribute__((packed)) name__
+struct i915_context_param_engines {
+  __u64 extensions;
+#define I915_CONTEXT_ENGINES_EXT_LOAD_BALANCE 0
+#define I915_CONTEXT_ENGINES_EXT_BOND 1
+#define I915_CONTEXT_ENGINES_EXT_PARALLEL_SUBMIT 2
+  struct i915_engine_class_instance engines[];
+} __attribute__((packed));
+#define I915_DEFINE_CONTEXT_PARAM_ENGINES(name__,N__) struct { __u64 extensions; struct i915_engine_class_instance engines[N__]; \
+} __attribute__((packed)) name__
+struct i915_gem_context_param_context_image {
+  struct i915_engine_class_instance engine;
+  __u32 flags;
+#define I915_CONTEXT_IMAGE_FLAG_ENGINE_INDEX (1u << 0)
+  __u32 size;
+  __u32 mbz;
+  __u64 image;
+} __attribute__((packed));
+struct drm_i915_gem_context_create_ext_setparam {
+  struct i915_user_extension base;
+  struct drm_i915_gem_context_param param;
+};
 struct drm_i915_gem_context_destroy {
   __u32 ctx_id;
   __u32 pad;
+};
+struct drm_i915_gem_vm_control {
+  __u64 extensions;
+  __u32 flags;
+  __u32 vm_id;
 };
 struct drm_i915_reg_read {
   __u64 offset;
@@ -652,23 +839,9 @@ struct drm_i915_gem_userptr {
   __u64 user_size;
   __u32 flags;
 #define I915_USERPTR_READ_ONLY 0x1
+#define I915_USERPTR_PROBE 0x2
 #define I915_USERPTR_UNSYNCHRONIZED 0x80000000
   __u32 handle;
-};
-struct drm_i915_gem_context_param {
-  __u32 ctx_id;
-  __u32 size;
-  __u64 param;
-#define I915_CONTEXT_PARAM_BAN_PERIOD 0x1
-#define I915_CONTEXT_PARAM_NO_ZEROMAP 0x2
-#define I915_CONTEXT_PARAM_GTT_SIZE 0x3
-#define I915_CONTEXT_PARAM_NO_ERROR_CAPTURE 0x4
-#define I915_CONTEXT_PARAM_BANNABLE 0x5
-#define I915_CONTEXT_PARAM_PRIORITY 0x6
-#define I915_CONTEXT_MAX_USER_PRIORITY 1023
-#define I915_CONTEXT_DEFAULT_PRIORITY 0
-#define I915_CONTEXT_MIN_USER_PRIORITY - 1023
-  __u64 value;
 };
 enum drm_i915_oa_format {
   I915_OA_FORMAT_A13 = 1,
@@ -681,6 +854,10 @@ enum drm_i915_oa_format {
   I915_OA_FORMAT_A12,
   I915_OA_FORMAT_A12_B8_C8,
   I915_OA_FORMAT_A32u40_A4u32_B8_C8,
+  I915_OAR_FORMAT_A32u40_A4u32_B8_C8,
+  I915_OA_FORMAT_A24u40_A14u32_B8_C8,
+  I915_OAM_FORMAT_MPEC8u64_B8_C8,
+  I915_OAM_FORMAT_MPEC8u32_B8_C8,
   I915_OA_FORMAT_MAX
 };
 enum drm_i915_perf_property_id {
@@ -689,6 +866,11 @@ enum drm_i915_perf_property_id {
   DRM_I915_PERF_PROP_OA_METRICS_SET,
   DRM_I915_PERF_PROP_OA_FORMAT,
   DRM_I915_PERF_PROP_OA_EXPONENT,
+  DRM_I915_PERF_PROP_HOLD_PREEMPTION,
+  DRM_I915_PERF_PROP_GLOBAL_SSEU,
+  DRM_I915_PERF_PROP_POLL_OA_PERIOD,
+  DRM_I915_PERF_PROP_OA_ENGINE_CLASS,
+  DRM_I915_PERF_PROP_OA_ENGINE_INSTANCE,
   DRM_I915_PERF_PROP_MAX
 };
 struct drm_i915_perf_open_param {
@@ -701,6 +883,7 @@ struct drm_i915_perf_open_param {
 };
 #define I915_PERF_IOCTL_ENABLE _IO('i', 0x0)
 #define I915_PERF_IOCTL_DISABLE _IO('i', 0x1)
+#define I915_PERF_IOCTL_CONFIG _IO('i', 0x2)
 struct drm_i915_perf_record_header {
   __u32 type;
   __u16 pad;
@@ -721,6 +904,123 @@ struct drm_i915_perf_oa_config {
   __u64 boolean_regs_ptr;
   __u64 flex_regs_ptr;
 };
+struct drm_i915_query_item {
+  __u64 query_id;
+#define DRM_I915_QUERY_TOPOLOGY_INFO 1
+#define DRM_I915_QUERY_ENGINE_INFO 2
+#define DRM_I915_QUERY_PERF_CONFIG 3
+#define DRM_I915_QUERY_MEMORY_REGIONS 4
+#define DRM_I915_QUERY_HWCONFIG_BLOB 5
+#define DRM_I915_QUERY_GEOMETRY_SUBSLICES 6
+#define DRM_I915_QUERY_GUC_SUBMISSION_VERSION 7
+  __s32 length;
+  __u32 flags;
+#define DRM_I915_QUERY_PERF_CONFIG_LIST 1
+#define DRM_I915_QUERY_PERF_CONFIG_DATA_FOR_UUID 2
+#define DRM_I915_QUERY_PERF_CONFIG_DATA_FOR_ID 3
+  __u64 data_ptr;
+};
+struct drm_i915_query {
+  __u32 num_items;
+  __u32 flags;
+  __u64 items_ptr;
+};
+struct drm_i915_query_topology_info {
+  __u16 flags;
+  __u16 max_slices;
+  __u16 max_subslices;
+  __u16 max_eus_per_subslice;
+  __u16 subslice_offset;
+  __u16 subslice_stride;
+  __u16 eu_offset;
+  __u16 eu_stride;
+  __u8 data[];
+};
+struct drm_i915_engine_info {
+  struct i915_engine_class_instance engine;
+  __u32 rsvd0;
+  __u64 flags;
+#define I915_ENGINE_INFO_HAS_LOGICAL_INSTANCE (1 << 0)
+  __u64 capabilities;
+#define I915_VIDEO_CLASS_CAPABILITY_HEVC (1 << 0)
+#define I915_VIDEO_AND_ENHANCE_CLASS_CAPABILITY_SFC (1 << 1)
+  __u16 logical_instance;
+  __u16 rsvd1[3];
+  __u64 rsvd2[3];
+};
+struct drm_i915_query_engine_info {
+  __u32 num_engines;
+  __u32 rsvd[3];
+  struct drm_i915_engine_info engines[];
+};
+struct drm_i915_query_perf_config {
+  union {
+    __u64 n_configs;
+    __u64 config;
+    char uuid[36];
+  };
+  __u32 flags;
+  __u8 data[];
+};
+enum drm_i915_gem_memory_class {
+  I915_MEMORY_CLASS_SYSTEM = 0,
+  I915_MEMORY_CLASS_DEVICE,
+};
+struct drm_i915_gem_memory_class_instance {
+  __u16 memory_class;
+  __u16 memory_instance;
+};
+struct drm_i915_memory_region_info {
+  struct drm_i915_gem_memory_class_instance region;
+  __u32 rsvd0;
+  __u64 probed_size;
+  __u64 unallocated_size;
+  union {
+    __u64 rsvd1[8];
+    struct {
+      __u64 probed_cpu_visible_size;
+      __u64 unallocated_cpu_visible_size;
+    };
+  };
+};
+struct drm_i915_query_memory_regions {
+  __u32 num_regions;
+  __u32 rsvd[3];
+  struct drm_i915_memory_region_info regions[];
+};
+struct drm_i915_query_guc_submission_version {
+  __u32 branch;
+  __u32 major;
+  __u32 minor;
+  __u32 patch;
+};
+struct drm_i915_gem_create_ext {
+  __u64 size;
+  __u32 handle;
+#define I915_GEM_CREATE_EXT_FLAG_NEEDS_CPU_ACCESS (1 << 0)
+  __u32 flags;
+#define I915_GEM_CREATE_EXT_MEMORY_REGIONS 0
+#define I915_GEM_CREATE_EXT_PROTECTED_CONTENT 1
+#define I915_GEM_CREATE_EXT_SET_PAT 2
+  __u64 extensions;
+};
+struct drm_i915_gem_create_ext_memory_regions {
+  struct i915_user_extension base;
+  __u32 pad;
+  __u32 num_regions;
+  __u64 regions;
+};
+struct drm_i915_gem_create_ext_protected_content {
+  struct i915_user_extension base;
+  __u32 flags;
+};
+struct drm_i915_gem_create_ext_set_pat {
+  struct i915_user_extension base;
+  __u32 pat_index;
+  __u32 rsvd;
+};
+#define I915_PROTECTED_CONTENT_DEFAULT_SESSION 0xf
 #ifdef __cplusplus
+}
 #endif
 #endif

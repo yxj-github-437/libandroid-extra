@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _MD_P_H
 #define _MD_P_H
 #include <linux/types.h>
@@ -168,7 +156,7 @@ struct mdp_superblock_1 {
   __le32 sb_csum;
   __le32 max_dev;
   __u8 pad3[64 - 32];
-  __le16 dev_roles[0];
+  __le16 dev_roles[];
 };
 #define MD_FEATURE_BITMAP_OFFSET 1
 #define MD_FEATURE_RECOVERY_OFFSET 2
@@ -182,7 +170,8 @@ struct mdp_superblock_1 {
 #define MD_FEATURE_JOURNAL 512
 #define MD_FEATURE_PPL 1024
 #define MD_FEATURE_MULTIPLE_PPLS 2048
-#define MD_FEATURE_ALL (MD_FEATURE_BITMAP_OFFSET | MD_FEATURE_RECOVERY_OFFSET | MD_FEATURE_RESHAPE_ACTIVE | MD_FEATURE_BAD_BLOCKS | MD_FEATURE_REPLACEMENT | MD_FEATURE_RESHAPE_BACKWARDS | MD_FEATURE_NEW_OFFSET | MD_FEATURE_RECOVERY_BITMAP | MD_FEATURE_CLUSTERED | MD_FEATURE_JOURNAL | MD_FEATURE_PPL | MD_FEATURE_MULTIPLE_PPLS)
+#define MD_FEATURE_RAID0_LAYOUT 4096
+#define MD_FEATURE_ALL (MD_FEATURE_BITMAP_OFFSET | MD_FEATURE_RECOVERY_OFFSET | MD_FEATURE_RESHAPE_ACTIVE | MD_FEATURE_BAD_BLOCKS | MD_FEATURE_REPLACEMENT | MD_FEATURE_RESHAPE_BACKWARDS | MD_FEATURE_NEW_OFFSET | MD_FEATURE_RECOVERY_BITMAP | MD_FEATURE_CLUSTERED | MD_FEATURE_JOURNAL | MD_FEATURE_PPL | MD_FEATURE_MULTIPLE_PPLS | MD_FEATURE_RAID0_LAYOUT)
 struct r5l_payload_header {
   __le16 type;
   __le16 flags;

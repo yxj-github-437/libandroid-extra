@@ -39,11 +39,7 @@ typedef __WINT_TYPE__ wint_t;
 
 int iswalnum(wint_t __wc);
 int iswalpha(wint_t __wc);
-
-#if __ANDROID_API__ >= 21
-int iswblank(wint_t __wc) __INTRODUCED_IN(21);
-#endif /* __ANDROID_API__ >= 21 */
-
+int iswblank(wint_t __wc);
 int iswcntrl(wint_t __wc);
 int iswdigit(wint_t __wc);
 int iswgraph(wint_t __wc);
@@ -58,12 +54,16 @@ wint_t towlower(wint_t __wc);
 wint_t towupper(wint_t __wc);
 
 typedef long wctype_t;
-wctype_t wctype(const char* __name);
+wctype_t wctype(const char* _Nonnull __name);
 int iswctype(wint_t __wc, wctype_t __type);
 
 typedef const void* wctrans_t;
-wint_t towctrans(wint_t __wc, wctrans_t __transform) __INTRODUCED_IN(26) __VERSIONER_NO_GUARD;
-wctrans_t wctrans(const char* __name) __INTRODUCED_IN(26) __VERSIONER_NO_GUARD;
+
+#if __BIONIC_AVAILABILITY_GUARD(26)
+wint_t towctrans(wint_t __wc, wctrans_t _Nonnull __transform) __INTRODUCED_IN(26);
+wctrans_t _Nullable wctrans(const char* _Nonnull __name) __INTRODUCED_IN(26);
+#endif /* __BIONIC_AVAILABILITY_GUARD(26) */
+
 
 __END_DECLS
 

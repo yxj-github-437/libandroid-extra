@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef __LINUX_UAPI_SND_ASOC_H
 #define __LINUX_UAPI_SND_ASOC_H
 #include <linux/types.h>
@@ -65,7 +53,7 @@
 #define SND_SOC_TPLG_MAGIC 0x41536F43
 #define SND_SOC_TPLG_NUM_TEXTS 16
 #define SND_SOC_TPLG_ABI_VERSION 0x5
-#define SND_SOC_TPLG_ABI_VERSION_MIN 0x4
+#define SND_SOC_TPLG_ABI_VERSION_MIN 0x5
 #define SND_SOC_TPLG_TLV_SIZE 32
 #define SND_SOC_TPLG_TYPE_MIXER 1
 #define SND_SOC_TPLG_TYPE_BYTES 2
@@ -95,6 +83,11 @@
 #define SND_SOC_TPLG_DAI_FLGBIT_SYMMETRIC_RATES (1 << 0)
 #define SND_SOC_TPLG_DAI_FLGBIT_SYMMETRIC_CHANNELS (1 << 1)
 #define SND_SOC_TPLG_DAI_FLGBIT_SYMMETRIC_SAMPLEBITS (1 << 2)
+#define SND_SOC_TPLG_DAI_CLK_GATE_UNDEFINED 0
+#define SND_SOC_TPLG_DAI_CLK_GATE_GATED 1
+#define SND_SOC_TPLG_DAI_CLK_GATE_CONT 2
+#define SND_SOC_TPLG_MCLK_CO 0
+#define SND_SOC_TPLG_MCLK_CI 1
 #define SND_SOC_DAI_FORMAT_I2S 1
 #define SND_SOC_DAI_FORMAT_RIGHT_J 2
 #define SND_SOC_DAI_FORMAT_LEFT_J 3
@@ -108,6 +101,14 @@
 #define SND_SOC_TPLG_LNK_FLGBIT_SYMMETRIC_CHANNELS (1 << 1)
 #define SND_SOC_TPLG_LNK_FLGBIT_SYMMETRIC_SAMPLEBITS (1 << 2)
 #define SND_SOC_TPLG_LNK_FLGBIT_VOICE_WAKEUP (1 << 3)
+#define SND_SOC_TPLG_BCLK_CP 0
+#define SND_SOC_TPLG_BCLK_CC 1
+#define SND_SOC_TPLG_BCLK_CM SND_SOC_TPLG_BCLK_CP
+#define SND_SOC_TPLG_BCLK_CS SND_SOC_TPLG_BCLK_CC
+#define SND_SOC_TPLG_FSYNC_CP 0
+#define SND_SOC_TPLG_FSYNC_CC 1
+#define SND_SOC_TPLG_FSYNC_CM SND_SOC_TPLG_FSYNC_CP
+#define SND_SOC_TPLG_FSYNC_CS SND_SOC_TPLG_FSYNC_CC
 struct snd_soc_tplg_hdr {
   __le32 magic;
   __le32 abi;
@@ -136,16 +137,16 @@ struct snd_soc_tplg_vendor_array {
   __le32 type;
   __le32 num_elems;
   union {
-    struct snd_soc_tplg_vendor_uuid_elem uuid[0];
-    struct snd_soc_tplg_vendor_value_elem value[0];
-    struct snd_soc_tplg_vendor_string_elem string[0];
+    __DECLARE_FLEX_ARRAY(struct snd_soc_tplg_vendor_uuid_elem, uuid);
+    __DECLARE_FLEX_ARRAY(struct snd_soc_tplg_vendor_value_elem, value);
+    __DECLARE_FLEX_ARRAY(struct snd_soc_tplg_vendor_string_elem, string);
   };
 } __attribute__((packed));
 struct snd_soc_tplg_private {
   __le32 size;
   union {
-    char data[0];
-    struct snd_soc_tplg_vendor_array array[0];
+    __DECLARE_FLEX_ARRAY(char, data);
+    __DECLARE_FLEX_ARRAY(struct snd_soc_tplg_vendor_array, array);
   };
 } __attribute__((packed));
 struct snd_soc_tplg_tlv_dbscale {
@@ -213,8 +214,8 @@ struct snd_soc_tplg_hw_config {
   __u8 clock_gated;
   __u8 invert_bclk;
   __u8 invert_fsync;
-  __u8 bclk_master;
-  __u8 fsync_master;
+  __u8 bclk_provider;
+  __u8 fsync_provider;
   __u8 mclk_direction;
   __le16 reserved;
   __le32 mclk_rate;

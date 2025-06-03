@@ -26,37 +26,33 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _SYS_STAT_H_
-#error "Never include this file directly; instead, include <sys/stat.h>"
-#endif
+#pragma once
 
-
-#if __ANDROID_API__ >= 18
-mode_t __umask_chk(mode_t) __INTRODUCED_IN(18);
-#endif /* __ANDROID_API__ >= 18 */
-
+mode_t __umask_chk(mode_t);
+mode_t __umask_real(mode_t mode) __RENAME(umask);
 
 #if defined(__BIONIC_FORTIFY)
 #define __umask_invalid_mode_str "'umask' called with invalid mode"
 
 #if defined(__clang__)
 
-#if __ANDROID_API__ >= __ANDROID_API_J_MR2__
 /* Abuse enable_if to make this an overload of umask. */
 __BIONIC_FORTIFY_INLINE
 mode_t umask(mode_t mode)
     __overloadable
     __enable_if(1, "")
     __clang_error_if(mode & ~0777, __umask_invalid_mode_str) {
+#if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
   return __umask_chk(mode);
+#else
+  return __umask_real(mode);
+#endif
 }
-#endif /* __ANDROID_API__ >= __ANDROID_API_J_MR2__ */
 
 #else /* defined(__clang__) */
 __errordecl(__umask_invalid_mode, __umask_invalid_mode_str);
 extern mode_t __umask_real(mode_t) __RENAME(umask);
 
-#if __ANDROID_API__ >= __ANDROID_API_J_MR2__
 __BIONIC_FORTIFY_INLINE
 mode_t umask(mode_t mode) {
   if (__builtin_constant_p(mode)) {
@@ -67,7 +63,6 @@ mode_t umask(mode_t mode) {
   }
   return __umask_chk(mode);
 }
-#endif /* __ANDROID_API__ >= __ANDROID_API_J_MR2__ */
 
 #endif /* defined(__clang__) */
 #undef __umask_invalid_mode_str

@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef __ASM_GENERIC_MMAN_COMMON_H
 #define __ASM_GENERIC_MMAN_COMMON_H
 #define PROT_READ 0x1
@@ -25,13 +13,16 @@
 #define PROT_NONE 0x0
 #define PROT_GROWSDOWN 0x01000000
 #define PROT_GROWSUP 0x02000000
-#define MAP_SHARED 0x01
-#define MAP_PRIVATE 0x02
-#define MAP_SHARED_VALIDATE 0x03
 #define MAP_TYPE 0x0f
 #define MAP_FIXED 0x10
 #define MAP_ANONYMOUS 0x20
-#define MAP_UNINITIALIZED 0x0
+#define MAP_POPULATE 0x008000
+#define MAP_NONBLOCK 0x010000
+#define MAP_STACK 0x020000
+#define MAP_HUGETLB 0x040000
+#define MAP_SYNC 0x080000
+#define MAP_FIXED_NOREPLACE 0x100000
+#define MAP_UNINITIALIZED 0x4000000
 #define MLOCK_ONFAULT 0x01
 #define MS_ASYNC 1
 #define MS_INVALIDATE 2
@@ -55,6 +46,12 @@
 #define MADV_DODUMP 17
 #define MADV_WIPEONFORK 18
 #define MADV_KEEPONFORK 19
+#define MADV_COLD 20
+#define MADV_PAGEOUT 21
+#define MADV_POPULATE_READ 22
+#define MADV_POPULATE_WRITE 23
+#define MADV_DONTNEED_LOCKED 24
+#define MADV_COLLAPSE 25
 #define MAP_FILE 0
 #define PKEY_DISABLE_ACCESS 0x1
 #define PKEY_DISABLE_WRITE 0x2

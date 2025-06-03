@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_INPUT_H
 #define _UAPI_INPUT_H
 #include <sys/time.h>
@@ -24,7 +12,21 @@
 #include <linux/types.h>
 #include "input-event-codes.h"
 struct input_event {
+#if __BITS_PER_LONG != 32 || !defined(__USE_TIME_BITS64)
   struct timeval time;
+#define input_event_sec time.tv_sec
+#define input_event_usec time.tv_usec
+#else
+  __kernel_ulong_t __sec;
+#if defined(__sparc__) && defined(__arch64__)
+  unsigned int __usec;
+  unsigned int __pad;
+#else
+  __kernel_ulong_t __usec;
+#endif
+#define input_event_sec __sec
+#define input_event_usec __usec
+#endif
   __u16 type;
   __u16 code;
   __s32 value;
@@ -111,10 +113,12 @@ struct input_mask {
 #define BUS_RMI 0x1D
 #define BUS_CEC 0x1E
 #define BUS_INTEL_ISHTP 0x1F
-#define MT_TOOL_FINGER 0
-#define MT_TOOL_PEN 1
-#define MT_TOOL_PALM 2
-#define MT_TOOL_MAX 2
+#define BUS_AMD_SFH 0x20
+#define MT_TOOL_FINGER 0x00
+#define MT_TOOL_PEN 0x01
+#define MT_TOOL_PALM 0x02
+#define MT_TOOL_DIAL 0x0a
+#define MT_TOOL_MAX 0x0f
 #define FF_STATUS_STOPPED 0x00
 #define FF_STATUS_PLAYING 0x01
 #define FF_STATUS_MAX 0x01
@@ -157,7 +161,7 @@ struct ff_periodic_effect {
   __u16 phase;
   struct ff_envelope envelope;
   __u32 custom_len;
-  __s16 __user * custom_data;
+  __s16  * custom_data;
 };
 struct ff_rumble_effect {
   __u16 strong_magnitude;

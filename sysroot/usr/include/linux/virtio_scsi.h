@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _LINUX_VIRTIO_SCSI_H
 #define _LINUX_VIRTIO_SCSI_H
 #include <linux/virtio_types.h>
@@ -77,16 +65,16 @@ struct virtio_scsi_event {
   __virtio32 reason;
 } __attribute__((packed));
 struct virtio_scsi_config {
-  __u32 num_queues;
-  __u32 seg_max;
-  __u32 max_sectors;
-  __u32 cmd_per_lun;
-  __u32 event_info_size;
-  __u32 sense_size;
-  __u32 cdb_size;
-  __u16 max_channel;
-  __u16 max_target;
-  __u32 max_lun;
+  __virtio32 num_queues;
+  __virtio32 seg_max;
+  __virtio32 max_sectors;
+  __virtio32 cmd_per_lun;
+  __virtio32 event_info_size;
+  __virtio32 sense_size;
+  __virtio32 cdb_size;
+  __virtio16 max_channel;
+  __virtio16 max_target;
+  __virtio32 max_lun;
 } __attribute__((packed));
 #define VIRTIO_SCSI_F_INOUT 0
 #define VIRTIO_SCSI_F_HOTPLUG 1

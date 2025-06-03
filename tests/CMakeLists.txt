@@ -1,4 +1,4 @@
-project(tests 
+project(tests
         LANGUAGES C)
 
 add_executable(fmemopen_test src/fmemopen_test.c)

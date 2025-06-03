@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_LINUX_IF_FDDI_H
 #define _UAPI_LINUX_IF_FDDI_H
 #include <linux/types.h>
@@ -29,6 +17,18 @@
 #define FDDI_K_LLC_ZLEN 13
 #define FDDI_K_LLC_LEN 4491
 #define FDDI_K_OUI_LEN 3
+#define FDDI_FC_K_CLASS_MASK 0x80
+#define FDDI_FC_K_CLASS_SYNC 0x80
+#define FDDI_FC_K_CLASS_ASYNC 0x00
+#define FDDI_FC_K_ALEN_MASK 0x40
+#define FDDI_FC_K_ALEN_48 0x40
+#define FDDI_FC_K_ALEN_16 0x00
+#define FDDI_FC_K_FORMAT_MASK 0x30
+#define FDDI_FC_K_FORMAT_FUTURE 0x30
+#define FDDI_FC_K_FORMAT_IMPLEMENTOR 0x20
+#define FDDI_FC_K_FORMAT_LLC 0x10
+#define FDDI_FC_K_FORMAT_MANAGEMENT 0x00
+#define FDDI_FC_K_CONTROL_MASK 0x0f
 #define FDDI_FC_K_VOID 0x00
 #define FDDI_FC_K_NON_RESTRICTED_TOKEN 0x80
 #define FDDI_FC_K_RESTRICTED_TOKEN 0xC0

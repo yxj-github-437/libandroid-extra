@@ -1,27 +1,16 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef __LINUX_MAGIC_H__
 #define __LINUX_MAGIC_H__
 #define ADFS_SUPER_MAGIC 0xadf5
 #define AFFS_SUPER_MAGIC 0xadff
 #define AFS_SUPER_MAGIC 0x5346414F
 #define AUTOFS_SUPER_MAGIC 0x0187
+#define CEPH_SUPER_MAGIC 0x00c36400
 #define CODA_SUPER_MAGIC 0x73757245
 #define CRAMFS_MAGIC 0x28cd3d45
 #define CRAMFS_MAGIC_WEND 0x453dcd28
@@ -35,6 +24,7 @@
 #define SQUASHFS_MAGIC 0x73717368
 #define ECRYPTFS_SUPER_MAGIC 0xf15f
 #define EFS_SUPER_MAGIC 0x414A53
+#define EROFS_SUPER_MAGIC_V1 0xE0F5E1E2
 #define EXT2_SUPER_MAGIC 0xEF53
 #define EXT3_SUPER_MAGIC 0xEF53
 #define XENFS_SUPER_MAGIC 0xabba1974
@@ -45,16 +35,20 @@
 #define HPFS_SUPER_MAGIC 0xf995e849
 #define ISOFS_SUPER_MAGIC 0x9660
 #define JFFS2_SUPER_MAGIC 0x72b6
+#define XFS_SUPER_MAGIC 0x58465342
 #define PSTOREFS_MAGIC 0x6165676C
 #define EFIVARFS_MAGIC 0xde5e81e4
 #define HOSTFS_SUPER_MAGIC 0x00c0ffee
 #define OVERLAYFS_SUPER_MAGIC 0x794c7630
+#define FUSE_SUPER_MAGIC 0x65735546
+#define BCACHEFS_SUPER_MAGIC 0xca451a4e
 #define MINIX_SUPER_MAGIC 0x137F
 #define MINIX_SUPER_MAGIC2 0x138F
 #define MINIX2_SUPER_MAGIC 0x2468
 #define MINIX2_SUPER_MAGIC2 0x2478
 #define MINIX3_SUPER_MAGIC 0x4d5a
 #define MSDOS_SUPER_MAGIC 0x4d44
+#define EXFAT_SUPER_MAGIC 0x2011BAB0
 #define NCP_SUPER_MAGIC 0x564c
 #define NFS_SUPER_MAGIC 0x6969
 #define OCFS2_SUPER_MAGIC 0x7461636f
@@ -67,6 +61,8 @@
 #define REISER2FS_SUPER_MAGIC_STRING "ReIsEr2Fs"
 #define REISER2FS_JR_SUPER_MAGIC_STRING "ReIsEr3Fs"
 #define SMB_SUPER_MAGIC 0x517B
+#define CIFS_SUPER_MAGIC 0xFF534D42
+#define SMB2_SUPER_MAGIC 0xFE534D42
 #define CGROUP_SUPER_MAGIC 0x27e0eb
 #define CGROUP2_SUPER_MAGIC 0x63677270
 #define RDTGROUP_SUPER_MAGIC 0x7655821
@@ -77,6 +73,7 @@
 #define DAXFS_MAGIC 0x64646178
 #define BINFMTFS_MAGIC 0x42494e4d
 #define DEVPTS_SUPER_MAGIC 0x1cd1
+#define BINDERFS_SUPER_MAGIC 0x6c6f6f70
 #define FUTEXFS_SUPER_MAGIC 0xBAD1DEA
 #define PIPEFS_MAGIC 0x50495045
 #define PROC_SUPER_MAGIC 0x9fa0
@@ -89,7 +86,10 @@
 #define NSFS_MAGIC 0x6e736673
 #define BPF_FS_MAGIC 0xcafe4a11
 #define AAFS_MAGIC 0x5a3c69f0
+#define ZONEFS_MAGIC 0x5a4f4653
 #define UDF_SUPER_MAGIC 0x15013346
-#define BALLOON_KVM_MAGIC 0x13661366
-#define ZSMALLOC_MAGIC 0x58295829
+#define DMA_BUF_MAGIC 0x444d4142
+#define DEVMEM_MAGIC 0x454d444d
+#define SECRETMEM_MAGIC 0x5345434d
+#define PID_FS_MAGIC 0x50494446
 #endif

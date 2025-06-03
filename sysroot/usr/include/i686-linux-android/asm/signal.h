@@ -1,26 +1,13 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_ASM_X86_SIGNAL_H
 #define _UAPI_ASM_X86_SIGNAL_H
 #ifndef __ASSEMBLY__
 #include <linux/types.h>
-#include <linux/time.h>
 #include <linux/compiler.h>
 struct siginfo;
 #define _KERNEL_NSIG 32
@@ -62,22 +49,13 @@ typedef unsigned long sigset_t;
 #define SIGUNUSED 31
 #define __SIGRTMIN 32
 #define __SIGRTMAX _KERNEL__NSIG
-#define SA_NOCLDSTOP 0x00000001u
-#define SA_NOCLDWAIT 0x00000002u
-#define SA_SIGINFO 0x00000004u
-#define SA_ONSTACK 0x08000000u
-#define SA_RESTART 0x10000000u
-#define SA_NODEFER 0x40000000u
-#define SA_RESETHAND 0x80000000u
-#define SA_NOMASK SA_NODEFER
-#define SA_ONESHOT SA_RESETHAND
 #define SA_RESTORER 0x04000000
 #define MINSIGSTKSZ 2048
 #define SIGSTKSZ 8192
 #include <asm-generic/signal-defs.h>
 #ifndef __ASSEMBLY__
 #ifdef __i386__
-struct sigaction {
+struct __kernel_sigaction {
   union {
     __sighandler_t _sa_handler;
     void(* _sa_sigaction) (int, struct siginfo *, void *);
@@ -89,7 +67,7 @@ struct sigaction {
 #define sa_handler _u._sa_handler
 #define sa_sigaction _u._sa_sigaction
 #else
-struct sigaction {
+struct __kernel_sigaction {
   __sighandler_t sa_handler;
   unsigned long sa_flags;
   __sigrestore_t sa_restorer;
@@ -97,9 +75,9 @@ struct sigaction {
 };
 #endif
 typedef struct sigaltstack {
-  void __user * ss_sp;
+  void  * ss_sp;
   int ss_flags;
-  size_t ss_size;
+  __kernel_size_t ss_size;
 } stack_t;
 #endif
 #endif

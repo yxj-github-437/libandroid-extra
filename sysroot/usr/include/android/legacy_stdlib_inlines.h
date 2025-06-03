@@ -26,86 +26,13 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _ANDROID_LEGACY_STDLIB_INLINES_H_
-#define _ANDROID_LEGACY_STDLIB_INLINES_H_
+#pragma once
 
 #include <sys/cdefs.h>
 
-#if __ANDROID_API__ < __ANDROID_API_K__
+#if __ANDROID_API__ < 26
 
-__BEGIN_DECLS
+#define __BIONIC_THREADS_INLINE static __inline
+#include <bits/stdlib_inlines.h>
 
-static __inline int abs(int __n) { return (__n < 0) ? -__n : __n; }
-
-static __inline long labs(long __n) { return (__n < 0L) ? -__n : __n; }
-
-static __inline long long llabs(long long __n) {
-  return (__n < 0LL) ? -__n : __n;
-}
-
-__END_DECLS
-
-#endif  /* __ANDROID_API__ < __ANDROID_API_K__ */
-
-#if __ANDROID_API__ < __ANDROID_API_L__
-
-#include <errno.h>
-#include <float.h>
-#include <stdlib.h>
-
-__BEGIN_DECLS
-
-static __inline float strtof(const char* nptr, char** endptr) {
-  double d = strtod(nptr, endptr);
-  if (d > FLT_MAX) {
-    errno = ERANGE;
-    return __builtin_huge_valf();
-  } else if (d < -FLT_MAX) {
-    errno = ERANGE;
-    return -__builtin_huge_valf();
-  }
-  return __BIONIC_CAST(static_cast, float, d);
-}
-
-static __inline double atof(const char *nptr) { return (strtod(nptr, NULL)); }
-
-static __inline int rand(void) { return (int)lrand48(); }
-
-static __inline void srand(unsigned int __s) { srand48(__s); }
-
-static __inline long random(void) { return lrand48(); }
-
-static __inline void srandom(unsigned int __s) { srand48(__s); }
-
-static __inline int grantpt(int __fd __attribute((unused))) {
-  return 0; /* devpts does this all for us! */
-}
-
-__END_DECLS
-
-#endif  /* __ANDROID_API__ < __ANDROID_API_L__ */
-
-#if __ANDROID_API__ < __ANDROID_API_O__
-
-#include <stdlib.h>
-#include <xlocale.h>
-
-__BEGIN_DECLS
-
-static __inline double strtod_l(const char* __s, char** __end_ptr, locale_t __l) {
-  return strtod(__s, __end_ptr);
-}
-
-static __inline float strtof_l(const char* __s, char** __end_ptr, locale_t __l) {
-  return strtof(__s, __end_ptr);
-}
-
-static __inline long strtol_l(const char* __s, char** __end_ptr, int __base, locale_t __l) {
-  return strtol(__s, __end_ptr, __base);
-}
-
-__END_DECLS
-
-#endif  /* __ANDROID_API__ < __ANDROID_API_O__ */
-
-#endif /* _ANDROID_LEGACY_STDLIB_INLINES_H_ */
+#endif

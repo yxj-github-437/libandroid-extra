@@ -1,29 +1,18 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_SERIO_H
 #define _UAPI_SERIO_H
+#include <linux/const.h>
 #include <linux/ioctl.h>
 #define SPIOCSTYPE _IOW('q', 0x01, unsigned long)
-#define SERIO_TIMEOUT BIT(0)
-#define SERIO_PARITY BIT(1)
-#define SERIO_FRAME BIT(2)
-#define SERIO_OOB_DATA BIT(3)
+#define SERIO_TIMEOUT _BITUL(0)
+#define SERIO_PARITY _BITUL(1)
+#define SERIO_FRAME _BITUL(2)
+#define SERIO_OOB_DATA _BITUL(3)
 #define SERIO_XT 0x00
 #define SERIO_8042 0x01
 #define SERIO_RS232 0x02
@@ -76,4 +65,6 @@
 #define SERIO_EGALAX 0x3f
 #define SERIO_PULSE8_CEC 0x40
 #define SERIO_RAINSHADOW_CEC 0x41
+#define SERIO_FSIA6B 0x42
+#define SERIO_EXTRON_DA_HD_4K_PLUS 0x43
 #endif

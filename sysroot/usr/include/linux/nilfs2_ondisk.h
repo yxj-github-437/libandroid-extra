@@ -1,25 +1,14 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _LINUX_NILFS2_ONDISK_H
 #define _LINUX_NILFS2_ONDISK_H
 #include <linux/types.h>
 #include <linux/magic.h>
+#include <asm/byteorder.h>
 #define NILFS_INODE_BMAP_SIZE 7
 struct nilfs_inode {
   __le64 i_blocks;
@@ -248,12 +237,17 @@ enum {
   NILFS_CHECKPOINT_MINOR,
 };
 #define NILFS_CHECKPOINT_FNS(flag,name) static inline void nilfs_checkpoint_set_ ##name(struct nilfs_checkpoint * cp) \
-{ cp->cp_flags = cpu_to_le32(le32_to_cpu(cp->cp_flags) | (1UL << NILFS_CHECKPOINT_ ##flag)); \
+{ cp->cp_flags = __cpu_to_le32(__le32_to_cpu(cp->cp_flags) | (1UL << NILFS_CHECKPOINT_ ##flag)); \
 } static inline void nilfs_checkpoint_clear_ ##name(struct nilfs_checkpoint * cp) \
-{ cp->cp_flags = cpu_to_le32(le32_to_cpu(cp->cp_flags) & ~(1UL << NILFS_CHECKPOINT_ ##flag)); \
+{ cp->cp_flags = __cpu_to_le32(__le32_to_cpu(cp->cp_flags) & ~(1UL << NILFS_CHECKPOINT_ ##flag)); \
 } static inline int nilfs_checkpoint_ ##name(const struct nilfs_checkpoint * cp) \
-{ return ! ! (le32_to_cpu(cp->cp_flags) & (1UL << NILFS_CHECKPOINT_ ##flag)); \
+{ return ! ! (__le32_to_cpu(cp->cp_flags) & (1UL << NILFS_CHECKPOINT_ ##flag)); \
 }
+struct nilfs_cpfile_header {
+  __le64 ch_ncheckpoints;
+  __le64 ch_nsnapshots;
+  struct nilfs_snapshot_list ch_snapshot_list;
+};
 #define NILFS_CPFILE_FIRST_CHECKPOINT_OFFSET ((sizeof(struct nilfs_cpfile_header) + sizeof(struct nilfs_checkpoint) - 1) / sizeof(struct nilfs_checkpoint))
 struct nilfs_segment_usage {
   __le64 su_lastmod;
@@ -267,11 +261,11 @@ enum {
   NILFS_SEGMENT_USAGE_ERROR,
 };
 #define NILFS_SEGMENT_USAGE_FNS(flag,name) static inline void nilfs_segment_usage_set_ ##name(struct nilfs_segment_usage * su) \
-{ su->su_flags = cpu_to_le32(le32_to_cpu(su->su_flags) | (1UL << NILFS_SEGMENT_USAGE_ ##flag)); \
+{ su->su_flags = __cpu_to_le32(__le32_to_cpu(su->su_flags) | (1UL << NILFS_SEGMENT_USAGE_ ##flag)); \
 } static inline void nilfs_segment_usage_clear_ ##name(struct nilfs_segment_usage * su) \
-{ su->su_flags = cpu_to_le32(le32_to_cpu(su->su_flags) & ~(1UL << NILFS_SEGMENT_USAGE_ ##flag)); \
+{ su->su_flags = __cpu_to_le32(__le32_to_cpu(su->su_flags) & ~(1UL << NILFS_SEGMENT_USAGE_ ##flag)); \
 } static inline int nilfs_segment_usage_ ##name(const struct nilfs_segment_usage * su) \
-{ return ! ! (le32_to_cpu(su->su_flags) & (1UL << NILFS_SEGMENT_USAGE_ ##flag)); \
+{ return ! ! (__le32_to_cpu(su->su_flags) & (1UL << NILFS_SEGMENT_USAGE_ ##flag)); \
 }
 struct nilfs_sufile_header {
   __le64 sh_ncleansegs;

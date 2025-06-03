@@ -1,23 +1,12 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI__LINUX_FUNCTIONFS_H__
 #define _UAPI__LINUX_FUNCTIONFS_H__
+#include <linux/const.h>
 #include <linux/types.h>
 #include <linux/ioctl.h>
 #include <linux/usb/ch9.h>
@@ -44,6 +33,18 @@ struct usb_endpoint_descriptor_no_audio {
   __le16 wMaxPacketSize;
   __u8 bInterval;
 } __attribute__((packed));
+struct usb_dfu_functional_descriptor {
+  __u8 bLength;
+  __u8 bDescriptorType;
+  __u8 bmAttributes;
+  __le16 wDetachTimeOut;
+  __le16 wTransferSize;
+  __le16 bcdDFUVersion;
+} __attribute__((packed));
+#define DFU_FUNC_ATT_CAN_DOWNLOAD _BITUL(0)
+#define DFU_FUNC_ATT_CAN_UPLOAD _BITUL(1)
+#define DFU_FUNC_ATT_MANIFEST_TOLERANT _BITUL(2)
+#define DFU_FUNC_ATT_WILL_DETACH _BITUL(3)
 struct usb_functionfs_descs_head_v2 {
   __le32 magic;
   __le32 length;
@@ -71,14 +72,21 @@ struct usb_os_desc_header {
 struct usb_ext_compat_desc {
   __u8 bFirstInterfaceNumber;
   __u8 Reserved1;
-  __u8 CompatibleID[8];
+  __struct_group(, IDs,, __u8 CompatibleID[8];
   __u8 SubCompatibleID[8];
+ );
   __u8 Reserved2[6];
 };
 struct usb_ext_prop_desc {
   __le32 dwSize;
   __le32 dwPropertyDataType;
   __le16 wPropertyNameLength;
+} __attribute__((packed));
+#define USB_FFS_DMABUF_TRANSFER_MASK 0x0
+struct usb_ffs_dmabuf_transfer_req {
+  int fd;
+  __u32 flags;
+  __u64 length;
 } __attribute__((packed));
 struct usb_functionfs_strings_head {
   __le32 magic;
@@ -108,4 +116,7 @@ struct usb_functionfs_event {
 #define FUNCTIONFS_INTERFACE_REVMAP _IO('g', 128)
 #define FUNCTIONFS_ENDPOINT_REVMAP _IO('g', 129)
 #define FUNCTIONFS_ENDPOINT_DESC _IOR('g', 130, struct usb_endpoint_descriptor)
+#define FUNCTIONFS_DMABUF_ATTACH _IOW('g', 131, int)
+#define FUNCTIONFS_DMABUF_DETACH _IOW('g', 132, int)
+#define FUNCTIONFS_DMABUF_TRANSFER _IOW('g', 133, struct usb_ffs_dmabuf_transfer_req)
 #endif

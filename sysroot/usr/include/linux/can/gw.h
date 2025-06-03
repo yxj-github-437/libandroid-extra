@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _UAPI_CAN_GW_H
 #define _UAPI_CAN_GW_H
 #include <linux/types.h>
@@ -47,23 +35,35 @@ enum {
   CGW_DELETED,
   CGW_LIM_HOPS,
   CGW_MOD_UID,
+  CGW_FDMOD_AND,
+  CGW_FDMOD_OR,
+  CGW_FDMOD_XOR,
+  CGW_FDMOD_SET,
   __CGW_MAX
 };
 #define CGW_MAX (__CGW_MAX - 1)
 #define CGW_FLAGS_CAN_ECHO 0x01
 #define CGW_FLAGS_CAN_SRC_TSTAMP 0x02
 #define CGW_FLAGS_CAN_IIF_TX_OK 0x04
+#define CGW_FLAGS_CAN_FD 0x08
 #define CGW_MOD_FUNCS 4
 #define CGW_MOD_ID 0x01
 #define CGW_MOD_DLC 0x02
+#define CGW_MOD_LEN CGW_MOD_DLC
 #define CGW_MOD_DATA 0x04
-#define CGW_FRAME_MODS 3
+#define CGW_MOD_FLAGS 0x08
+#define CGW_FRAME_MODS 4
 #define MAX_MODFUNCTIONS (CGW_MOD_FUNCS * CGW_FRAME_MODS)
 struct cgw_frame_mod {
   struct can_frame cf;
   __u8 modtype;
 } __attribute__((packed));
+struct cgw_fdframe_mod {
+  struct canfd_frame cf;
+  __u8 modtype;
+} __attribute__((packed));
 #define CGW_MODATTR_LEN sizeof(struct cgw_frame_mod)
+#define CGW_FDMODATTR_LEN sizeof(struct cgw_fdframe_mod)
 struct cgw_csum_xor {
   __s8 from_idx;
   __s8 to_idx;

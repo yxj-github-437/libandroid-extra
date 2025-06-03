@@ -29,9 +29,10 @@
 #ifndef _NET_IF_H_
 #define _NET_IF_H_
 
+#include <sys/cdefs.h>
+
 #include <sys/socket.h>
 #include <linux/if.h>
-#include <sys/cdefs.h>
 
 #ifndef IF_NAMESIZE
 #define IF_NAMESIZE IFNAMSIZ
@@ -41,16 +42,16 @@ __BEGIN_DECLS
 
 struct if_nameindex {
   unsigned if_index;
-  char* if_name;
+  char* _Nullable if_name;
 };
 
-char* if_indextoname(unsigned __index, char* __buf);
-unsigned if_nametoindex(const char* __name);
+char* _Nullable if_indextoname(unsigned __index, char* _Nonnull __buf);
+unsigned if_nametoindex(const char* _Nonnull __name);
 
-#if __ANDROID_API__ >= 24
-struct if_nameindex* if_nameindex(void) __INTRODUCED_IN(24);
-void if_freenameindex(struct if_nameindex* __ptr) __INTRODUCED_IN(24);
-#endif /* __ANDROID_API__ >= 24 */
+#if __BIONIC_AVAILABILITY_GUARD(24)
+struct if_nameindex* _Nullable if_nameindex(void) __INTRODUCED_IN(24);
+void if_freenameindex(struct if_nameindex* _Nullable __ptr) __INTRODUCED_IN(24);
+#endif /* __BIONIC_AVAILABILITY_GUARD(24) */
 
 
 __END_DECLS

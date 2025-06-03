@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _LINUX_DQBLK_XFS_H
 #define _LINUX_DQBLK_XFS_H
 #include <linux/types.h>
@@ -50,7 +38,10 @@ typedef struct fs_disk_quota {
   __s32 d_btimer;
   __u16 d_iwarns;
   __u16 d_bwarns;
-  __s32 d_padding2;
+  __s8 d_itimer_hi;
+  __s8 d_btimer_hi;
+  __s8 d_rtbtimer_hi;
+  __s8 d_padding2;
   __u64 d_rtb_hardlimit;
   __u64 d_rtb_softlimit;
   __u64 d_rtbcount;
@@ -78,6 +69,7 @@ typedef struct fs_disk_quota {
 #define FS_DQ_ICOUNT (1 << 13)
 #define FS_DQ_RTBCOUNT (1 << 14)
 #define FS_DQ_ACCT_MASK (FS_DQ_BCOUNT | FS_DQ_ICOUNT | FS_DQ_RTBCOUNT)
+#define FS_DQ_BIGTIME (1 << 15)
 #define FS_QUOTA_UDQ_ACCT (1 << 0)
 #define FS_QUOTA_UDQ_ENFD (1 << 1)
 #define FS_QUOTA_GDQ_ACCT (1 << 2)
@@ -126,6 +118,9 @@ struct fs_quota_statv {
   __s32 qs_rtbtimelimit;
   __u16 qs_bwarnlimit;
   __u16 qs_iwarnlimit;
-  __u64 qs_pad2[8];
+  __u16 qs_rtbwarnlimit;
+  __u16 qs_pad3;
+  __u32 qs_pad4;
+  __u64 qs_pad2[7];
 };
 #endif

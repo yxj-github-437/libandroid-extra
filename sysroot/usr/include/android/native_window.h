@@ -15,7 +15,13 @@
  */
 
 /**
- * @addtogroup NativeActivity Native Activity
+ * @defgroup ANativeWindow Native Window
+ *
+ * ANativeWindow represents the producer end of an image queue.
+ * It is the C counterpart of the android.view.Surface object in Java,
+ * and can be converted both ways. Depending on the consumer, images
+ * submitted to ANativeWindow can be shown on the display or sent to
+ * other consumers, such as video encoders.
  * @{
  */
 
@@ -27,6 +33,8 @@
 #ifndef ANDROID_NATIVE_WINDOW_H
 #define ANDROID_NATIVE_WINDOW_H
 
+#include <stdint.h>
+#include <stdbool.h>
 #include <sys/cdefs.h>
 
 #include <android/data_space.h>
@@ -41,7 +49,7 @@ extern "C" {
  * Legacy window pixel format names, kept for backwards compatibility.
  * New code and APIs should use AHARDWAREBUFFER_FORMAT_*.
  */
-enum {
+enum ANativeWindow_LegacyFormat {
     // NOTE: these values must match the values from graphics/common/x.x/types.hal
 
     /** Red: 8 bits, Green: 8 bits, Blue: 8 bits, Alpha: 8 bits. **/
@@ -95,7 +103,7 @@ typedef struct ANativeWindow_Buffer {
     /// memory. This may be >= width.
     int32_t stride;
 
-    /// The format of the buffer. One of AHARDWAREBUFFER_FORMAT_*
+    /// The format of the buffer. One of AHardwareBuffer_Format.
     int32_t format;
 
     /// The actual bits.
@@ -149,9 +157,10 @@ int32_t ANativeWindow_getFormat(ANativeWindow* window);
  * For all of these parameters, if 0 is supplied then the window's base
  * value will come back in force.
  *
+ * \param window pointer to an ANativeWindow object.
  * \param width width of the buffers in pixels.
  * \param height height of the buffers in pixels.
- * \param format one of AHARDWAREBUFFER_FORMAT_* constants.
+ * \param format one of the AHardwareBuffer_Format constants.
  * \return 0 for success, or a negative value on error.
  */
 int32_t ANativeWindow_setBuffersGeometry(ANativeWindow* window,
@@ -178,19 +187,16 @@ int32_t ANativeWindow_lock(ANativeWindow* window, ANativeWindow_Buffer* outBuffe
  */
 int32_t ANativeWindow_unlockAndPost(ANativeWindow* window);
 
-#if __ANDROID_API__ >= __ANDROID_API_O__
-
 /**
  * Set a transform that will be applied to future buffers posted to the window.
  *
+ * Available since API level 26.
+ *
+ * \param window pointer to an ANativeWindow object.
  * \param transform combination of {@link ANativeWindowTransform} flags
  * \return 0 for success, or -EINVAL if \p transform is invalid
  */
-int32_t ANativeWindow_setBuffersTransform(ANativeWindow* window, int32_t transform);
-
-#endif // __ANDROID_API__ >= __ANDROID_API_O__
-
-#if __ANDROID_API__ >= __ANDROID_API_P__
+int32_t ANativeWindow_setBuffersTransform(ANativeWindow* window, int32_t transform) __INTRODUCED_IN(26);
 
 /**
  * All buffers queued after this call will be associated with the dataSpace
@@ -202,23 +208,178 @@ int32_t ANativeWindow_setBuffersTransform(ANativeWindow* window, int32_t transfo
  * measurement data instead of color images. The default dataSpace is 0,
  * ADATASPACE_UNKNOWN, unless it has been overridden by the producer.
  *
+ * Available since API level 28.
+ *
+ * \param window pointer to an ANativeWindow object.
  * \param dataSpace data space of all buffers queued after this call.
  * \return 0 for success, -EINVAL if window is invalid or the dataspace is not
  * supported.
  */
-int32_t ANativeWindow_setBuffersDataSpace(ANativeWindow* window, int32_t dataSpace);
+int32_t ANativeWindow_setBuffersDataSpace(ANativeWindow* window, int32_t dataSpace) __INTRODUCED_IN(28);
 
 /**
  * Get the dataspace of the buffers in window.
+ *
+ * Available since API level 28.
+ *
  * \return the dataspace of buffers in window, ADATASPACE_UNKNOWN is returned if
  * dataspace is unknown, or -EINVAL if window is invalid.
  */
-int32_t ANativeWindow_getBuffersDataSpace(ANativeWindow* window);
+int32_t ANativeWindow_getBuffersDataSpace(ANativeWindow* window) __INTRODUCED_IN(28);
 
-#endif // __ANDROID_API__ >= __ANDROID_API_P__
+/**
+ * Get the default dataspace of the buffers in window as set by the consumer.
+ *
+ * Available since API level 34.
+ *
+ * \return the dataspace of buffers in window, ADATASPACE_UNKNOWN is returned if
+ * dataspace is unknown, or -EINVAL if window is invalid.
+ */
+int32_t ANativeWindow_getBuffersDefaultDataSpace(ANativeWindow* window) __INTRODUCED_IN(34);
+
+/** Compatibility value for ANativeWindow_setFrameRate. */
+enum ANativeWindow_FrameRateCompatibility {
+    /**
+     * There are no inherent restrictions on the frame rate of this window. When
+     * the system selects a frame rate other than what the app requested, the
+     * app will be able to run at the system frame rate without requiring pull
+     * down. This value should be used when displaying game content, UIs, and
+     * anything that isn't video.
+     */
+    ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_DEFAULT = 0,
+    /**
+     * This window is being used to display content with an inherently fixed
+     * frame rate, e.g.\ a video that has a specific frame rate. When the system
+     * selects a frame rate other than what the app requested, the app will need
+     * to do pull down or use some other technique to adapt to the system's
+     * frame rate. The user experience is likely to be worse (e.g. more frame
+     * stuttering) than it would be if the system had chosen the app's requested
+     * frame rate. This value should be used for video content.
+     */
+    ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_FIXED_SOURCE = 1
+};
+
+/**
+ * Same as ANativeWindow_setFrameRateWithChangeStrategy(window, frameRate, compatibility,
+ * ANATIVEWINDOW_CHANGE_FRAME_RATE_ONLY_IF_SEAMLESS).
+ *
+ * See ANativeWindow_setFrameRateWithChangeStrategy().
+ *
+ * Available since API level 30.
+ */
+int32_t ANativeWindow_setFrameRate(ANativeWindow* window, float frameRate, int8_t compatibility)
+        __INTRODUCED_IN(30);
+
+/**
+ * Provides a hint to the window that buffers should be preallocated ahead of
+ * time. Note that the window implementation is not guaranteed to preallocate
+ * any buffers, for instance if an implementation disallows allocation of new
+ * buffers, or if there is insufficient memory in the system to preallocate
+ * additional buffers
+ *
+ * Available since API level 30.
+ */
+void ANativeWindow_tryAllocateBuffers(ANativeWindow* window) __INTRODUCED_IN(30);
+
+/** Change frame rate strategy value for ANativeWindow_setFrameRate. */
+enum ANativeWindow_ChangeFrameRateStrategy {
+    /**
+     * Change the frame rate only if the transition is going to be seamless.
+     */
+    ANATIVEWINDOW_CHANGE_FRAME_RATE_ONLY_IF_SEAMLESS = 0,
+    /**
+     * Change the frame rate even if the transition is going to be non-seamless,
+     * i.e. with visual interruptions for the user.
+     */
+    ANATIVEWINDOW_CHANGE_FRAME_RATE_ALWAYS = 1
+} __INTRODUCED_IN(31);
+
+/**
+ * Sets the intended frame rate for this window.
+ *
+ * On devices that are capable of running the display at different refresh
+ * rates, the system may choose a display refresh rate to better match this
+ * window's frame rate. Usage of this API won't introduce frame rate throttling,
+ * or affect other aspects of the application's frame production
+ * pipeline. However, because the system may change the display refresh rate,
+ * calls to this function may result in changes to Choreographer callback
+ * timings, and changes to the time interval at which the system releases
+ * buffers back to the application.
+ *
+ * Note that this only has an effect for windows presented on the display. If
+ * this ANativeWindow is consumed by something other than the system compositor,
+ * e.g. a media codec, this call has no effect.
+ *
+ * You can register for changes in the refresh rate using
+ * \a AChoreographer_registerRefreshRateCallback.
+ *
+ * See ANativeWindow_clearFrameRate().
+ *
+ * Available since API level 31.
+ *
+ * \param window pointer to an ANativeWindow object.
+ *
+ * \param frameRate The intended frame rate of this window, in frames per
+ * second. 0 is a special value that indicates the app will accept the system's
+ * choice for the display frame rate, which is the default behavior if this
+ * function isn't called. The frameRate param does <em>not</em> need to be a
+ * valid refresh rate for this device's display - e.g., it's fine to pass 30fps
+ * to a device that can only run the display at 60fps.
+ *
+ * \param compatibility The frame rate compatibility of this window. The
+ * compatibility value may influence the system's choice of display refresh
+ * rate. See the ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_* values for more info.
+ * This parameter is ignored when frameRate is 0.
+ *
+ * \param changeFrameRateStrategy Whether display refresh rate transitions caused by this
+ * window should be seamless.
+ * A seamless transition is one that doesn't have any visual interruptions, such as a black
+ * screen for a second or two. See the ANATIVEWINDOW_CHANGE_FRAME_RATE_* values.
+ * This parameter is ignored when frameRate is 0.
+ *
+ * \return 0 for success, -EINVAL if the window, frame rate, or compatibility
+ * value are invalid.
+ */
+int32_t ANativeWindow_setFrameRateWithChangeStrategy(ANativeWindow* window, float frameRate,
+        int8_t compatibility, int8_t changeFrameRateStrategy)
+        __INTRODUCED_IN(31);
+
+/**
+ * Clears the frame rate which is set for this window.
+ *
+ * This is equivalent to calling
+ * ANativeWindow_setFrameRateWithChangeStrategy(window, 0, compatibility, changeFrameRateStrategy).
+ *
+ * Usage of this API won't introduce frame rate throttling,
+ * or affect other aspects of the application's frame production
+ * pipeline. However, because the system may change the display refresh rate,
+ * calls to this function may result in changes to Choreographer callback
+ * timings, and changes to the time interval at which the system releases
+ * buffers back to the application.
+ *
+ * Note that this only has an effect for windows presented on the display. If
+ * this ANativeWindow is consumed by something other than the system compositor,
+ * e.g. a media codec, this call has no effect.
+ *
+ * You can register for changes in the refresh rate using
+ * \a AChoreographer_registerRefreshRateCallback.
+ *
+ * See ANativeWindow_setFrameRateWithChangeStrategy().
+ *
+ * Available since API level 31.
+ *
+ * \param window pointer to an ANativeWindow object.
+ *
+ * \return 0 for success, -EINVAL if the window value is invalid.
+ */
+inline int32_t ANativeWindow_clearFrameRate(ANativeWindow* window) __INTRODUCED_IN(31) {
+    return ANativeWindow_setFrameRateWithChangeStrategy(window, 0,
+            ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_DEFAULT,
+            ANATIVEWINDOW_CHANGE_FRAME_RATE_ONLY_IF_SEAMLESS);
+}
 
 #ifdef __cplusplus
-};
+}
 #endif
 
 #endif // ANDROID_NATIVE_WINDOW_H

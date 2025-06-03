@@ -1,21 +1,9 @@
-/****************************************************************************
- ****************************************************************************
- ***
- ***   This header was automatically generated from a Linux kernel header
- ***   of the same name, to make information necessary for userspace to
- ***   call into the kernel available to libc.  It contains only constants,
- ***   structures, and macros generated from the original header, and thus,
- ***   contains no copyrightable information.
- ***
- ***   To edit the content of this header, modify the corresponding
- ***   source file (e.g. under external/kernel-headers/original/) then
- ***   run bionic/libc/kernel/tools/update_all.py
- ***
- ***   Any manual change here will be lost the next time this script will
- ***   be run. You've been warned!
- ***
- ****************************************************************************
- ****************************************************************************/
+/*
+ * This file is auto-generated. Modifications will be lost.
+ *
+ * See https://android.googlesource.com/platform/bionic/+/master/libc/kernel/
+ * for more information.
+ */
 #ifndef _LINUX_SNMP_H
 #define _LINUX_SNMP_H
 enum {
@@ -24,7 +12,7 @@ enum {
   IPSTATS_MIB_INOCTETS,
   IPSTATS_MIB_INDELIVERS,
   IPSTATS_MIB_OUTFORWDATAGRAMS,
-  IPSTATS_MIB_OUTPKTS,
+  IPSTATS_MIB_OUTREQUESTS,
   IPSTATS_MIB_OUTOCTETS,
   IPSTATS_MIB_INHDRERRORS,
   IPSTATS_MIB_INTOOBIGERRORS,
@@ -55,6 +43,8 @@ enum {
   IPSTATS_MIB_ECT1PKTS,
   IPSTATS_MIB_ECT0PKTS,
   IPSTATS_MIB_CEPKTS,
+  IPSTATS_MIB_REASM_OVERLAPS,
+  IPSTATS_MIB_OUTPKTS,
   __IPSTATS_MIB_MAX
 };
 enum {
@@ -86,6 +76,8 @@ enum {
   ICMP_MIB_OUTADDRMASKS,
   ICMP_MIB_OUTADDRMASKREPS,
   ICMP_MIB_CSUMERRORS,
+  ICMP_MIB_RATELIMITGLOBAL,
+  ICMP_MIB_RATELIMITHOST,
   __ICMP_MIB_MAX
 };
 #define __ICMPMSG_MIB_MAX 512
@@ -96,6 +88,7 @@ enum {
   ICMP6_MIB_OUTMSGS,
   ICMP6_MIB_OUTERRORS,
   ICMP6_MIB_CSUMERRORS,
+  ICMP6_MIB_RATELIMITHOST,
   __ICMP6_MIB_MAX
 };
 #define __ICMP6MSG_MIB_MAX 512
@@ -128,6 +121,7 @@ enum {
   UDP_MIB_SNDBUFERRORS,
   UDP_MIB_CSUMERRORS,
   UDP_MIB_IGNOREDMULTI,
+  UDP_MIB_MEMERRORS,
   __UDP_MIB_MAX
 };
 enum {
@@ -209,6 +203,7 @@ enum {
   LINUX_MIB_TCPREQQFULLDROP,
   LINUX_MIB_TCPRETRANSFAIL,
   LINUX_MIB_TCPRCVCOALESCE,
+  LINUX_MIB_TCPBACKLOGCOALESCE,
   LINUX_MIB_TCPOFOQUEUE,
   LINUX_MIB_TCPOFODROP,
   LINUX_MIB_TCPOFOMERGE,
@@ -243,6 +238,25 @@ enum {
   LINUX_MIB_TCPKEEPALIVE,
   LINUX_MIB_TCPMTUPFAIL,
   LINUX_MIB_TCPMTUPSUCCESS,
+  LINUX_MIB_TCPDELIVERED,
+  LINUX_MIB_TCPDELIVEREDCE,
+  LINUX_MIB_TCPACKCOMPRESSED,
+  LINUX_MIB_TCPZEROWINDOWDROP,
+  LINUX_MIB_TCPRCVQDROP,
+  LINUX_MIB_TCPWQUEUETOOBIG,
+  LINUX_MIB_TCPFASTOPENPASSIVEALTKEY,
+  LINUX_MIB_TCPTIMEOUTREHASH,
+  LINUX_MIB_TCPDUPLICATEDATAREHASH,
+  LINUX_MIB_TCPDSACKRECVSEGS,
+  LINUX_MIB_TCPDSACKIGNOREDDUBIOUS,
+  LINUX_MIB_TCPMIGRATEREQSUCCESS,
+  LINUX_MIB_TCPMIGRATEREQFAILURE,
+  LINUX_MIB_TCPPLBREHASH,
+  LINUX_MIB_TCPAOREQUIRED,
+  LINUX_MIB_TCPAOBAD,
+  LINUX_MIB_TCPAOKEYNOTFOUND,
+  LINUX_MIB_TCPAOGOOD,
+  LINUX_MIB_TCPAODROPPEDICMPS,
   __LINUX_MIB_MAX
 };
 enum {
@@ -275,6 +289,24 @@ enum {
   LINUX_MIB_XFRMFWDHDRERROR,
   LINUX_MIB_XFRMOUTSTATEINVALID,
   LINUX_MIB_XFRMACQUIREERROR,
+  LINUX_MIB_XFRMOUTSTATEDIRERROR,
+  LINUX_MIB_XFRMINSTATEDIRERROR,
   __LINUX_MIB_XFRMMAX
+};
+enum {
+  LINUX_MIB_TLSNUM = 0,
+  LINUX_MIB_TLSCURRTXSW,
+  LINUX_MIB_TLSCURRRXSW,
+  LINUX_MIB_TLSCURRTXDEVICE,
+  LINUX_MIB_TLSCURRRXDEVICE,
+  LINUX_MIB_TLSTXSW,
+  LINUX_MIB_TLSRXSW,
+  LINUX_MIB_TLSTXDEVICE,
+  LINUX_MIB_TLSRXDEVICE,
+  LINUX_MIB_TLSDECRYPTERROR,
+  LINUX_MIB_TLSRXDEVICERESYNC,
+  LINUX_MIB_TLSDECRYPTRETRY,
+  LINUX_MIB_TLSRXNOPADVIOL,
+  __LINUX_MIB_TLSMAX
 };
 #endif

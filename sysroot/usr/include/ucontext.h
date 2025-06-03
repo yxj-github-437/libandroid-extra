@@ -33,10 +33,12 @@
 
 __BEGIN_DECLS
 
+#ifdef __ANDROID_EXTRA
 int getcontext(ucontext_t*);
 int setcontext(const ucontext_t*);
 int makecontext(ucontext_t*, void (*)(), int, ...);
 int swapcontext(ucontext_t*, const ucontext_t*);
+#endif
 
 __END_DECLS
 

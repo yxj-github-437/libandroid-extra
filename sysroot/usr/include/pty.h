@@ -26,8 +26,12 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _PTY_H
-#define _PTY_H
+#pragma once
+
+/**
+ * @file pty.h
+ * @brief Pseudoterminal functions.
+ */
 
 #include <sys/cdefs.h>
 
@@ -36,13 +40,30 @@
 
 __BEGIN_DECLS
 
+/**
+ * [openpty(3)](https://man7.org/linux/man-pages/man3/openpty.3.html) finds
+ * a free pseudoterminal and configures it with the given terminal and window
+ * size settings.
+ *
+ * Returns 0 on success and returns -1 and sets `errno` on failure.
+ *
+ * Available since API level 23.
+ */
 
-// #if __ANDROID_API__ >= 23
-int openpty(int* __master_fd, int* __slave_fd, char* __slave_name, const struct termios* __termios_ptr, const struct winsize* __winsize_ptr) __INTRODUCED_IN(23);
-int forkpty(int* __master_fd, char* __slave_name, const struct termios* __termios_ptr, const struct winsize* __winsize_ptr) __INTRODUCED_IN(23);
-// #endif /* __ANDROID_API__ >= 23 */
+#if __BIONIC_AVAILABILITY_GUARD(23) || __ANDROID_EXTRA
+int openpty(int* _Nonnull __pty_fd, int* _Nonnull __tty_fd, char* _Nullable __tty_name, const struct termios* _Nullable __termios_ptr, const struct winsize* _Nullable __winsize_ptr) __INTRODUCED_IN(23);
+
+/**
+ * [forkpty(3)](https://man7.org/linux/man-pages/man3/forkpty.3.html) creates
+ * a new process connected to a pseudoterminal from openpty().
+ *
+ * Returns 0 in the child/the pid of the child in the parent on success,
+ * and returns -1 and sets `errno` on failure.
+ *
+ * Available since API level 23.
+ */
+int forkpty(int* _Nonnull __parent_pty_fd, char* _Nullable __child_tty_name, const struct termios* _Nullable __termios_ptr, const struct winsize* _Nullable __winsize_ptr) __INTRODUCED_IN(23);
+#endif /* __BIONIC_AVAILABILITY_GUARD(23) */
 
 
 __END_DECLS
-
-#endif
