@@ -41,3 +41,6 @@ target_link_libraries(ucontext_test c_extra)
 
 add_executable(complex_test src/complex_test.c)
 target_link_libraries(complex_test m_extra m)
+
+add_executable(crypt_test src/crypt_test.c)
+target_link_libraries(crypt_test crypt c_extra)

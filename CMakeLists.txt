@@ -26,6 +26,7 @@ set(EXECUTABLE_OUTPUT_PATH "${PROJECT_BINARY_DIR}/bin")
 option(STRIP_LIBRARY "Strip library" ON)
 option(BUILD_TESTS "Build tests" ON)
 
+add_subdirectory(crypt)
 add_subdirectory(libc-extra)
 add_subdirectory(libm-extra)
 
@@ -92,6 +93,8 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/sysroot/usr/include
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/sysroot/usr/lib/${TARGET_TRIPLE}
           DESTINATION ${CMAKE_INSTALL_PREFIX}/sysroot/usr/lib)
 install(TARGETS c_extra m_extra
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/sysroot/usr/lib/${TARGET_TRIPLE})
+install(TARGETS crypt
         DESTINATION ${CMAKE_INSTALL_PREFIX}/sysroot/usr/lib/${TARGET_TRIPLE})
 
 install(CODE "set(TARGET_TRIPLE \"${TARGET_TRIPLE}\")")
