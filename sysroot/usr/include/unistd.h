@@ -386,6 +386,10 @@ int sethostname(const char* _Nonnull __name, size_t __n) __INTRODUCED_IN(23);
 int brk(void* _Nonnull __addr);
 void* _Nullable sbrk(ptrdiff_t __increment);
 
+#ifdef __ANDROID_EXTRA
+char* getpass(const char* prompt);
+#endif
+
 int isatty(int __fd);
 char* _Nullable ttyname(int __fd);
 int ttyname_r(int __fd, char* _Nonnull __buf, size_t __buf_size);

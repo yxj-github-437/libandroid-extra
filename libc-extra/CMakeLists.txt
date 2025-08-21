@@ -5,6 +5,7 @@ set(SRC_LIST
     src/bionic_futex.c
     src/glob.c
     src/conio.cpp
+    src/getpass.c
     src/grp.c
     src/hcreate.c
     src/hcreate_r.c

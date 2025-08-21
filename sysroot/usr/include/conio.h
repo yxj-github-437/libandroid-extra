@@ -20,6 +20,7 @@
 #define __CONIO_H
 
 #include <stdio.h>
+#include <unistd.h>
 
 __BEGIN_DECLS
 
@@ -81,7 +82,6 @@ int kbhit();
 void clreol();
 void insline();
 void delline();
-char* getpass(const char* prompt);
 void setcursortype(int cur_t);
 void gettextinfo(struct text_info* r);
 void textattr(int attr);

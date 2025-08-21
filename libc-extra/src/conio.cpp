@@ -11,7 +11,6 @@ class _conio
 {
 private:
     int bgc;
-    char password[513] = ""; /* 512 1-byte charactes and '0' */
 
 public:
     _conio()
@@ -262,70 +261,6 @@ public:
         return 0;
     }
 
-    char* getpass(const char* prompt)
-    {
-        // termios struct as in asm-generic/termbits.h
-        struct _termios
-        {
-            unsigned int c_iflag;              /* input mode flags */
-            unsigned int c_oflag;              /* output mode flags */
-            unsigned int c_cflag;              /* control mode flags */
-            unsigned int c_lflag;              /* local mode flags */
-            unsigned char c_line;              /* line discipline */
-            unsigned char c_cc[19 /* NCCS */]; /* control characters */
-        };
-
-        struct _termios term_old, term_new;
-        int len = 0, tty_changed = 0;
-
-        // print prompt
-        while (*prompt) {
-            write(1, prompt, 1);
-            prompt++;
-        }
-
-        // try to disable echoing on terminal
-        if (ioctl(0, 0x5401 /* TCGETS */, &term_old) == 0) {
-            term_new = term_old;
-            term_new.c_lflag &= ~ECHO;
-
-            if (ioctl(0, 0x5402 + 0 /* TCSETS+TCSANOW */, &term_new) == 0) {
-                tty_changed = 1;
-            }
-            else {
-                tty_changed = 0;
-            }
-        }
-
-        // read password
-        char chr;
-        while (read(0, &chr, sizeof(char)) > 0) {
-            if (chr == '\r' || chr == '\n' || chr == 0) {
-                break;
-            }
-
-            if (len == sizeof(password) - 1) {
-                // we should consume all entered characters even
-                // if maximal input length reached
-                continue;
-            }
-            else {
-                password[len++] = chr;
-            }
-        }
-        password[len] = 0;
-
-        // restore terminal to previous state if needed
-        if (tty_changed) {
-            ioctl(0, 0x5402 + 0 /* TCSETS+TCSANOW */, &term_old);
-        }
-
-        // force new line
-        write(1, "\n", 1);
-
-        return password;
-    }
-
     void setcursortype(int cur_t)
     {
         switch (cur_t) {
@@ -429,10 +364,6 @@ void insline()
 void delline()
 {
     conio.delline();
-}
-char* getpass(const char* prompt)
-{
-    return conio.getpass(prompt);
 }
 void setcursortype(int cur_t)
 {
