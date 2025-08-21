@@ -29,6 +29,7 @@ struct state
     mbstate_t mbs;   /* conversion state of the stream */
 };
 
+#if !defined(__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__)
 static void* reallocarray(void* old_mem, size_t item_count, size_t item_size)
 {
     size_t new_size;
@@ -42,7 +43,7 @@ static void* reallocarray(void* old_mem, size_t item_count, size_t item_size)
     }
     return realloc(old_mem, new_size);
 }
-
+#endif
 
 static int wmemstream_write(void* v, const char* b, int l)
 {
