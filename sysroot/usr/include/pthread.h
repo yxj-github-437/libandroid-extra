@@ -174,18 +174,6 @@ void* _Nullable pthread_getspecific(pthread_key_t __key);
 
 pid_t pthread_gettid_np(pthread_t __pthread);
 
-#if defined(__USE_GNU)
-static __inline __always_inline
-int pthread_getaffinity_np(pthread_t __pthread, size_t __set_size, cpu_set_t* __set) {
-  return sched_getaffinity(pthread_gettid_np(__pthread), __set_size, __set);
-}
-
-static __inline __always_inline
-int pthread_setaffinity_np(pthread_t __pthread, size_t __set_size, cpu_set_t* __set) {
-  return sched_setaffinity(pthread_gettid_np(__pthread), __set_size, __set);
-}
-#endif
-
 int pthread_join(pthread_t __pthread, void* _Nullable * _Nullable __return_value_ptr);
 
 /**
@@ -362,7 +350,7 @@ int pthread_setname_np(pthread_t __pthread, const char* _Nonnull __name);
  * Available since API level 36.
  * See sched_getaffinity() and pthread_gettid_np() for greater portability.
  */
-#if defined(__USE_GNU) && __BIONIC_AVAILABILITY_GUARD(36)
+#if defined(__USE_GNU) && (__BIONIC_AVAILABILITY_GUARD(36) || __ANDROID_EXTRA)
 int pthread_getaffinity_np(pthread_t __pthread, size_t __cpu_set_size, cpu_set_t* __cpu_set) __INTRODUCED_IN(36);
 #endif
 
@@ -375,7 +363,7 @@ int pthread_getaffinity_np(pthread_t __pthread, size_t __cpu_set_size, cpu_set_t
  * Available since API level 36.
  * See sched_getaffinity() and pthread_gettid_np() for greater portability.
  */
-#if defined(__USE_GNU) && __BIONIC_AVAILABILITY_GUARD(36)
+#if defined(__USE_GNU) && (__BIONIC_AVAILABILITY_GUARD(36) || __ANDROID_EXTRA)
 int pthread_setaffinity_np(pthread_t __pthread, size_t __cpu_set_size, const cpu_set_t* __cpu_set) __INTRODUCED_IN(36);
 #endif
 
