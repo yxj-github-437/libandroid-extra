@@ -1,5 +1,4 @@
-project(tests
-        LANGUAGES C)
+project(tests LANGUAGES C)
 
 add_compile_definitions(_FORTIFY_SOURCE=2)
 

@@ -5,6 +5,6 @@ add_library(${PROJECT_NAME} ${SRC_LIST})
 
 if(STRIP_LIBRARY)
     add_custom_command(TARGET  ${PROJECT_NAME} POST_BUILD
-                   COMMAND ${CMAKE_STRIP} -R.comment --strip-unneeded "$<TARGET_FILE:${PROJECT_NAME}>"
-                   COMMENT "Strip unneeded symbols done on final binary.")
+        COMMAND ${CMAKE_STRIP} -R.comment --strip-unneeded "$<TARGET_FILE:${PROJECT_NAME}>"
+        COMMENT "Strip unneeded symbols done on final binary.")
 endif()

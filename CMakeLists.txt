@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-  message("Setting build type to 'Release' as none was specified.")
-  set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
-  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release"
-    "MinSizeRel" "RelWithDebInfo")
+    message("Setting build type to 'Release' as none was specified.")
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release"
+        "MinSizeRel" "RelWithDebInfo")
 endif()
 
 project(libandroid-extra)
@@ -14,7 +14,7 @@ set(CMAKE_SYSROOT "${PROJECT_SOURCE_DIR}/sysroot")
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 11)
 
-set(CMAKE_CXX_FLAGS "-fno-exceptions -fno-rtti")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -fno-rtti")
 
 set(LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/lib")
 set(EXECUTABLE_OUTPUT_PATH "${PROJECT_BINARY_DIR}/bin")
@@ -88,22 +88,23 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/sysroot/usr/include
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/sysroot/usr/lib/${TARGET_TRIPLE}
           DESTINATION ${CMAKE_INSTALL_PREFIX}/sysroot/usr/lib)
 install(TARGETS c_extra m_extra
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/sysroot/usr/lib/${TARGET_TRIPLE})
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/sysroot/usr/lib/${TARGET_TRIPLE})
+
 install(CODE "set(TARGET_TRIPLE \"${TARGET_TRIPLE}\")")
 install(CODE [[
-  file(RENAME ${CMAKE_INSTALL_PREFIX}/sysroot/usr/lib/${TARGET_TRIPLE}/libc.so
-    ${CMAKE_INSTALL_PREFIX}/sysroot/usr/lib/${TARGET_TRIPLE}/libc_real.so)
-  file(RENAME ${CMAKE_INSTALL_PREFIX}/sysroot/usr/lib/${TARGET_TRIPLE}/libm.so
-    ${CMAKE_INSTALL_PREFIX}/sysroot/usr/lib/${TARGET_TRIPLE}/libm_real.so)
+    file(RENAME $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/sysroot/usr/lib/${TARGET_TRIPLE}/libc.so
+        $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/sysroot/usr/lib/${TARGET_TRIPLE}/libc_real.so)
+    file(RENAME $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/sysroot/usr/lib/${TARGET_TRIPLE}/libm.so
+        $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/sysroot/usr/lib/${TARGET_TRIPLE}/libm_real.so)
 
-  file(WRITE ${CMAKE_INSTALL_PREFIX}/sysroot/usr/lib/${TARGET_TRIPLE}/libc.so
-    "INPUT(libc_extra.a libc_real.so)")
-  file(WRITE ${CMAKE_INSTALL_PREFIX}/sysroot/usr/lib/${TARGET_TRIPLE}/libm.so
-    "INPUT(libm_extra.a libm_real.so)")
-  file(WRITE ${CMAKE_INSTALL_PREFIX}/sysroot/usr/lib/${TARGET_TRIPLE}/libpthread.a
-    "INPUT(-lc)")
-  file(WRITE ${CMAKE_INSTALL_PREFIX}/sysroot/usr/lib/${TARGET_TRIPLE}/librt.so
-    "INPUT(-lc)")
-  file(WRITE ${CMAKE_INSTALL_PREFIX}/sysroot/usr/lib/${TARGET_TRIPLE}/libutil.so
-    "INPUT(-lc)")
+    file(WRITE $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/sysroot/usr/lib/${TARGET_TRIPLE}/libc.so
+        "INPUT(libc_extra.a libc_real.so)")
+    file(WRITE $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/sysroot/usr/lib/${TARGET_TRIPLE}/libm.so
+        "INPUT(libm_extra.a libm_real.so)")
+    file(WRITE $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/sysroot/usr/lib/${TARGET_TRIPLE}/libpthread.a
+        "INPUT(-lc)")
+    file(WRITE $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/sysroot/usr/lib/${TARGET_TRIPLE}/librt.so
+        "INPUT(-lc)")
+    file(WRITE $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/sysroot/usr/lib/${TARGET_TRIPLE}/libutil.so
+        "INPUT(-lc)")
 ]])
