@@ -165,7 +165,7 @@ char** backtrace_symbols(void* const* buffer, int size)
         Dl_info info;
         if (dladdr(address, &info) != 0) {
             if (info.dli_fname != nullptr) {
-                fprintf(mfile.get_fp(), info.dli_fname);
+                fprintf(mfile.get_fp(), "%s", info.dli_fname);
             }
             if (info.dli_sname != nullptr) {
                 fprintf(mfile.get_fp(),
