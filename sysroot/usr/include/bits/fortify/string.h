@@ -143,7 +143,8 @@ void* mempcpy(void* const dst __pass_object_size0, const void* src, size_t copy_
 
 __BIONIC_FORTIFY_INLINE
 char* stpcpy(char* const dst __pass_object_size, const char* src) {
-    if(__bos_unevaluated_le(__bos(dst), __builtin_strlen(src))) {
+    if(__bos0(src) != __BIONIC_FORTIFY_UNKNOWN_SIZE &&
+       __bos_unevaluated_le(__bos(dst), __builtin_strlen(src))) {
         __stpcpy_dest_size_error();
     }
 
@@ -156,7 +157,8 @@ char* stpcpy(char* const dst __pass_object_size, const char* src) {
 
 __BIONIC_FORTIFY_INLINE __diagnose_as_builtin(__builtin_strcpy, 1, 2)
 char* strcpy(char* const dst __pass_object_size, const char* src) {
-    if(__bos_unevaluated_le(__bos(dst), __builtin_strlen(src))) {
+    if(__bos0(src) != __BIONIC_FORTIFY_UNKNOWN_SIZE &&
+       __bos_unevaluated_le(__bos(dst), __builtin_strlen(src))) {
         __strcpy_dest_size_error();
     }
 
@@ -169,7 +171,8 @@ char* strcpy(char* const dst __pass_object_size, const char* src) {
 
 __BIONIC_FORTIFY_INLINE
 char* strcat(char* const dst __pass_object_size, const char* src) {
-    if(__bos_unevaluated_le(__bos(dst), __builtin_strlen(src))) {
+    if(__bos0(src) != __BIONIC_FORTIFY_UNKNOWN_SIZE &&
+       __bos_unevaluated_le(__bos(dst), __builtin_strlen(src))) {
         __strcat_dest_size_error();
     }
 
