@@ -62,6 +62,11 @@
 #define __BIONIC_AVAILABILITY(__what, ...) __attribute__((annotated(#__what)))
 #endif
 
+#ifdef __ANDROID_EXTRA
+#undef __BIONIC_AVAILABILITY_GUARD
+#define __BIONIC_AVAILABILITY_GUARD(api_level) (__ANDROID_MIN_SDK_VERSION__ >= (api_level))
+#endif
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wc23-extensions"
 // Passing no argument for the '...' parameter of a variadic macro is a C23 extension
