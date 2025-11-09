@@ -10,7 +10,11 @@
  * from the use of this software.
  */
 
+.type __start_context, %function
 .globl __start_context;
+#if defined __thumb__ || defined __thumb2__
+.thumb_func
+#endif
 .fnstart
 .cantunwind
 	nop

@@ -240,3 +240,5 @@ int sync_file_range(int __fd, off64_t __offset, off64_t __length, unsigned int _
 #endif
 
 __END_DECLS
+
+#include <bits/android_extra/fcntl.h>

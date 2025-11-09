@@ -130,7 +130,7 @@ int wmemcmp(const wchar_t* _Nullable __lhs, const wchar_t* _Nullable __rhs, size
 wchar_t* _Nonnull wmemcpy(wchar_t* _Nonnull __dst, const wchar_t* _Nonnull __src, size_t __n);
 #if defined(__USE_GNU)
 
-#if __BIONIC_AVAILABILITY_GUARD(23) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(23)
 wchar_t* _Nonnull wmempcpy(wchar_t* _Nonnull __dst, const wchar_t* _Nonnull __src, size_t __n) __INTRODUCED_IN(23);
 #endif /* __BIONIC_AVAILABILITY_GUARD(23) */
 
@@ -150,7 +150,7 @@ size_t wcslcat(wchar_t* _Nonnull __dst, const wchar_t* _Nonnull __src, size_t __
 size_t wcslcpy(wchar_t* _Nonnull __dst, const wchar_t* _Nonnull __src, size_t __n);
 
 
-#if __BIONIC_AVAILABILITY_GUARD(23) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(23)
 FILE* _Nullable open_wmemstream(wchar_t* _Nonnull * _Nonnull __ptr, size_t* _Nonnull  __size_ptr) __INTRODUCED_IN(23);
 #endif /* __BIONIC_AVAILABILITY_GUARD(23) */
 
@@ -160,3 +160,5 @@ size_t wcsnlen(const wchar_t* _Nonnull __s, size_t __n);
 __END_DECLS
 
 #endif
+
+#include <bits/android_extra/wchar.h>

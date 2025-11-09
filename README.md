@@ -1,5 +1,5 @@
 # libandroid-extra
-A library to complete Android Bionic libc (Based on NDK r28b)
+A library to complete Android Bionic libc (Based on NDK r29)
 
 # Added library
   - [X] libcrypt

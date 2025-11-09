@@ -372,7 +372,8 @@ int32_t ANativeWindow_setFrameRateWithChangeStrategy(ANativeWindow* window, floa
  *
  * \return 0 for success, -EINVAL if the window value is invalid.
  */
-inline int32_t ANativeWindow_clearFrameRate(ANativeWindow* window) __INTRODUCED_IN(31) {
+__INTRODUCED_IN(31)
+inline int32_t ANativeWindow_clearFrameRate(ANativeWindow* window)  {
     return ANativeWindow_setFrameRateWithChangeStrategy(window, 0,
             ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_DEFAULT,
             ANATIVEWINDOW_CHANGE_FRAME_RATE_ONLY_IF_SEAMLESS);

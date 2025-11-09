@@ -63,7 +63,7 @@ typedef int nl_item;
  * Available since API level 28.
  */
 
-#if __BIONIC_AVAILABILITY_GUARD(26) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(26)
 nl_catd _Nonnull catopen(const char* _Nonnull __name, int __flag) __INTRODUCED_IN(26);
 
 /**
@@ -86,3 +86,5 @@ int catclose(nl_catd _Nonnull __catalog) __INTRODUCED_IN(26);
 
 
 __END_DECLS
+
+#include <bits/android_extra/nl_types.h>

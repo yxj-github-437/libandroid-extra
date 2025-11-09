@@ -77,19 +77,6 @@ struct __sfileext
     pid_t _popen_pid;
 };
 
-
-/*
- * The first few FILEs are statically allocated; others are dynamically
- * allocated and linked in via this glue structure.
- */
-struct glue
-{
-    struct glue* next;
-    int niobs;
-    FILE* iobs;
-};
-
-
 #define _EXT(fp) __BIONIC_CAST(reinterpret_cast, struct __sfileext*, (fp)->_ext._base)
 
 #define WCIO_GET(fp) (_EXT(fp) ? &(_EXT(fp)->_wcio) : (struct wchar_io_data*)0)

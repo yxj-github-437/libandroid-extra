@@ -217,7 +217,7 @@ const char* _Nullable getprogname(void);
 void setprogname(const char* _Nonnull __name);
 
 
-#if __BIONIC_AVAILABILITY_GUARD(26) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(26)
 int mblen(const char* _Nullable __s, size_t __n) __INTRODUCED_IN(26);
 #endif /* __BIONIC_AVAILABILITY_GUARD(26) */
 
@@ -375,3 +375,5 @@ __END_DECLS
 #include <android/legacy_stdlib_inlines.h>
 
 #endif /* _STDLIB_H */
+
+#include <bits/android_extra/stdlib.h>

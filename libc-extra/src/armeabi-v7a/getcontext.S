@@ -10,7 +10,12 @@
  * from the use of this software.
  */
 
+.type __getcontext, %function
 .globl __getcontext;
+#if defined __thumb__ || defined __thumb2__
+.thumb_func
+#endif
+
 __getcontext:
 	/* copy all of the current registers into the ucontext structure */
 	add	r1, r0, #48

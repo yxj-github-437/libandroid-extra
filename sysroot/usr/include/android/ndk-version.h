@@ -11,14 +11,14 @@
  *
  * For example: 16 for r16.
  */
-#define __NDK_MAJOR__ 28
+#define __NDK_MAJOR__ 29
 
 /**
  * Minor version of this NDK.
  *
  * For example: 0 for r16 and 1 for r16b.
  */
-#define __NDK_MINOR__ 1
+#define __NDK_MINOR__ 0
 
 /**
  * Set to 0 if this is a release build, or 1 for beta 1,
@@ -31,7 +31,7 @@
  *
  * For a local development build of the NDK, this is 0.
  */
-#define __NDK_BUILD__ 13356709
+#define __NDK_BUILD__ 14206865
 
 /**
  * Set to 1 if this is a canary build, 0 if not.

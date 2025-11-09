@@ -93,7 +93,7 @@ __BEGIN_DECLS
 #define CRNCYSTR 55
 
 
-#if __BIONIC_AVAILABILITY_GUARD(26) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(26)
 char* _Nonnull nl_langinfo(nl_item __item) __INTRODUCED_IN(26);
 char* _Nonnull nl_langinfo_l(nl_item __item, locale_t _Nonnull __l) __INTRODUCED_IN(26);
 #endif /* __BIONIC_AVAILABILITY_GUARD(26) */
@@ -102,3 +102,5 @@ char* _Nonnull nl_langinfo_l(nl_item __item, locale_t _Nonnull __l) __INTRODUCED
 __END_DECLS
 
 #endif
+
+#include <bits/android_extra/langinfo.h>

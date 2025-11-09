@@ -56,7 +56,7 @@ typedef struct __posix_spawnattr* posix_spawnattr_t;
 typedef struct __posix_spawn_file_actions* posix_spawn_file_actions_t;
 
 
-#if __BIONIC_AVAILABILITY_GUARD(28) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(28)
 int posix_spawn(pid_t* _Nullable __pid, const char* _Nonnull __path, const posix_spawn_file_actions_t _Nullable * _Nullable __actions, const posix_spawnattr_t _Nullable * _Nullable __attr, char* const _Nullable __argv[_Nullable], char* const _Nullable __env[_Nullable]) __INTRODUCED_IN(28);
 int posix_spawnp(pid_t* _Nullable __pid, const char* _Nonnull __file, const posix_spawn_file_actions_t _Nullable * _Nullable __actions, const posix_spawnattr_t _Nullable * _Nullable __attr, char* const _Nullable __argv[_Nullable], char* const _Nullable __env[_Nullable]) __INTRODUCED_IN(28);
 
@@ -104,3 +104,5 @@ int posix_spawn_file_actions_addfchdir_np(posix_spawn_file_actions_t _Nonnull * 
 __END_DECLS
 
 #endif
+
+#include <bits/android_extra/spawn.h>

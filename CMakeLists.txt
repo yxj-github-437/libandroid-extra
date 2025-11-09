@@ -90,6 +90,10 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/sysroot/usr/include
         DESTINATION ${CMAKE_INSTALL_PREFIX}/sysroot/usr
         FILES_MATCHING PATTERN "*.h")
 
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/crypt/include
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/sysroot/usr
+        FILES_MATCHING PATTERN "*.h")
+
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/sysroot/usr/lib/${TARGET_TRIPLE}
           DESTINATION ${CMAKE_INSTALL_PREFIX}/sysroot/usr/lib)
 install(TARGETS c_extra m_extra

@@ -386,10 +386,6 @@ int sethostname(const char* _Nonnull __name, size_t __n) __INTRODUCED_IN(23);
 int brk(void* _Nonnull __addr);
 void* _Nullable sbrk(ptrdiff_t __increment);
 
-#ifdef __ANDROID_EXTRA
-char* getpass(const char* prompt);
-#endif
-
 int isatty(int __fd);
 char* _Nullable ttyname(int __fd);
 int ttyname_r(int __fd, char* _Nonnull __buf, size_t __buf_size);
@@ -483,3 +479,4 @@ int close_range(unsigned int __min_fd, unsigned int __max_fd, int __flags) __INT
 __END_DECLS
 
 #include <android/legacy_unistd_inlines.h>
+#include <bits/android_extra/unistd.h>

@@ -11,6 +11,14 @@
  */
 
 .globl __swapcontext;
+.type __swapcontext, %function;
+#if defined __thumb__ || defined __thumb2__
+.thumb_func
+.code 16
+#else
+.code 32
+#endif
+
 __swapcontext:
 	/* copy all of the current registers into the ucontext structure */
 	add	r2, r0, #32

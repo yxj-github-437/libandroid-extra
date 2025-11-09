@@ -57,7 +57,7 @@ __BEGIN_DECLS
  * See also flock().
  */
 
-#if __BIONIC_AVAILABILITY_GUARD(24) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(24)
 int lockf(int __fd, int __op, off_t __length) __RENAME_IF_FILE_OFFSET64(lockf64) __INTRODUCED_IN(24);
 
 /**

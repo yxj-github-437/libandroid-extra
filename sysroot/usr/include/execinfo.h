@@ -48,7 +48,7 @@ __BEGIN_DECLS
  * Available since API level 33.
  */
 
-#if __BIONIC_AVAILABILITY_GUARD(33) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(33)
 int backtrace(void* _Nonnull * _Nonnull buffer, int size) __INTRODUCED_IN(33);
 
 /**
@@ -76,3 +76,5 @@ void backtrace_symbols_fd(void* _Nonnull const* _Nonnull buffer, int size, int f
 
 
 __END_DECLS
+
+#include <bits/android_extra/execinfo.h>

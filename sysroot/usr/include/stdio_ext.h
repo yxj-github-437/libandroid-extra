@@ -45,7 +45,7 @@ __BEGIN_DECLS
  * Available since API level 23.
  */
 
-#if __BIONIC_AVAILABILITY_GUARD(23) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(23)
 size_t __fbufsize(FILE* _Nonnull __fp) __INTRODUCED_IN(23);
 
 /**
@@ -65,7 +65,7 @@ int __freadable(FILE* _Nonnull __fp) __INTRODUCED_IN(23);
  * Available since API level 28.
  */
 
-#if __BIONIC_AVAILABILITY_GUARD(28) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(28)
 int __freading(FILE* _Nonnull __fp) __INTRODUCED_IN(28);
 #endif /* __BIONIC_AVAILABILITY_GUARD(28) */
 
@@ -77,7 +77,7 @@ int __freading(FILE* _Nonnull __fp) __INTRODUCED_IN(28);
  * Available since API level 23.
  */
 
-#if __BIONIC_AVAILABILITY_GUARD(23) ||  __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(23)
 int __fwritable(FILE* _Nonnull __fp) __INTRODUCED_IN(23);
 #endif /* __BIONIC_AVAILABILITY_GUARD(23) */
 
@@ -89,7 +89,7 @@ int __fwritable(FILE* _Nonnull __fp) __INTRODUCED_IN(23);
  * Available since API level 28.
  */
 
-#if __BIONIC_AVAILABILITY_GUARD(28) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(28)
 int __fwriting(FILE* _Nonnull __fp) __INTRODUCED_IN(28);
 #endif /* __BIONIC_AVAILABILITY_GUARD(28) */
 
@@ -101,7 +101,7 @@ int __fwriting(FILE* _Nonnull __fp) __INTRODUCED_IN(28);
  * Available since API level 23.
  */
 
-#if __BIONIC_AVAILABILITY_GUARD(23) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(23)
 int __flbf(FILE* _Nonnull __fp) __INTRODUCED_IN(23);
 #endif /* __BIONIC_AVAILABILITY_GUARD(23) */
 
@@ -119,7 +119,7 @@ void __fpurge(FILE* _Nonnull __fp) __RENAME(fpurge);
  * Available since API level 23.
  */
 
-#if __BIONIC_AVAILABILITY_GUARD(23) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(23)
 size_t __fpending(FILE* _Nonnull __fp) __INTRODUCED_IN(23);
 #endif /* __BIONIC_AVAILABILITY_GUARD(23) */
 
@@ -143,7 +143,7 @@ size_t __freadahead(FILE* _Nonnull __fp) __INTRODUCED_IN(34);
  * Available since API level 23.
  */
 
-#if __BIONIC_AVAILABILITY_GUARD(23) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(23)
 void _flushlbf(void) __INTRODUCED_IN(23);
 #endif /* __BIONIC_AVAILABILITY_GUARD(23) */
 
@@ -155,7 +155,7 @@ void _flushlbf(void) __INTRODUCED_IN(23);
  * Available since API level 28.
  */
 
-#if __BIONIC_AVAILABILITY_GUARD(28) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(28)
 void __fseterr(FILE* _Nonnull __fp) __INTRODUCED_IN(28);
 #endif /* __BIONIC_AVAILABILITY_GUARD(28) */
 
@@ -176,9 +176,11 @@ void __fseterr(FILE* _Nonnull __fp) __INTRODUCED_IN(28);
  * Available since API level 23.
  */
 
-#if __BIONIC_AVAILABILITY_GUARD(23) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(23)
 int __fsetlocking(FILE* _Nonnull __fp, int __type) __INTRODUCED_IN(23);
 #endif /* __BIONIC_AVAILABILITY_GUARD(23) */
 
 
 __END_DECLS
+
+#include <bits/android_extra/stdio_ext.h>

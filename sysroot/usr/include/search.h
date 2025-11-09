@@ -86,7 +86,7 @@ void remque(void* _Nonnull __element);
  * Available since API level 28.
  */
 
-#if __BIONIC_AVAILABILITY_GUARD(28) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(28)
 int hcreate(size_t __n) __INTRODUCED_IN(28);
 
 /**
@@ -125,7 +125,7 @@ ENTRY* _Nullable hsearch(ENTRY __entry, ACTION __action) __INTRODUCED_IN(28);
  * Available since API level 28.
  */
 
-#if __BIONIC_AVAILABILITY_GUARD(28) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(28)
 int hcreate_r(size_t __n, struct hsearch_data* _Nonnull __table) __INTRODUCED_IN(28);
 
 /**
@@ -217,3 +217,5 @@ void* _Nullable tsearch(const void* _Nonnull __key, void* _Nullable * _Nullable 
 void twalk(const void* _Nullable __root, void (* _Nullable __visitor)(const void* _Nullable, VISIT, int));
 
 __END_DECLS
+
+#include <bits/android_extra/search.h>

@@ -294,7 +294,7 @@ int pthread_rwlock_unlock(pthread_rwlock_t* _Nonnull __rwlock);
 int pthread_rwlock_wrlock(pthread_rwlock_t* _Nonnull __rwlock);
 
 
-#if __BIONIC_AVAILABILITY_GUARD(24) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(24)
 int pthread_barrierattr_init(pthread_barrierattr_t* _Nonnull __attr) __INTRODUCED_IN(24);
 int pthread_barrierattr_destroy(pthread_barrierattr_t* _Nonnull __attr) __INTRODUCED_IN(24);
 int pthread_barrierattr_getpshared(const pthread_barrierattr_t* _Nonnull __attr, int* _Nonnull __shared) __INTRODUCED_IN(24);
@@ -350,7 +350,7 @@ int pthread_setname_np(pthread_t __pthread, const char* _Nonnull __name);
  * Available since API level 36.
  * See sched_getaffinity() and pthread_gettid_np() for greater portability.
  */
-#if defined(__USE_GNU) && (__BIONIC_AVAILABILITY_GUARD(36) || __ANDROID_EXTRA)
+#if defined(__USE_GNU) && __BIONIC_AVAILABILITY_GUARD(36)
 int pthread_getaffinity_np(pthread_t __pthread, size_t __cpu_set_size, cpu_set_t* __cpu_set) __INTRODUCED_IN(36);
 #endif
 
@@ -363,7 +363,7 @@ int pthread_getaffinity_np(pthread_t __pthread, size_t __cpu_set_size, cpu_set_t
  * Available since API level 36.
  * See sched_getaffinity() and pthread_gettid_np() for greater portability.
  */
-#if defined(__USE_GNU) && (__BIONIC_AVAILABILITY_GUARD(36) || __ANDROID_EXTRA)
+#if defined(__USE_GNU) && __BIONIC_AVAILABILITY_GUARD(36)
 int pthread_setaffinity_np(pthread_t __pthread, size_t __cpu_set_size, const cpu_set_t* __cpu_set) __INTRODUCED_IN(36);
 #endif
 
@@ -436,3 +436,5 @@ void __pthread_cleanup_pop(__pthread_cleanup_t* _Nonnull, int);
     } while (0);                                       \
 
 __END_DECLS
+
+#include <bits/android_extra/pthread.h>

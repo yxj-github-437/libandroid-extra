@@ -124,74 +124,94 @@ int isxdigit_l(int __ch, locale_t __l) __INTRODUCED_IN(21);
 int tolower_l(int __ch, locale_t __l) __INTRODUCED_IN(21);
 int toupper_l(int __ch, locale_t __l) __INTRODUCED_IN(21);
 #else
-/** Like isalnum() but with an ignored `locale_t`. */
-__BIONIC_CTYPE_INLINE int isalnum_l(int __ch, locale_t __l) {
-  return isalnum(__ch);
+/** Internal implementation detail. Do not use. */
+__attribute__((__no_sanitize__("unsigned-integer-overflow")))
+__BIONIC_CTYPE_INLINE int __bionic_ctype_in_range(unsigned __lo, int __ch, unsigned __hi) {
+  return (__BIONIC_CAST(static_cast, unsigned, __ch) - __lo) < (__hi - __lo + 1);
 }
 
-/** Like isalpha() but with an ignored `locale_t`. */
+/** Like isalpha() but with an ignored `locale_t`.
+    Returns true if `ch` is in `[A-Za-z]`. */
 __BIONIC_CTYPE_INLINE int isalpha_l(int __ch, locale_t __l) {
-  return isalpha(__ch);
+  return __bionic_ctype_in_range('a', _tolower(__ch), 'z');
 }
 
-/** Like isblank() but with an ignored `locale_t`. */
+/** Like isblank() but with an ignored `locale_t`.
+  * Returns true if `ch` is a space or tab. */
 __BIONIC_CTYPE_INLINE int isblank_l(int __ch, locale_t __l) {
-  return isblank(__ch);
+  return __ch == ' ' || __ch == '\t';
 }
 
-/** Like iscntrl() but with an ignored `locale_t`. */
+/** Like iscntrl() but with an ignored `locale_t`.
+  * Returns true if `ch` is a control character (any character before space, plus DEL). */
 __BIONIC_CTYPE_INLINE int iscntrl_l(int __ch, locale_t __l) {
-  return iscntrl(__ch);
+  return (__BIONIC_CAST(static_cast, unsigned, __ch) < ' ') || __ch == 0x7f;
 }
 
-/** Like isdigit() but with an ignored `locale_t`. */
+/** Like isdigit() but with an ignored `locale_t`.
+  * Returns true if `ch` is in `[0-9]`. */
 __BIONIC_CTYPE_INLINE int isdigit_l(int __ch, locale_t __l) {
-  return isdigit(__ch);
+  return __bionic_ctype_in_range('0', __ch, '9');
 }
 
-/** Like isgraph() but with an ignored `locale_t`. */
+/** Like isalnum() but with an ignored `locale_t`.
+  * Returns true if `ch` is in `[A-Za-z0-9]`. */
+__BIONIC_CTYPE_INLINE int isalnum_l(int __ch, locale_t __l) {
+  return isalpha_l(__ch, __l) || isdigit_l(__ch, __l);
+}
+
+/** Like isgraph() but with an ignored `locale_t`.
+  * Returns true if `ch` is `[A-Za-z0-9]` or punctuation. */
 __BIONIC_CTYPE_INLINE int isgraph_l(int __ch, locale_t __l) {
-  return isgraph(__ch);
+  return __bionic_ctype_in_range('!', __ch, '~');
 }
 
-/** Like islower() but with an ignored `locale_t`. */
+/** Like islower() but with an ignored `locale_t`.
+  * Returns true if `ch` is in `[a-z]`. */
 __BIONIC_CTYPE_INLINE int islower_l(int __ch, locale_t __l) {
-  return islower(__ch);
+  return __bionic_ctype_in_range('a', __ch, 'z');
 }
 
-/** Like isprint() but with an ignored `locale_t`. */
+/** Like isprint() but with an ignored `locale_t`.
+  * Returns true if `ch` is `[A-Za-z0-9]` or punctuation or space. */
 __BIONIC_CTYPE_INLINE int isprint_l(int __ch, locale_t __l) {
-  return isprint(__ch);
+  return __bionic_ctype_in_range(' ', __ch, '~');
 }
 
-/** Like ispunct() but with an ignored `locale_t`. */
+/** Like ispunct() but with an ignored `locale_t`.
+  * Returns true if `ch` is punctuation. */
 __BIONIC_CTYPE_INLINE int ispunct_l(int __ch, locale_t __l) {
-  return ispunct(__ch);
+  return isgraph_l(__ch, __l) && !isalnum_l(__ch, __l);
 }
 
-/** Like isspace() but with an ignored `locale_t`. */
+/** Like isspace() but with an ignored `locale_t`.
+  * Returns true if `ch` is in `[ \f\n\r\t\v]`. */
 __BIONIC_CTYPE_INLINE int isspace_l(int __ch, locale_t __l) {
-  return isspace(__ch);
+  return __ch == ' ' || __bionic_ctype_in_range('\t', __ch, '\r');
 }
 
-/** Like isupper() but with an ignored `locale_t`. */
+/** Like issupper() but with an ignored `locale_t`.
+  * Returns true if `ch` is in `[A-Z]`. */
 __BIONIC_CTYPE_INLINE int isupper_l(int __ch, locale_t __l) {
-  return isupper(__ch);
+  return __bionic_ctype_in_range('A', __ch, 'Z');
 }
 
-/** Like isxdigit() but with an ignored `locale_t`. */
+/** Like isxdigit() but with an ignored `locale_t`.
+  * Returns true if `ch` is in `[0-9A-Fa-f]`. */
 __BIONIC_CTYPE_INLINE int isxdigit_l(int __ch, locale_t __l) {
-  return isxdigit(__ch);
+  return isdigit_l(__ch, __l) || __bionic_ctype_in_range('a', _tolower(__ch), 'f') ;
 }
 
-/** Like tolower() but with an ignored `locale_t`. */
+/** Like tolower() but with an ignored `locale_t`.
+  * Returns the corresponding lower-case character if `ch` is upper-case, or `ch` otherwise. */
 __BIONIC_CTYPE_INLINE int tolower_l(int __ch, locale_t __l) {
-  return tolower(__ch);
+  return (__bionic_ctype_in_range('A', __ch, 'Z')) ? _tolower(__ch) : __ch;
 }
 
-/** Like toupper() but with an ignored `locale_t`. */
+/** Like toupper() but with an ignored `locale_t`.
+  * Returns the corresponding upper-case character if `ch` is lower-case, or `ch` otherwise. */
 __BIONIC_CTYPE_INLINE int toupper_l(int __ch, locale_t __l) {
-  return toupper(__ch);
+  return (__bionic_ctype_in_range('a', __ch, 'z')) ? _toupper(__ch) : __ch;
 }
 #endif
 

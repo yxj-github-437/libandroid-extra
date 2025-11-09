@@ -59,12 +59,8 @@
 #endif
 
 #ifndef __clang__
+#undef __BIONIC_AVAILABILITY
 #define __BIONIC_AVAILABILITY(__what, ...) __attribute__((annotated(#__what)))
-#endif
-
-#ifdef __ANDROID_EXTRA
-#undef __BIONIC_AVAILABILITY_GUARD
-#define __BIONIC_AVAILABILITY_GUARD(api_level) (__ANDROID_MIN_SDK_VERSION__ >= (api_level))
 #endif
 
 #pragma clang diagnostic push

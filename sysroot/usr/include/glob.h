@@ -93,7 +93,7 @@ typedef struct {
 __BEGIN_DECLS
 
 
-#if __BIONIC_AVAILABILITY_GUARD(28) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(28)
 int glob(const char* _Nonnull __pattern, int __flags, int (* _Nullable __error_callback)(const char* _Nonnull __failure_path, int __failure_errno), glob_t* _Nonnull __result_ptr) __INTRODUCED_IN(28);
 void globfree(glob_t* _Nonnull __result_ptr) __INTRODUCED_IN(28);
 #endif /* __BIONIC_AVAILABILITY_GUARD(28) */
@@ -102,3 +102,5 @@ void globfree(glob_t* _Nonnull __result_ptr) __INTRODUCED_IN(28);
 __END_DECLS
 
 #endif
+
+#include <bits/android_extra/glob.h>

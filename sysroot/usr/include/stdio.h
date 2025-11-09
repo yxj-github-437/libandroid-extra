@@ -46,7 +46,7 @@
 
 #include <bits/seek_constants.h>
 
-#if __ANDROID_API__ < 24 || __ANDROID_EXTRA
+#if __ANDROID_API__ < 24
 #include <bits/struct_file.h>
 #endif
 
@@ -291,7 +291,7 @@ int vsscanf(const char* _Nonnull __s, const char* _Nonnull __fmt, va_list __args
 
 #define L_ctermid 1024 /* size for ctermid() */
 
-#if __BIONIC_AVAILABILITY_GUARD(26) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(26)
 char* _Nonnull ctermid(char* _Nullable __buf) __INTRODUCED_IN(26);
 #endif /* __BIONIC_AVAILABILITY_GUARD(26) */
 
@@ -309,7 +309,7 @@ int putc_unlocked(int __ch, FILE* _Nonnull __fp);
 int putchar_unlocked(int __ch);
 
 
-#if __BIONIC_AVAILABILITY_GUARD(23) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(23)
 __nodiscard FILE* _Nullable fmemopen(void* _Nullable __buf, size_t __size, const char* _Nonnull __mode) __INTRODUCED_IN(23);
 __nodiscard FILE* _Nullable open_memstream(char* _Nonnull * _Nonnull __ptr, size_t* _Nonnull __size_ptr) __INTRODUCED_IN(23);
 #endif /* __BIONIC_AVAILABILITY_GUARD(23) */
@@ -323,14 +323,14 @@ void setbuffer(FILE* _Nonnull __fp, char* _Nullable __buf, int __size);
 int setlinebuf(FILE* _Nonnull __fp);
 int vasprintf(char* _Nullable * _Nonnull __s_ptr, const char* _Nonnull __fmt, va_list __args) __printflike(2, 0);
 
-#if __BIONIC_AVAILABILITY_GUARD(23) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(23)
 void clearerr_unlocked(FILE* _Nonnull __fp) __INTRODUCED_IN(23);
 __nodiscard int feof_unlocked(FILE* _Nonnull __fp) __INTRODUCED_IN(23);
 __nodiscard int ferror_unlocked(FILE* _Nonnull __fp) __INTRODUCED_IN(23);
 #endif /* __BIONIC_AVAILABILITY_GUARD(23) */
 
 
-#if __BIONIC_AVAILABILITY_GUARD(24) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(24)
 __nodiscard int fileno_unlocked(FILE* _Nonnull __fp) __INTRODUCED_IN(24);
 #endif /* __BIONIC_AVAILABILITY_GUARD(24) */
 
@@ -366,3 +366,5 @@ char* _Nullable fgets_unlocked(char* _Nonnull __buf, int __size, FILE* _Nonnull 
 __END_DECLS
 
 #endif
+
+#include <bits/android_extra/stdio.h>

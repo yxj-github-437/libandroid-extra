@@ -132,9 +132,11 @@ void endutent(void);
  * Available since API level 23.
  */
 
-#if __BIONIC_AVAILABILITY_GUARD(23) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(23)
 int login_tty(int __fd) __INTRODUCED_IN(23);
 #endif /* __BIONIC_AVAILABILITY_GUARD(23) */
 
 
 __END_DECLS
+
+#include <bits/android_extra/utmp.h>

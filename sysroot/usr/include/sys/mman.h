@@ -192,7 +192,7 @@ ssize_t process_madvise(int __pid_fd, const struct iovec* _Nonnull __iov, size_t
  * Returns an fd on success, and returns -1 and sets `errno` on failure.
  */
 
-#if __BIONIC_AVAILABILITY_GUARD(30) || __ANDROID_EXTRA
+#if __BIONIC_AVAILABILITY_GUARD(30)
 int memfd_create(const char* _Nonnull __name, unsigned __flags) __INTRODUCED_IN(30);
 #endif /* __BIONIC_AVAILABILITY_GUARD(30) */
 
@@ -255,3 +255,5 @@ int mseal(void* _Nonnull __addr, size_t __size, unsigned long __flags) __INTRODU
 
 
 __END_DECLS
+
+#include <bits/android_extra/sys_mman.h>

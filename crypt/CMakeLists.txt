@@ -1,14 +1,17 @@
 project(libcrypt)
 
 add_library(crypt STATIC
-    crypt_blowfish.c
-    crypt.c
-    crypt_des.c
-    crypt_md5.c
-    crypt_r.c
-    crypt_sha256.c
-    crypt_sha512.c
-    encrypt.c)
+    src/crypt_blowfish.c
+    src/crypt.c
+    src/crypt_des.c
+    src/crypt_md5.c
+    src/crypt_r.c
+    src/crypt_sha256.c
+    src/crypt_sha512.c
+    src/encrypt.c)
+
+target_include_directories(crypt PUBLIC
+    include)
 
 if(STRIP_LIBRARY)
     add_custom_command(TARGET crypt POST_BUILD

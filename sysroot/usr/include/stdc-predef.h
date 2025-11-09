@@ -13,6 +13,5 @@
 #endif
 
 #define __ANDROID_EXTRA 1
-#define __ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__ 1
 
 #endif // _STDC_PREDEF_H
