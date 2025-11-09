@@ -246,6 +246,17 @@ extern LIBICONV_SHLIB_EXPORTED void iconvlist (int (*do_one) (unsigned int names
    The result is either a canonical encoding name, or name itself. */
 extern LIBICONV_SHLIB_EXPORTED const char * iconv_canonicalize (const char * name);
 
+/* Support for relocatable packages.  */
+
+/* Sets the original and the current installation prefix of the package.
+   Relocation simply replaces a pathname starting with the original prefix
+   by the corresponding pathname with the current prefix instead.  Both
+   prefixes should be directory names without trailing slash (i.e. use ""
+   instead of "/").  */
+__attribute__((__always_inline__))
+static __inline void libiconv_set_relocation_prefix (const char *orig_prefix,
+                                            const char *curr_prefix) {}
+
 #ifdef __cplusplus
 }
 #endif
