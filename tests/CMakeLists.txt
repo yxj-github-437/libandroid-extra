@@ -47,3 +47,6 @@ target_link_libraries(crypt_test crypt c_extra)
 
 add_executable(langinfo_test src/langinfo_test.c)
 target_link_libraries(langinfo_test c_extra)
+
+add_executable(iconv_test src/iconv_test.c)
+target_link_libraries(iconv_test iconv c_extra)
