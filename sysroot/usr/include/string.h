@@ -236,6 +236,8 @@ char* _Nonnull basename(const char* _Nonnull __path) __RENAME(__gnu_basename) __
 #endif
 #endif
 
+#include <bits/android_extra/string.h>
+
 #if defined(__BIONIC_INCLUDE_FORTIFY_HEADERS)
 #include <bits/fortify/string.h>
 #endif
@@ -328,5 +330,3 @@ const char* _Nullable strpbrk(const char* _Nonnull h, const char* _Nonnull n) __
 __END_DECLS
 
 #endif
-
-#include <bits/android_extra/string.h>

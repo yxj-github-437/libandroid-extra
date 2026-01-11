@@ -5,9 +5,10 @@
 #ifdef __ANDROID_EXTRA
 
 __BEGIN_DECLS
-void* _Nonnull mempcpy(void* _Nonnull __dst, const void* _Nonnull __src, size_t __n);
 
 #if defined(__USE_GNU)
+void* _Nonnull mempcpy(void* _Nonnull __dst, const void* _Nonnull __src, size_t __n);
+
 #if defined(__cplusplus)
 extern "C++" char* _Nonnull strchrnul(char* _Nonnull __s, int __ch) __RENAME(strchrnul) __attribute_pure__;
 extern "C++" const char* _Nonnull strchrnul(const char* _Nonnull __s, int __ch) __RENAME(strchrnul) __attribute_pure__;
