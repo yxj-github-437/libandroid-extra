@@ -68,7 +68,7 @@ void* _Nonnull mempcpy(void* _Nonnull const dst __pass_object_size0, const void*
         __overloadable
         __clang_error_if(__bos_unevaluated_lt(__bos0(dst), copy_amount),
                          "'mempcpy' called with size bigger than buffer") {
-#if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
+#if __ANDROID_API__ >= 30 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
     size_t bos_dst = __bos0(dst);
     if (!__bos_trivially_ge(bos_dst, copy_amount)) {
         return __builtin___mempcpy_chk(dst, src, copy_amount, bos_dst);
@@ -130,7 +130,7 @@ void* mempcpy(void* const dst __pass_object_size0, const void* src, size_t copy_
         __mempcpy_dest_size_error();
     }
 
-#if __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
+#if __ANDROID_API__ >= 30 && __BIONIC_FORTIFY_RUNTIME_CHECKS_ENABLED
     size_t bos_dst = __bos0(dst);
     if (!__bos_trivially_ge(bos_dst, copy_amount)) {
         return __builtin___mempcpy_chk(dst, src, copy_amount, bos_dst);
