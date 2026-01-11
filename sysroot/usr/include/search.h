@@ -218,4 +218,6 @@ void twalk(const void* _Nullable __root, void (* _Nullable __visitor)(const void
 
 __END_DECLS
 
+#define _SEARCH_H_
 #include <bits/android_extra/search.h>
+#undef _SEARCH_H_

@@ -1,6 +1,6 @@
-#pragma once
-
-#include <pthread.h>
+#ifndef _PTHREAD_H_
+#error "Never include this file directly; instead, include <pthread.h>"
+#endif
 
 #ifdef __ANDROID_EXTRA
 

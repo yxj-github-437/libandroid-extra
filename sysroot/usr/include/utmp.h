@@ -139,4 +139,6 @@ int login_tty(int __fd) __INTRODUCED_IN(23);
 
 __END_DECLS
 
+#define _UTMP_H_
 #include <bits/android_extra/utmp.h>
+#undef _UTMP_H_

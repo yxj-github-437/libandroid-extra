@@ -1,6 +1,6 @@
-#pragma once
-
-#include <wctype.h>
+#ifndef _WCTYPE_H_
+#error "Never include this file directly; instead, include <wctype.h>"
+#endif
 
 #ifdef __ANDROID_EXTRA
 

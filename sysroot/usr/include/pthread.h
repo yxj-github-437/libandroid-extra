@@ -437,4 +437,6 @@ void __pthread_cleanup_pop(__pthread_cleanup_t* _Nonnull, int);
 
 __END_DECLS
 
+#define _PTHREAD_H_
 #include <bits/android_extra/pthread.h>
+#undef _PTHREAD_H_

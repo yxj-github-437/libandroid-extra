@@ -68,4 +68,6 @@ int forkpty(int* _Nonnull __parent_pty_fd, char* _Nullable __child_tty_name, con
 
 __END_DECLS
 
+#define _PTY_H_
 #include <bits/android_extra/pty.h>
+#undef _PTY_H_

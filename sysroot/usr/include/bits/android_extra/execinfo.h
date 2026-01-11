@@ -1,6 +1,6 @@
-#pragma once
-
-#include <execinfo.h>
+#ifndef _EXECINFO_H_
+#error "Never include this file directly; instead, include <execinfo.h>"
+#endif
 
 #ifdef __ANDROID_EXTRA
 

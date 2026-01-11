@@ -96,4 +96,6 @@ void freeifaddrs(struct ifaddrs* _Nullable __ptr) __INTRODUCED_IN(24);
 
 __END_DECLS
 
+#define _IFADDRS_H_
 #include <bits/android_extra/ifaddrs.h>
+#undef _IFADDRS_H_

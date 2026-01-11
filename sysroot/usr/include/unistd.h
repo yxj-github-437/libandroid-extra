@@ -479,4 +479,7 @@ int close_range(unsigned int __min_fd, unsigned int __max_fd, int __flags) __INT
 __END_DECLS
 
 #include <android/legacy_unistd_inlines.h>
+
+#define _UNISTD_H_
 #include <bits/android_extra/unistd.h>
+#undef _UNISTD_H_

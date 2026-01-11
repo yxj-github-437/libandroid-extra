@@ -1,6 +1,6 @@
-#pragma once
-
-#include <utmp.h>
+#ifndef _UTMP_H_
+#error "Never include this file directly; instead, include <utmp.h>"
+#endif
 
 #ifdef __ANDROID_EXTRA
 

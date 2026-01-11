@@ -1,6 +1,6 @@
-#pragma once
-
-#include <glob.h>
+#ifndef _GLOB_H_
+#error "Never include this file directly; instead, include <glob.h>"
+#endif
 
 #ifdef __ANDROID_EXTRA
 

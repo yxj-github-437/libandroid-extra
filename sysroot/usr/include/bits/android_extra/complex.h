@@ -1,6 +1,6 @@
-#pragma once
-
-#include <complex.h>
+#ifndef _COMPLEX_H
+#error "Never include this file directly; instead, include <complex.h>"
+#endif
 
 #ifdef __ANDROID_EXTRA
 

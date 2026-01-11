@@ -1,6 +1,6 @@
-#pragma once
-
-#include <ifaddrs.h>
+#ifndef _IFADDRS_H_
+#error "Never include this file directly; instead, include <ifaddrs.h>"
+#endif
 
 #ifdef __ANDROID_EXTRA
 

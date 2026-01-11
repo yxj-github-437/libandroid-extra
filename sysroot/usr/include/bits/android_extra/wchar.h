@@ -1,6 +1,6 @@
-#pragma once
-
-#include <wchar.h>
+#ifndef _WCHAR_H_
+#error "Never include this file directly; instead, include <wchar.h>"
+#endif
 
 #ifdef __ANDROID_EXTRA
 

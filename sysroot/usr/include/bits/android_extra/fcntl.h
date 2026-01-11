@@ -1,6 +1,6 @@
-#pragma once
-
-#include <fcntl.h>
+#ifndef _FCNTL_H
+#error "Never include this file directly; instead, include <fcntl.h>"
+#endif
 
 #ifdef __ANDROID_EXTRA
 

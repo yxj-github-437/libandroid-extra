@@ -1,6 +1,6 @@
-#pragma once
-
-#include <stdio_ext.h>
+#ifndef _STDIO_EXT_H_
+#error "Never include this file directly; instead, include <stdio_ext.h>"
+#endif
 
 #ifdef __ANDROID_EXTRA
 

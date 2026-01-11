@@ -1,6 +1,6 @@
-#pragma once
-
-#include <unistd.h>
+#ifndef _UNISTD_H_
+#error "Never include this file directly; instead, include <unistd.h>"
+#endif
 
 #ifdef __ANDROID_EXTRA
 

@@ -1,6 +1,6 @@
-#pragma once
-
-#include <nl_types.h>
+#ifndef _NL_TYPES_H_
+#error "Never include this file directly; instead, include <nl_types.h>"
+#endif
 
 #ifdef __ANDROID_EXTRA
 

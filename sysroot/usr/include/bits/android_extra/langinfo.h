@@ -1,6 +1,6 @@
-#pragma once
-
-#include <langinfo.h>
+#ifndef _LANGINFO_H_
+#error "Never include this file directly; instead, include <langinfo.h>"
+#endif
 
 #ifdef __ANDROID_EXTRA
 

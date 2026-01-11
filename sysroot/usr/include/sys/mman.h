@@ -256,4 +256,6 @@ int mseal(void* _Nonnull __addr, size_t __size, unsigned long __flags) __INTRODU
 
 __END_DECLS
 
+#define _SYS_MMAN_H_
 #include <bits/android_extra/sys_mman.h>
+#undef _SYS_MMAN_H_

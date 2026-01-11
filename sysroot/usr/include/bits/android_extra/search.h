@@ -1,6 +1,6 @@
-#pragma once
-
-#include <search.h>
+#ifndef _SEARCH_H_
+#error "Never include this file directly; instead, include <search.h>"
+#endif
 
 #ifdef __ANDROID_EXTRA
 

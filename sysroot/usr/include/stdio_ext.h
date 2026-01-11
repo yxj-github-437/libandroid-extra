@@ -183,4 +183,6 @@ int __fsetlocking(FILE* _Nonnull __fp, int __type) __INTRODUCED_IN(23);
 
 __END_DECLS
 
+#define _STDIO_EXT_H_
 #include <bits/android_extra/stdio_ext.h>
+#undef _STDIO_EXT_H_

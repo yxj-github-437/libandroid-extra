@@ -1,6 +1,6 @@
-#pragma once
-
-#include <pty.h>
+#ifndef _PTY_H_
+#error "Never include this file directly; instead, include <pty.h>"
+#endif
 
 #ifdef __ANDROID_EXTRA
 

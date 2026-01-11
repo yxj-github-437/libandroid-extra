@@ -1,6 +1,6 @@
-#pragma once
-
-#include <string.h>
+#ifndef _STRING_H
+#error "Never include this file directly; instead, include <string.h>"
+#endif
 
 #ifdef __ANDROID_EXTRA
 

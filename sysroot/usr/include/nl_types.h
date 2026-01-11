@@ -87,4 +87,6 @@ int catclose(nl_catd _Nonnull __catalog) __INTRODUCED_IN(26);
 
 __END_DECLS
 
+#define _NL_TYPES_H_
 #include <bits/android_extra/nl_types.h>
+#undef _NL_TYPES_H_

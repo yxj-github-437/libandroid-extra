@@ -77,4 +77,6 @@ void backtrace_symbols_fd(void* _Nonnull const* _Nonnull buffer, int size, int f
 
 __END_DECLS
 
+#define _EXECINFO_H_
 #include <bits/android_extra/execinfo.h>
+#undef _EXECINFO_H_

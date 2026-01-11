@@ -1,6 +1,6 @@
-#pragma once
-
-#include <spawn.h>
+#ifndef _SPAWN_H_
+#error "Never include this file directly; instead, include <spawn.h>"
+#endif
 
 #ifdef __ANDROID_EXTRA
 

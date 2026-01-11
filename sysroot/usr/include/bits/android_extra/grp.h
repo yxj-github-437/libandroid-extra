@@ -1,6 +1,6 @@
-#pragma once
-
-#include <grp.h>
+#ifndef _GRP_H_
+#error "Never include this file directly; instead, include <grp.h>"
+#endif
 
 #ifdef __ANDROID_EXTRA
 

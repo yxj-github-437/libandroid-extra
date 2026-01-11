@@ -1,6 +1,6 @@
-#pragma once
-
-#include <sys/mman.h>
+#ifndef _SYS_MMAN_H_
+#error "Never include this file directly; instead, include <sys/mman.h>"
+#endif
 
 #ifdef __ANDROID_EXTRA
 
