@@ -266,7 +266,7 @@ __errordecl(__readlink_size_toobig_error, "readlink called with size > SSIZE_MAX
 __errordecl(__readlinkat_dest_size_error, "readlinkat called with size bigger than destination");
 __errordecl(__readlinkat_size_toobig_error, "readlinkat called with size > SSIZE_MAX");
 
-#define __overflows_ssizet(what) ((what) > SSIZE_MAX)
+#define __overflows_ssizet(what) (__builtin_constant_p((what)) && (what) > SSIZE_MAX)
 #define __overflows_objectsize(what, objsize) \
     (__bos_unevaluated_lt((objsize), (what)))
 

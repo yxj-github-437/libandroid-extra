@@ -311,10 +311,10 @@
 
 /* Intended for use in unevaluated contexts, e.g. diagnose_if conditions. */
 #define __bos_unevaluated_lt(bos_val, val) \
-  ((bos_val) != __BIONIC_FORTIFY_UNKNOWN_SIZE && (bos_val) < (val))
+  ((bos_val) != __BIONIC_FORTIFY_UNKNOWN_SIZE && __builtin_constant_p((val)) && (bos_val) < (val))
 
 #define __bos_unevaluated_le(bos_val, val) \
-  ((bos_val) != __BIONIC_FORTIFY_UNKNOWN_SIZE && (bos_val) <= (val))
+  ((bos_val) != __BIONIC_FORTIFY_UNKNOWN_SIZE && __builtin_constant_p((val)) && (bos_val) <= (val))
 
 /* Intended for use in evaluated contexts. */
 #define __bos_dynamic_check_impl_and(bos_val, op, index, cond) \

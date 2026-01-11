@@ -55,7 +55,7 @@ __errordecl(__realpath_size_error, __realpath_buf_too_small_str);
 
 __BIONIC_FORTIFY_INLINE
 char* realpath(const char* path, char* resolved) {
-    if (!path)
+    if (__builtin_constant_p(path) && !path)
         __realpath_path_null();
 
     if (__bos_unevaluated_lt(__bos(resolved), __PATH_MAX)) {
