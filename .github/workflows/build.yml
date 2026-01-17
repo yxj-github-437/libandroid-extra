@@ -1,0 +1,91 @@
+name: libandroid-extra build
+
+on:
+  push:
+    branches :
+      - master
+
+env:
+  NDK_VERSION: 29
+
+jobs:
+  prepare_ndk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: cache ndk
+        uses: actions/cache@v4
+        id: ndk-cache
+        with:
+          path: /opt/ndk
+          key: ${{ runner.os }}-ndk-r${{ env.NDK_VERSION }}
+          restore-keys: ${{ runner.os }}-ndk-
+
+      - name: download ndk
+        run: |
+            # 下载NDK
+            wget -q https://dl.google.com/android/repository/android-ndk-r$NDK_VERSION-linux.zip
+            unzip -q android-ndk-r$NDK_VERSION-linux.zip -d /opt/
+            mv /opt/android-ndk-r$NDK_VERSION /opt/ndk
+        if: steps.ndk-cache.outputs.cache-hit != 'true'
+
+      - name: check clang
+        run: |
+          /opt/ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++ -v
+
+
+  build_android_extra:
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [RelWithDebInfo]
+        target_abi: [arm64-v8a, armeabi-v7a, x86_64, x86]
+    runs-on: ubuntu-latest
+    needs: [prepare_ndk]
+    steps:
+      - name: checkout
+        uses: actions/checkout@v5
+
+      - id: get_commit
+        run: |
+          echo "commit_id=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+
+      - name: cache sysroot
+        uses: actions/cache@v4
+        id: sysroot-cache
+        with:
+          path: /opt/android-build/sysroot
+          key: ${{ runner.os }}-sysroot-${{ matrix.target_abi }}-${{ steps.get_commit.outputs.commit_id }}
+          restore-keys: ${{ runner.os }}-sysroot-${{ matrix.target_abi }}-
+
+      - name: restore ndk
+        uses: actions/cache@v4
+        with:
+          path: /opt/ndk
+          key: ${{ runner.os }}-ndk-r${{ env.NDK_VERSION }}
+        if: steps.sysroot-cache.outputs.cache-hit != 'true'
+
+      - name: build
+        run: |
+          cmake -B ${{ github.workspace }}/libandroid-extra-build \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DANDROID_PLATFORM=android-21 -DANDROID_ABI=${{ matrix.target_abi }} \
+            -DANDROID_ARM_MODE=arm \
+            --toolchain /opt/ndk/build/cmake/android.toolchain.cmake \
+            --install-prefix /opt/android-build \
+            -GNinja
+          cmake --build ${{ github.workspace }}/libandroid-extra-build --config ${{ matrix.build_type }}
+          cmake --install ${{ github.workspace }}/libandroid-extra-build
+
+          if [[ ${{ matrix.target_abi }} == x86_64 ]]; then
+            rm -rf ${{ github.workspace }}/libandroid-extra-build
+            cmake -B ${{ github.workspace }}/libandroid-extra-build \
+              -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+              -DANDROID_PLATFORM=android-21 -DANDROID_ABI=x86 \
+              --toolchain /opt/ndk/build/cmake/android.toolchain.cmake \
+              --install-prefix /opt/android-build \
+              -GNinja
+            cmake --build ${{ github.workspace }}/libandroid-extra-build --config ${{ matrix.build_type }}
+            cmake --install ${{ github.workspace }}/libandroid-extra-build
+          fi
+        if: steps.sysroot-cache.outputs.cache-hit != 'true'
+
