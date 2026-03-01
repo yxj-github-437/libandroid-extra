@@ -6,6 +6,9 @@
 
 __BEGIN_DECLS
 int memfd_create(const char* _Nonnull __name, unsigned __flags);
+
+int shm_open(const char *name, int oflag, mode_t mode);
+int shm_unlink(const char *name);
 __END_DECLS
 
 #endif

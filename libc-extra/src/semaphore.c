@@ -1,5 +1,5 @@
-/* This file is a port of posix named semaphore for Termux Android, 
-   based on musl-libc which is licensed under the standard MIT license. 
+/* This file is a port of posix named semaphore for Termux Android,
+   based on musl-libc which is licensed under the standard MIT license.
    The ported files are listed as following.
 
    File(s): src/thread/sem_open.c
@@ -40,22 +40,11 @@
 #include <pthread.h>   // mutex
 #include <paths.h>     // _PATH_TMP
 
+#include "tmpdir_get.h"
+
 #ifndef SEM_NSEMS_MAX
 #define SEM_NSEMS_MAX 256
 #endif // !SEM_NSEMS_MAX
-
-static char sem_prefix[256] = { 0 };
-static __inline char* __sem_prefix() {
-    if(sem_prefix[0] != '\0')
-        return sem_prefix;
-    
-    char* tmpdir = getenv("TMPDIR");
-    if(!tmpdir) {
-        tmpdir = getenv("PWD");
-    }
-    snprintf(sem_prefix, sizeof(sem_prefix), "%s/.sem.", tmpdir);
-    return sem_prefix;
-}
 
 static __inline__ char *__strchrnul(const char *s, int c)
 {
@@ -92,10 +81,10 @@ static char *__sem_mapname(const char *name, char *buf)
         errno = ENAMETOOLONG;
         return 0;
     }
-    
-    __sem_prefix();
-    memcpy(buf, sem_prefix, strlen(sem_prefix));
-    memcpy(buf+strlen(sem_prefix), name, p-name+1);
+
+    tmpdir_get(buf, PATH_MAX);
+    size_t len = strlen(buf);
+    snprintf(buf + len, PATH_MAX - len, "/.sem.%s", name);
     return buf;
 }
 
@@ -108,7 +97,7 @@ sem_t *sem_open(const char *name, int flags, ...)
     sem_t newsem;
     void *map;
     struct stat st;
-    char buf[sizeof(sem_prefix) + NAME_MAX];
+    char buf[PATH_MAX];
 
     if (!(name = __sem_mapname(name, buf)))
         return SEM_FAILED;
@@ -138,14 +127,14 @@ sem_t *sem_open(const char *name, int flags, ...)
     /* Dummy pointer to make a reservation */
     semtab[slot].sem = (sem_t *)-1;
     UNLOCK(lock);
-    
+
     /* Only O_CREAT and O_EXCL are useful */
     flags &= (O_CREAT|O_EXCL);
 
     /* Get a file descriptor. */
     switch (flags) {
     case 0:
-        /* There is no flag specified in oflag. Just open the existing semaphore.  
+        /* There is no flag specified in oflag. Just open the existing semaphore.
          * If a semaphore with the given name doesn't exist, return an error. */
         {
             if ((fd = open(name, FLAGS)) < 0) {
@@ -154,7 +143,7 @@ sem_t *sem_open(const char *name, int flags, ...)
         }
         break;
     case O_CREAT:
-        /* If only O_CREAT is specified in oflag, then the semaphore is 
+        /* If only O_CREAT is specified in oflag, then the semaphore is
          * created if it does not already exist. If a semaphore with the
          * given name already exists, then mode and value are ignored. */
         {
@@ -196,7 +185,7 @@ sem_t *sem_open(const char *name, int flags, ...)
         errno = EINVAL;
         goto fail;
     }
-    
+
     /* Do fstat and mmap. */
     if (fstat(fd, &st) < 0 || (map = mmap(0, sizeof(sem_t), PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0)) == MAP_FAILED) {
         close(fd);
@@ -259,7 +248,7 @@ int sem_close(sem_t *sem)
 
 int sem_unlink(const char *name)
 {
-    char buf[sizeof(sem_prefix) + NAME_MAX];
+    char buf[PATH_MAX];
     if (!(name = __sem_mapname(name, buf))) return -1;
     return unlink(name);
 }

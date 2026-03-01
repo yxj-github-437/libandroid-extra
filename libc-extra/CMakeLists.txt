@@ -14,6 +14,7 @@ set(SRC_LIST
     src/ifaddrs.c
     src/langinfo.c
     src/nl_types.c
+    src/posix_shm.c
     src/posix_spawn.cpp
     src/pthread_affinity.c
     src/pthread_barrier.c
